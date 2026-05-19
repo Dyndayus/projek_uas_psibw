@@ -292,13 +292,13 @@
 
     <header class="navbar">
         <div class="nav-left">
-            <img src="https://via.placeholder.com/150x50?text=LOGO+UNIV" alt="Logo Universitas" class="logo-univ">
+            <img src="uploads/foto_dosen/dosen_1778570746.png" alt="Logo Universitas" class="logo-univ">
             <span class="univ-name">SIAKAD UNIVERSITAS</span>
         </div>
         <div class="nav-right">
             <div class="profile-click" onclick="bukaKonten('profil')">
                 <span class="dosen-name">Dr. Budi Santoso, M.T.</span>
-                <img src="https://via.placeholder.com/150?text=Dosen" alt="Foto Dosen" class="foto-profil">
+                <img src="uploads/foto_dosen/dosen_1778570746.png" alt="Foto Dosen" class="foto-profil">
             </div>
         </div>
     </header>
