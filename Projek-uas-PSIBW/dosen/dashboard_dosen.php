@@ -14,6 +14,8 @@
             --accent-color: #3498db;
             --light-bg: #f8f9fa;
             --text-color: #333;
+            --success-color: #2ecc71;
+            --warning-color: #f1c40f;
         }
 
         * {
@@ -162,33 +164,69 @@
         }
 
         h2 {
-            margin-bottom: 20px;
+            margin-bottom: 5px;
             color: var(--primary-color);
-            border-bottom: 2px solid #ddd;
-            padding-bottom: 10px;
         }
 
-        /* --- CARDS (BERANDA) --- */
+        .sub-title {
+            color: #7f8c8d;
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+        }
+
+        .section-header {
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: var(--secondary-color);
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 8px;
+        }
+
+        /* --- CARDS STATISTIK (BERANDA) --- */
         .dashboard-cards {
             display: flex;
             gap: 20px;
-            margin-top: 20px;
+            margin-top: 15px;
         }
 
         .card {
             background: #fff;
-            padding: 25px;
+            padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-left: 5px solid var(--accent-color);
         }
 
-        .card h3 {
+        .card.card-matkul { border-left-color: var(--accent-color); }
+        .card.card-mahasiswa { border-left-color: var(--success-color); }
+        .card.card-jadwal { border-left-color: var(--warning-color); }
+
+        .card-info h3 {
             font-size: 2rem;
-            color: var(--accent-color);
+            color: #2c3e50;
+            line-height: 1.2;
         }
 
-        /* --- TABLES (MATAKULIAH & NILAI) --- */
+        .card-info p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            color: #bdc3c7;
+        }
+
+        /* --- TABLES (ALL SECTIONS) --- */
         .table-responsive {
             overflow-x: auto;
         }
@@ -196,11 +234,11 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
             background: #fff;
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 10px;
         }
 
         th, td {
@@ -212,10 +250,21 @@
         th {
             background-color: var(--secondary-color);
             color: white;
+            font-weight: 600;
         }
 
         tr:hover {
             background-color: #f1f2f6;
+        }
+
+        /* Badge status untuk kelas hari ini */
+        .badge-status {
+            background-color: #e8f8f5;
+            color: #2ecc71;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
         }
 
         /* --- PROFIL SAYA --- */
@@ -229,7 +278,6 @@
 
         .table-profil {
             box-shadow: none;
-            width: 100%;
         }
 
         .table-profil td {
@@ -292,13 +340,13 @@
 
     <header class="navbar">
         <div class="nav-left">
-            <img src="uploads/foto_dosen/dosen_1778570746.png" alt="Logo Universitas" class="logo-univ">
+            <img src="https://via.placeholder.com/150x50?text=LOGO+UNIV" alt="Logo Universitas" class="logo-univ">
             <span class="univ-name">SIAKAD UNIVERSITAS</span>
         </div>
         <div class="nav-right">
             <div class="profile-click" onclick="bukaKonten('profil')">
                 <span class="dosen-name">Dr. Budi Santoso, M.T.</span>
-                <img src="uploads/foto_dosen/dosen_1778570746.png" alt="Foto Dosen" class="foto-profil">
+                <img src="../uploads/foto_dosen/dosen_1778570746.jpg" onerror="this.src='https://via.placeholder.com/150?text=Dosen'" alt="Foto Dosen" class="foto-profil">
             </div>
         </div>
     </header>
@@ -328,22 +376,78 @@
             
             <section id="konten-beranda" class="tab-konten active">
                 <h2>Selamat Datang, Dr. Budi Santoso, M.T.</h2>
-                <p>Selamat datang di Sistem Informasi Akademik khusus Dosen. Silakan gunakan menu di sebelah kiri atau klik foto profil Anda untuk mengelola data akademik.</p>
+                <p class="sub-title">Sistem Informasi Akademik Dosen | Universitas Terbuka</p>
                 
                 <div class="dashboard-cards">
-                    <div class="card">
-                        <h3>2</h3>
-                        <p>Matakuliah Diampu resmi</p>
+                    <div class="card card-matkul">
+                        <div class="card-info">
+                            <h3>4</h3>
+                            <p>Total Matakuliah</p>
+                        </div>
+                        <div class="card-icon"><i class="fa-solid fa-book-bookmark"></i></div>
                     </div>
-                    <div class="card">
-                        <h3>60</h3>
-                        <p>Total Mahasiswa Aktif</p>
+                    <div class="card card-mahasiswa">
+                        <div class="card-info">
+                            <h3>145</h3>
+                            <p>Jumlah Mahasiswa</p>
+                        </div>
+                        <div class="card-icon"><i class="fa-solid fa-users"></i></div>
                     </div>
+                    <div class="card card-jadwal">
+                        <div class="card-info">
+                            <h3>2</h3>
+                            <p>Jadwal Hari Ini</p>
+                        </div>
+                        <div class="card-icon"><i class="fa-solid fa-calendar-day"></i></div>
+                    </div>
+                </div>
+
+                <div class="section-header">
+                    <i class="fa-solid fa-clock"></i> 
+                    <span>Jadwal Saya Hari Ini (<?php 
+                        // Array nama hari Indonesia berbasis PHP
+                        $hari = array("Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu");
+                        echo $hari[date("w")]; 
+                    ?>)</span>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID Matkul</th>
+                                <th>Nama Matkul</th>
+                                <th>SKS</th>
+                                <th>Jam Masuk</th>
+                                <th>Ruangan</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>INF201</td>
+                                <td><strong>Pemrograman Web</strong></td>
+                                <td>3</td>
+                                <td>08:00 - 10:30</td>
+                                <td>Lab Komputer 3</td>
+                                <td><span class="badge-status">Siap Mengajar</span></td>
+                            </tr>
+                            <tr>
+                                <td>INF205</td>
+                                <td><strong>Basis Data</strong></td>
+                                <td>3</td>
+                                <td>11:00 - 13:30</td>
+                                <td>Ruang Teori 4.2</td>
+                                <td><span class="badge-status">Siap Mengajar</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </section>
 
             <section id="konten-matakuliah" class="tab-konten">
                 <h2>Matakuliah Saya</h2>
+                <p class="sub-title">Daftar keseluruhan matakuliah yang Anda ampu pada semester ini.</p>
                 <div class="table-responsive">
                     <table>
                         <thead>
@@ -370,6 +474,20 @@
                                 <td>11:00 - 13:30</td>
                                 <td>Ruang Teori 4.2</td>
                             </tr>
+                            <tr>
+                                <td>INF302</td>
+                                <td>Rekayasa Perangkat Lunak</td>
+                                <td>4</td>
+                                <td>14:00 - 17:20</td>
+                                <td>Ruang Teori 2.1</td>
+                            </tr>
+                            <tr>
+                                <td>INF108</td>
+                                <td>Logika Informatika</td>
+                                <td>2</td>
+                                <td>08:00 - 09:40</td>
+                                <td>Ruang Teori 1.5</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -377,6 +495,7 @@
 
             <section id="konten-nilai" class="tab-konten">
                 <h2>Input Nilai Mahasiswa</h2>
+                <p class="sub-title">Silakan pilih kelas dan masukkan nilai komponen mahasiswa.</p>
                 <div class="form-group">
                     <label>Pilih Matakuliah:</label>
                     <select>
@@ -413,11 +532,12 @@
                         </tbody>
                     </table>
                 </div>
-                <button class="btn-simpan" onclick="alert('Data nilai berhasil disimpan! (Simulasi)')">Simpan Nilai</button>
+                <button class="btn-simpan" onclick="alert('Data nilai berhasil disimpan!')">Simpan Nilai</button>
             </section>
 
             <section id="konten-profil" class="tab-konten">
                 <h2>Profil Saya</h2>
+                <p class="sub-title">Informasi data diri resmi dosen pengajar.</p>
                 <div class="profil-box">
                     <table class="table-profil">
                         <tr>
@@ -449,22 +569,22 @@
 
     <script>
         function bukaKonten(namaKonten) {
-            // 1. Sembunyikan semua section konten terlebih dahulu
+            // Sembunyikan semua section konten
             let semuaKonten = document.getElementsByClassName('tab-konten');
             for (let i = 0; i < semuaKonten.length; i++) {
                 semuaKonten[i].classList.remove('active');
             }
 
-            // 2. Matikan status 'active' pada semua menu di sidebar
+            // Nonaktifkan semua menu di sidebar
             let semuaMenu = document.getElementsByClassName('menu-item');
             for (let i = 0; i < semuaMenu.length; i++) {
                 semuaMenu[i].classList.remove('active');
             }
 
-            // 3. Tampilkan section konten yang sedang dipilih
+            // Tampilkan section konten yang dipilih
             document.getElementById('konten-' + namaKonten).classList.add('active');
             
-            // 4. Hidupkan status 'active' pada menu sidebar yang bersesuaian
+            // Set menu sidebar menjadi aktif jika tombol navigasi yang ditekan
             let menuAktif = document.getElementById('menu-' + namaKonten);
             if(menuAktif) {
                 menuAktif.classList.add('active');
