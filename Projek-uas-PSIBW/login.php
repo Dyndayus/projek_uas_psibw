@@ -51,13 +51,11 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     const btn = document.getElementById('btnSubmit');
     const msg = document.getElementById('message');
 
-    // Reset tampilan
     msg.innerHTML = '';
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Menghubungkan...';
 
     try {
-        // Mendapatkan path dasar aplikasi
         const rootPath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
         const apiUrl = `${rootPath}/api/auth/login.php`;
 
@@ -73,23 +71,17 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
             })
         });
 
-        // Validasi apakah respon adalah JSON
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-            const rawText = await response.text();
-            console.error("Respon bukan JSON:", rawText);
-            throw new Error("Server mengirim respon tidak valid (Bukan JSON).");
-        }
+        // Tambahan debug: cek isi respon mentah
+        const rawText = await response.text();
+        console.log("Raw Response:", rawText);
 
-        const result = await response.json();
+        // Parse JSON dari respon mentah
+        const result = JSON.parse(rawText);
 
         if (result.status === 'success') {
             msg.innerHTML = `<div class="alert alert-success border-0 text-center">Login Berhasil! Mengalihkan...</div>`;
-            
             setTimeout(() => {
                 const role = result.data.role;
-                
-                // Pengalihan ke folder masing-masing role
                 if (role === 'admin') {
                     window.location.href = 'admin/dashboard_admin.php';
                 } else if (role === 'dosen') {
@@ -102,7 +94,6 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
                 }
             }, 1200);
         } else {
-            // Jika status failed dari API
             throw new Error(result.message || "Username atau Password salah.");
         }
 
@@ -114,5 +105,6 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     }
 });
 </script>
+
 </body>
 </html>
