@@ -2,7 +2,7 @@
 // PASTIKAN TIDAK ADA BARIS KOSONG DI ATAS <?php
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
-define('DB_PASS', 'D1ND4k3c1l');
+define('DB_PASS', '');
 define('DB_NAME', 'sistem_akademik');
 
 function getDB() {
