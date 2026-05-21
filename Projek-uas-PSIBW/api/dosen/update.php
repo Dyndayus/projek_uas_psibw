@@ -1,7 +1,7 @@
 ﻿<?php
 require_once '../../config/db.php';
 setHeaders();
-requireRole(['admin']);
+requireRole(['admin', 'dosen']);
 
 $db = getDB();
 $id = intval($_POST['id_dosen'] ?? 0);
@@ -41,7 +41,9 @@ $stmt = $db->prepare("UPDATE dosen SET nidn=?, nama=?, tgl_lahir=?, jenis_kelami
 $stmt->bind_param('sssssssssssi', $nidn, $nama, $tgl_lahir, $jenis_kelamin, $alamat, $no_hp, $email, $foto, $pendidikan_terakhir, $jabatan, $status, $id);
 
 if ($stmt->execute()) {
+    if (ob_get_length()) ob_clean(); // <-- TAMBAHKAN BARIS INI UNTUK MEMBERSIHKAN TEKS LIAR
     echo json_encode(['status' => 'success', 'message' => 'Data dosen berhasil diperbarui']);
 } else {
+    if (ob_get_length()) ob_clean(); // <-- TAMBAHKAN BARIS INI JUGA
     echo json_encode(['status' => 'error', 'message' => 'Gagal memperbarui data']);
 }
