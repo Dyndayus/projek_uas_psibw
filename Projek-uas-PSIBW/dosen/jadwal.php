@@ -1,34 +1,78 @@
 <?php
 require_once '../config/db.php';
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 requireRole(['dosen']);
 
 $conn = getDB();
 $session_email = $_SESSION['username'];
 
-// Ambil data dosen pendukung sidebar
-$dosen_q = "SELECT nama, foto FROM dosen WHERE email = ?";
+// 1. Ambil data dosen pendukung sidebar
+$dosen_q = "SELECT id_dosen, nama, foto FROM dosen WHERE email = ?";
 $stmt_d = $conn->prepare($dosen_q);
 $stmt_d->bind_param("s", $session_email);
 $stmt_d->execute();
 $dosen_res = $stmt_d->get_result()->fetch_assoc();
 $stmt_d->close();
 
+$id_dosen   = $dosen_res['id_dosen'] ?? 0;
 $nama_dosen = $dosen_res['nama'] ?? 'Dosen SIAKAD';
-$foto_path = !empty($dosen_res['foto']) ? '../uploads/foto_dosen/' . $dosen_res['foto'] : 'https://via.placeholder.com/150';
+$foto_path  = !empty($dosen_res['foto']) ? '../uploads/foto_dosen/' . $dosen_res['foto'] : 'https://via.placeholder.com/150';
 
-// Ambil mata kuliah dari database untuk dipetakan ke jadwal secara dinamis
-$kuliah_result = $conn->query("SELECT id_kuliah, kode_mk, nama_mk FROM kuliah ORDER BY nama_mk ASC");
-$matkul_list = [];
-while ($row = $kuliah_result->fetch_assoc()) {
-    $matkul_list[] = $row;
+// 2. Ambil data mata kuliah berdasarkan dosen yang login
+$jadwal_list = [];
+if ($id_dosen > 0) {
+    $kuliah_q = "SELECT 
+                    kode_mk, 
+                    nama_mk, 
+                    sks, 
+                    hari, 
+                    jam AS jam_mulai 
+                 FROM kuliah 
+                 WHERE id_dosen = ? 
+                 ORDER BY FIELD(hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'), jam_mulai ASC";
+                 
+    $stmt_k = $conn->prepare($kuliah_q);
+    $stmt_k->bind_param("i", $id_dosen);
+    $stmt_k->execute();
+    $kuliah_result = $stmt_k->get_result();
+    
+    while ($row = $kuliah_result->fetch_assoc()) {
+        $jam_mulai = $row['jam_mulai'];
+        $sks_matkul = (int)($row['sks'] ?? 2);
+        
+        // Menghitung jam selesai secara otomatis (1 SKS = 50 Menit)
+        $durasi_menit = $sks_matkul * 50;
+        $jam_selesai = date('H:i', strtotime("+$durasi_menit minutes", strtotime($jam_mulai)));
+        
+        $jadwal_list[$row['hari']][] = [
+            'kode_mk'     => $row['kode_mk'],
+            'nama_mk'     => $row['nama_mk'],
+            'sks'         => $row['sks'],
+            'jam_mulai'   => $jam_mulai,
+            'jam_selesai' => $jam_selesai,
+            'kelas'       => 'Reguler A', 
+            'ruangan'     => 'Ruang Kuliah Utama' 
+        ];
+    }
+    $stmt_k->close();
 }
 $conn->close();
 
-// Simulasi plotting jadwal mingguan agar terlihat penuh dan natural tanpa tabel baru
-// Menggunakan data riil dari DB jika ada, jika DB kosong pakai fallback text
-$mk1 = $matkul_list[0] ?? ['id_kuliah' => '', 'kode_mk' => 'TI-101', 'nama_mk' => 'Algoritma dan Pemrograman'];
-$mk2 = $matkul_list[1] ?? ['id_kuliah' => '', 'kode_mk' => 'TI-104', 'nama_mk' => 'Struktur Data'];
-$mk3 = $matkul_list[2] ?? ['id_kuliah' => '', 'kode_mk' => 'TI-203', 'nama_mk' => 'Basis Data'];
+// Array urutan hari untuk memastikan sorting tampilan tetap berurutan dari Senin dst.
+$urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+
+function getHariClass($hari) {
+    switch (ucfirst(strtolower($hari))) {
+        case 'Senin': return 'card-senin';
+        case 'Selasa': return 'card-selasa';
+        case 'Rabu': return 'card-senin'; // Mengikuti style asli kamu
+        case 'Kamis': return 'card-kamis';
+        case 'Jumat': return 'card-jumat';
+        default: return 'card-jumat';
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -37,201 +81,394 @@ $mk3 = $matkul_list[2] ?? ['id_kuliah' => '', 'kode_mk' => 'TI-203', 'nama_mk' =
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jadwal Mengajar Dosen</title>
+    <title>Jadwal Mengajar Dosen - SIAKAD UNRI</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        body {
-            font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             font-size: 14px;
-            color: #333333;
-            background-color: #f4f6f9;
-            overflow-x: hidden;
+            color: #334155;
+            background-color: #f8fafc;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* NAVBAR SINKRON */
+        .custom-navbar {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
         }
 
         .logo-navbar {
-            height: 35px;
+            height: 38px;
             width: auto;
             object-fit: contain;
+            filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.15));
         }
 
+        .btn-logout-custom {
+            color: rgba(255, 255, 255, 0.75);
+            font-weight: 500;
+            font-size: 12.5px;
+            border-radius: 6px;
+            transition: all 0.2s ease-in-out;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-logout-custom:hover {
+            background-color: #dc2626 !important;
+            color: #ffffff !important;
+            border-color: #dc2626 !important;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+        }
+
+        .main-wrapper {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* SIDEBAR MODERN */
         .sidebar {
-            min-height: calc(100vh - 56px);
+            width: 260px;
             background-color: #ffffff;
             border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            flex-shrink: 0;
         }
 
         .sidebar .nav-link {
-            color: #4a5568;
+            color: #475569;
             font-size: 13.5px;
-            font-weight: 500;
-            padding: 10px 18px;
-            border-radius: 6px;
-            margin: 2px 12px;
+            font-weight: 600;
+            padding: 12px 20px;
+            margin: 3px 0;
+            position: relative;
+            transition: all 0.2s ease;
         }
 
         .sidebar .nav-link:hover {
-            background-color: #f1f5f9;
-            color: #0d6efd;
+            color: #2563eb !important;
+            background-color: #f8fafc !important;
         }
 
-        /* Penanda aktif untuk menu Jadwal Mengajar */
-        .sidebar .nav-link.active-jadwal {
-            background-color: #f1f5f9;
-            color: #0d6efd;
-            font-weight: 600;
+        .sidebar .nav-link.active {
+            background-color: #eff6ff;
+            color: #2563eb;
+            font-weight: 700;
         }
 
-        .table-custom {
-            font-size: 13.5px;
+        .sidebar .nav-link.active::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 5px;
+            background-color: #2563eb;
+            border-top-right-radius: 4px;
+            border-bottom-right-radius: 4px;
         }
 
-        .table-custom thead th {
+        .sidebar .nav-link-danger-custom {
+            color: #64748b;
+            background-color: transparent;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .sidebar .nav-link-danger-custom:hover {
+            background-color: #fff1f2 !important;
+            color: #e11d48 !important;
+        }
+
+        .right-layout {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .content-scrollable {
+            flex: 1;
+            overflow-y: auto;
             background-color: #f8fafc;
-            color: #4a5568;
-            font-weight: 600;
-            border-bottom: 2px solid #e2e8f0;
-            padding: 12px;
         }
 
-        .table-custom tbody td {
-            padding: 14px 12px;
-            vertical-align: middle;
-            color: #333333;
-            border-bottom: 1px solid #f1f5f9;
+        /* HERO HEADER JADWAL */
+        .form-hero-header {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            padding: 24px 28px;
+            border-bottom: 1px solid #bfdbfe;
+            border-left: 5px solid #2563eb;
+            border-radius: 12px 12px 0 0;
         }
 
-        .badge-day {
-            font-size: 11px;
+        .header-icon-box {
+            width: 44px;
+            height: 44px;
+            background-color: #ffffff;
+            border: 1px solid #bfdbfe;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1d4ed8;
+            font-size: 18px;
+            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.06);
+        }
+
+        /* CARD JADWAL */
+        .jadwal-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            overflow: hidden;
+        }
+
+        .jadwal-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.08);
+            border-color: #cbd5e1;
+        }
+
+        .day-strip {
+            background-color: #f1f5f9;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #334155;
+            font-size: 14px;
+            letter-spacing: 0.8px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            padding: 5px 10px;
-            border-radius: 4px;
+            min-height: 100%;
+            padding: 15px;
+        }
+
+        /* Variasi warna strip hari */
+        .card-senin { border-left: 5px solid #2563eb; }
+        .card-senin .day-strip { background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%); color: #1d4ed8; border-right-color: #bfdbfe; }
+        
+        .card-selasa { border-left: 5px solid #16a34a; }
+        .card-selasa .day-strip { background: linear-gradient(180deg, #f0fdf4 0%, #dcfce7 100%); color: #15803d; border-right-color: #bbf7d0; }
+        
+        .card-kamis { border-left: 5px solid #ea580c; }
+        .card-kamis .day-strip { background: linear-gradient(180deg, #fff7ed 0%, #ffedd5 100%); color: #c2410c; border-right-color: #fed7aa; }
+        
+        .card-jumat { border-left: 5px solid #64748b; }
+        .card-jumat .day-strip { background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%); color: #475569; border-right-color: #e2e8f0; }
+
+        .time-badge {
+            background-color: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            color: #1e293b;
             font-weight: 600;
-            display: inline-block;
+            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .meta-info-badge {
+            font-size: 12px;
+            font-weight: 500;
+            color: #64748b;
+            background-color: #f8fafc;
+            border: 1px solid #f1f5f9;
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+
+        .footer {
+            background-color: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            font-size: 13px;
+            color: #64748b;
+            width: 100%;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 767.98px) {
+            html, body { overflow: auto; height: auto; }
+            .main-wrapper { flex-direction: column; overflow: visible; }
+            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #e2e8f0; }
+            .right-layout { height: auto; overflow: visible; }
+            .content-scrollable { overflow-y: visible; height: auto; }
+            .day-strip { padding: 12px; border-right: none; border-bottom: 1px solid #e2e8f0; flex-direction: row; gap: 8px; }
+            .form-hero-header { border-radius: 0; }
         }
     </style>
 </head>
 
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm sticky-top">
+    <nav class="navbar navbar-expand-lg navbar-dark custom-navbar shadow-sm sticky-top" style="z-index: 1050;">
         <div class="container-fluid px-4">
             <a class="navbar-brand fw-bold d-flex align-items-center" href="dashboard_dosen.php">
                 <img src="https://unri.ac.id/wp-content/uploads/2016/05/cropped-LogoUR-1-1.png" alt="Logo UNRI" class="logo-navbar me-2">
-                Universitas Riau
+                <span class="d-flex flex-column">
+                    <span class="text-white fw-bold mb-0" style="font-size: 15px; line-height: 1.2; letter-spacing: 0.3px;">SIAKAD Portal</span>
+                    <span class="text-white-50" style="font-size: 11px; font-weight: 400; opacity: 0.85;">Universitas Riau</span>
+                </span>
             </a>
             <div class="ms-auto">
-                <a class="btn btn-light btn-sm text-danger fw-bold rounded px-3" href="../logout.php" style="font-size: 12px;">
-                    <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
+                <a class="btn btn-sm btn-logout-custom px-3 py-1.5" href="../logout.php">
+                    <i class="fa-solid fa-right-from-bracket me-1.5"></i> Keluar
                 </a>
             </div>
         </div>
     </nav>
 
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-3 col-lg-2 px-0 sidebar">
-                <div class="text-center p-4 border-bottom mb-3" style="background-color: #fafafa;">
-                    <img src="<?= $foto_path ?>" class="rounded-circle img-thumbnail mb-2" style="width: 80px; height: 80px; object-fit: cover;">
-                    <div class="fw-bold text-dark text-truncate small px-1"><?= htmlspecialchars($nama_dosen) ?></div>
-                    <a href="edit_profil.php" class="btn btn-sm btn-light border rounded mt-2" style="font-size: 11px; padding: 2px 8px;">
-                        <i class="fa-solid fa-user-gear me-1"></i> Lihat Profil
-                    </a>
+    <div class="main-wrapper">
+        
+        <div class="sidebar py-3">
+            <div class="text-center pb-4 px-3 border-bottom mb-3">
+                <div class="position-relative d-inline-block mb-2">
+                    <img src="<?= $foto_path ?>" class="rounded-circle border border-2 border-primary-subtle" style="width: 78px; height: 78px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
                 </div>
-
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link" href="dashboard_dosen.php">
-                            <i class="fa-solid fa-house me-2"></i> Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="matakuliah.php">
-                            <i class="fa-solid fa-book me-2"></i> Daftar Mata Kuliah
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active-jadwal" href="jadwal.php">
-                            <i class="fa-solid fa-calendar-days me-2"></i> Jadwal Mengajar
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="input_nilai.php">
-                            <i class="fa-solid fa-pen-to-square me-2"></i> Input Nilai
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-danger" href="ganti_password.php">
-                            <i class="fa-solid fa-key me-2"></i> Ganti Password
-                        </a>
-                    </li>
-                </ul>
+                <div class="fw-bold text-dark text-truncate small px-2" style="font-size: 14px; letter-spacing: -0.1px;"><?= htmlspecialchars($nama_dosen) ?></div>
             </div>
 
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-2 mb-3 border-bottom">
-                    <h5 class="fw-bold text-dark"><i class="fa-solid fa-calendar-week text-primary me-2"></i>Jadwal Perkuliahan Mingguan</h5>
+            <ul class="nav flex-column" style="flex: 1;">
+                <li class="nav-item">
+                    <a class="nav-link" href="dashboard_dosen.php">
+                        <i class="fa-solid fa-house-chimney me-2.5"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="matakuliah.php">
+                        <i class="fa-solid fa-book-open me-2.5"></i> Daftar Mata Kuliah
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="jadwal.php">
+                        <i class="fa-solid fa-calendar-check me-2.5"></i> Jadwal Mengajar
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="input_nilai.php">
+                        <i class="fa-solid fa-file-pen me-2.5"></i> Input Nilai Mhs
+                    </a>
+                </li>
+                <li class="nav-item mt-2 border-top pt-2">
+                    <a class="nav-link" href="edit_profil.php">
+                        <i class="fa-solid fa-user-gear me-2.5"></i> Pengaturan Profil
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link nav-link-danger-custom" href="ganti_password.php">
+                        <i class="fa-solid fa-lock-open me-2.5"></i> Ganti Password
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="right-layout">
+            <div class="content-scrollable px-4 py-4">
+                <div class="card shadow-sm border-0 mx-auto mb-4" style="max-width: 1000px; border-radius: 12px; overflow: hidden;">
+                    <div class="form-hero-header d-flex align-items-center gap-3">
+                        <div class="header-icon-box d-none d-sm-flex">
+                            <i class="fa-solid fa-calendar-week"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold text-primary mb-1" style="letter-spacing: -0.3px; color: #1e3a8a !important;">Jadwal Perkuliahan Mingguan</h5>
+                            <p class="text-secondary mb-0" style="font-size: 12.5px; line-height: 1.4; color: #475569 !important;">
+                                Daftar waktu dan lokasi pelaksanaan kelas tatap muka akademik yang ditugaskan resmi kepada Anda.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-white d-flex flex-column gap-3">
+                        <?php 
+                        if (empty($jadwal_list)): 
+                        ?>
+                            <div class="alert alert-info text-center py-4 border-0 shadow-sm" style="border-radius: 10px; background-color: #f0f9ff;">
+                                <i class="fa-solid fa-calendar-xmark text-primary mb-2" style="font-size: 24px;"></i>
+                                <h6 class="fw-bold text-dark mb-1">Belum Ada Jadwal Mengajar</h6>
+                                <p class="text-muted small mb-0">Anda tidak memiliki agenda kelas tatap muka yang terplot pada semester ini.</p>
+                            </div>
+                        <?php 
+                        else:
+                            // LOGIKA TERBARU: Loop hanya hari yang memiliki jadwal aktif
+                            foreach ($urutan_hari as $hari):
+                                if (isset($jadwal_list[$hari])):
+                                    foreach ($jadwal_list[$hari] as $item):
+                                        $bgClass = getHariClass($hari);
+                        ?>
+                                        <div class="jadwal-card <?= $bgClass ?>">
+                                            <div class="row g-0 align-items-stretch">
+                                                <div class="col-md-2 d-none d-md-flex day-strip">
+                                                    <i class="fa-solid fa-calendar-day mb-1 opacity-75"></i>
+                                                    <span><?= $hari ?></span>
+                                                </div>
+                                                <div class="col-12 col-md-10 p-3">
+                                                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                                                        <div>
+                                                            <span class="d-md-none badge bg-primary mb-2"><?= $hari ?></span>
+                                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                                <h6 class="fw-bold text-dark mb-0" style="font-size: 16px;"><?= htmlspecialchars($item['nama_mk']) ?></h6>
+                                                                <span class="meta-info-badge"><?= htmlspecialchars($item['sks']) ?> SKS</span>
+                                                            </div>
+                                                            <p class="text-muted mb-0 small fw-medium">
+                                                                <i class="fa-solid fa-layer-group me-1"></i> <?= htmlspecialchars($item['kode_mk']) ?> &bull; <?= htmlspecialchars($item['kelas']) ?>
+                                                            </p>
+                                                        </div>
+                                                        <div class="text-md-end d-flex flex-column align-items-start align-items-md-end">
+                                                            <div class="time-badge mb-2">
+                                                                <i class="fa-regular fa-clock me-2 text-primary fw-bold"></i><?= date('H:i', strtotime($item['jam_mulai'])) ?> - <?= date('H:i', strtotime($item['jam_selesai'])) ?>
+                                                            </div>
+                                                            <div class="text-secondary small fw-medium">
+                                                                <i class="fa-solid fa-location-dot me-1.5 text-danger"></i><?= htmlspecialchars($item['ruangan']) ?>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                        <?php 
+                                    endforeach;
+                                endif;
+                            endforeach; 
+                        endif;
+                        ?>
+                    </div>
                 </div>
+            </div>
 
-                <div class="card border-0 rounded-3 shadow-sm" style="border: 1px solid #e2e8f0 !important;">
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-custom mb-0">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 150px;">Hari</th>
-                                        <th style="width: 180px;">Waktu / Jam</th>
-                                        <th>Mata Kuliah</th>
-                                        <th style="width: 250px;">Ruang Kelas</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><span class="badge-day bg-primary-subtle text-primary">Senin</span></td>
-                                        <td class="fw-bold text-dark">08:00 - 10:30</td>
-                                        <td>
-                                            <span class="fw-semibold text-dark d-block"><?= htmlspecialchars($mk1['nama_mk']) ?></span>
-                                            <span class="text-muted" style="font-size: 11px;"><?= htmlspecialchars($mk1['kode_mk']) ?> • Teknik Informatika</span>
-                                        </td>
-                                        <td><span class="text-secondary fw-medium"><i class="fa-solid fa-location-dot me-1 text-muted"></i> Lab Komputer 2</span></td>
-                                    </tr>
-
-                                    <tr>
-                                        <td><span class="badge-day bg-primary-subtle text-primary">Selasa</span></td>
-                                        <td class="fw-bold text-dark">13:30 - 15:10</td>
-                                        <td>
-                                            <span class="fw-semibold text-dark d-block"><?= htmlspecialchars($mk2['nama_mk']) ?></span>
-                                            <span class="text-muted" style="font-size: 11px;"><?= htmlspecialchars($mk2['kode_mk']) ?> • Sistem Informasi</span>
-                                        </td>
-                                        <td><span class="text-secondary fw-medium"><i class="fa-solid fa-location-dot me-1 text-muted"></i> Gedung Thariq 3</span></td>
-                                    </tr>
-
-                                    <tr>
-                                        <td><span class="badge-day bg-primary-subtle text-primary">Kamis</span></td>
-                                        <td class="fw-bold text-dark">10:45 - 13:15</td>
-                                        <td>
-                                            <span class="fw-semibold text-dark d-block"><?= htmlspecialchars($mk3['nama_mk']) ?></span>
-                                            <span class="text-muted" style="font-size: 11px;"><?= htmlspecialchars($mk3['kode_mk']) ?> • Teknik Informatika</span>
-                                        </td>
-                                        <td><span class="text-secondary fw-medium"><i class="fa-solid fa-location-dot me-1 text-muted"></i> Ruang Kuliah R.202</span></td>
-                                    </tr>
-
-                                    <tr>
-                                        <td><span class="badge-day bg-secondary-subtle text-secondary">Jumat</span></td>
-                                        <td colspan="3" class="text-muted text-center py-3" style="font-style: italic; font-size: 12.5px;">
-                                            Tidak ada jadwal mengajar pada hari ini (Waktu Khusus Riset/Bimbingan).
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+            <footer class="footer py-3">
+                <div class="container-fluid px-4">
+                    <div class="row align-items-center justify-content-between flex-column flex-sm-row">
+                        <div class="col-auto text-center text-sm-start mb-2 mb-sm-0">
+                            <span class="fw-semibold text-secondary">SIAKAD Universitas Riau</span> &copy; <?= date('Y'); ?>. Seluruh Hak Cipta Dilindungi.
+                        </div>
+                        <div class="col-auto text-center text-sm-end">
+                            <span class="me-3" style="font-size: 12px; font-weight: 500;"><i class="fa-solid fa-circle-shield text-success me-1"></i> Sesi Dosen Aman</span>
+                            <span class="text-muted" style="font-size: 11px;">v2.2.0</span>
                         </div>
                     </div>
                 </div>
-            </main>
+            </footer>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>
