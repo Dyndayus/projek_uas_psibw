@@ -1,8 +1,42 @@
 <?php
+// Pastikan session dimulai di baris paling pertama
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once '../config/db.php'; 
 requireRole(['admin']); 
 
 $db = getDB();
+
+// --- PENANGANAN BACKEND INTEGRASI FOTO CADANGAN ---
+$pesan_sukses = "";
+$pesan_gagal = "";
+
+// Jika form mengirim data secara langsung (POST Native) untuk mengamankan unggahan foto profil
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset($_FILES['foto'])) {
+    $role = mysqli_real_escape_string($db, $_POST['role']);
+    $username = mysqli_real_escape_string($db, $_POST['username']);
+    
+    if ($role === 'mahasiswa' && isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
+        $file_tmp = $_FILES['foto']['tmp_name'];
+        $file_name = $_FILES['foto']['name'];
+        
+        // Membersihkan nama file dan memberikan timestamp unik agar tidak bentrok
+        $nama_foto_database = time() . "_" . preg_replace("/[^a-zA-Z0-9\._-]/", "", $file_name);
+        $target_dir = "../uploads/foto_mhs/";
+
+        if (!is_dir($target_dir)) {
+            mkdir($target_dir, 0777, true);
+        }
+
+        // Pindahkan file ke folder tujuan fisiknya
+        if (move_uploaded_file($file_tmp, $target_dir . $nama_foto_database)) {
+            // Update nama file foto di database berdasarkan NIM mahasiswa yang baru saja tersimpan via API
+            $db->query("UPDATE mhs SET foto = '$nama_foto_database' WHERE nim = '$username'");
+        }
+    }
+}
 
 // Ambil total untuk dashboard box
 $totalMhs = $db->query("SELECT COUNT(*) as total FROM mhs")->fetch_assoc()['total'];
@@ -55,7 +89,7 @@ $mkBaru = $db->query("SELECT kode_mk, nama_mk FROM kuliah ORDER BY id_kuliah DES
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h3 class="fw-bold mb-0">Dashboard Admin</h3>
-            <small class="text-muted">Selamat datang, <strong><?= $_SESSION['nama'] ?></strong></small>
+            <small class="text-muted">Selamat datang, <strong><?= isset($_SESSION['nama']) ? htmlspecialchars($_SESSION['nama']) : 'Admin' ?></strong></small>
         </div>
         <div>
             <button class="btn btn-success rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#modalGenerateUser">
@@ -115,7 +149,7 @@ $mkBaru = $db->query("SELECT kode_mk, nama_mk FROM kuliah ORDER BY id_kuliah DES
                     <table class="table table-hover mb-0 small">
                         <tbody>
                             <?php while($m = $mhsBaru->fetch_assoc()): ?>
-                                <tr><td class="ps-3"><?= $m['nim'] ?></td><td><?= $m['nama'] ?></td></tr>
+                                <tr><td class="ps-3"><?= htmlspecialchars($m['nim']) ?></td><td><?= htmlspecialchars($m['nama']) ?></td></tr>
                             <?php endwhile; ?>
                         </tbody>
                     </table>
@@ -135,7 +169,7 @@ $mkBaru = $db->query("SELECT kode_mk, nama_mk FROM kuliah ORDER BY id_kuliah DES
                     <table class="table table-hover mb-0 small">
                         <tbody>
                             <?php while($d = $dosenBaru->fetch_assoc()): ?>
-                                <tr><td class="ps-3"><?= $d['nidn'] ?></td><td><?= $d['nama'] ?></td></tr>
+                                <tr><td class="ps-3"><?= htmlspecialchars($d['nidn']) ?></td><td><?= htmlspecialchars($d['nama']) ?></td></tr>
                             <?php endwhile; ?>
                         </tbody>
                     </table>
@@ -155,7 +189,7 @@ $mkBaru = $db->query("SELECT kode_mk, nama_mk FROM kuliah ORDER BY id_kuliah DES
                     <table class="table table-hover mb-0 small">
                         <tbody>
                             <?php while($mk = $mkBaru->fetch_assoc()): ?>
-                                <tr><td class="ps-3"><?= $mk['kode_mk'] ?></td><td><?= $mk['nama_mk'] ?></td></tr>
+                                <tr><td class="ps-3"><?= htmlspecialchars($mk['kode_mk']) ?></td><td><?= htmlspecialchars($mk['nama_mk']) ?></td></tr>
                             <?php endwhile; ?>
                         </tbody>
                     </table>
@@ -198,7 +232,7 @@ $mkBaru = $db->query("SELECT kode_mk, nama_mk FROM kuliah ORDER BY id_kuliah DES
 
                         <div class="col-md-12">
                             <label class="form-label fw-bold small text-primary"><i class="bi bi-image me-1"></i>Foto Profil</label>
-                            <input type="file" name="foto" class="form-control border-2" accept="image/*">
+                            <input type="file" name="foto" id="inputFoto" class="form-control border-2" accept="image/*">
                             <div class="form-text text-muted small">Opsional. Format: JPG/PNG, Maks: 2MB.</div>
                         </div>
 
@@ -223,7 +257,7 @@ $mkBaru = $db->query("SELECT kode_mk, nama_mk FROM kuliah ORDER BY id_kuliah DES
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold small">Email</label>
-                            <input type="email" name="email" class="form-control">
+                            <input type="email" name="email" class="form-control" required>
                         </div>
 
                         <div class="col-md-6 field-dosen">
@@ -244,23 +278,23 @@ $mkBaru = $db->query("SELECT kode_mk, nama_mk FROM kuliah ORDER BY id_kuliah DES
                         </div>
                         <div class="col-md-3 field-mhs">
                             <label class="form-label fw-bold small">Angkatan</label>
-                            <input type="number" name="angkatan" class="form-control" placeholder="2023">
+                            <input type="number" name="angkatan" class="form-control" placeholder="2026" value="2026">
                         </div>
                         <div class="col-md-3 field-mhs">
                             <label class="form-label fw-bold small">Semester</label>
-                            <input type="number" name="semester" class="form-control" placeholder="1">
+                            <input type="number" name="semester" class="form-control" placeholder="1" value="1">
                         </div>
 
                         <div class="col-md-12">
                             <label class="form-label fw-bold small">Status Keaktifan</label>
                             <select name="status" class="form-select">
-                                <option value="aktif">Aktif</option>
-                                <option value="non-aktif">Non-Aktif</option>
+                                <option value="Aktif">Aktif</option>
+                                <option value="Non-Aktif">Non-Aktif</option>
                             </select>
                         </div>
 
                         <div class="col-12 alert alert-info py-2 small border-0 mb-0 mt-3">
-                            <i class="bi bi-info-circle me-1"></i> Akun login akan dibuat otomatis dengan password default sama dengan NIM/NIDN.
+                            <i class="bi bi-info-circle me-1"></i> Akun login akan dibuat otomatis dengan Username dari <strong>Email</strong> dan Password default dari <strong>NIM/NIDN</strong>.
                         </div>
                     </div>
                 </div>
@@ -284,11 +318,11 @@ function toggleForm(role) {
     if(role !== "") {
         container.style.display = 'flex';
         if(role === 'dosen') {
-            labelID.innerText = 'NIDN (Username)';
+            labelID.innerText = 'NIDN';
             dosenFields.forEach(f => f.style.display = 'block');
             mhsFields.forEach(f => f.style.display = 'none');
         } else {
-            labelID.innerText = 'NIM (Username)';
+            labelID.innerText = 'NIM';
             dosenFields.forEach(f => f.style.display = 'none');
             mhsFields.forEach(f => f.style.display = 'block');
         }
@@ -300,11 +334,12 @@ function toggleForm(role) {
 document.getElementById('formGenerateUser').addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    // Konfirmasi otomatis sesuai gambar kamu
     if(!confirm('Buat akun login otomatis?')) return;
 
     const btn = document.getElementById('btnProses');
-    const formData = new FormData(e.target);
+    const formElement = e.target;
+    const formData = new FormData(formElement);
+    const inputFoto = document.getElementById('inputFoto');
 
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Memproses...';
@@ -315,17 +350,24 @@ document.getElementById('formGenerateUser').addEventListener('submit', async (e)
             body: formData
         });
 
-        // Cek jika response bukan JSON
         const contentType = response.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
-            throw new Error("Server tidak memberikan respon valid.");
+            throw new Error("Server tidak memberikan respon valid JSON.");
         }
 
         const result = await response.json();
-        alert(result.message);
         
         if(result.status === 'success') {
+            if (inputFoto && inputFoto.files.length > 0) {
+                await fetch('dashboard_admin.php', {
+                    method: 'POST',
+                    body: formData
+                });
+            }
+            alert(result.message);
             location.reload();
+        } else {
+            alert(result.message);
         }
     } catch (err) {
         console.error(err);
