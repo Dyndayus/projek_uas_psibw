@@ -32,28 +32,28 @@ if ($id_dosen > 0) {
                  FROM kuliah 
                  WHERE id_dosen = ? 
                  ORDER BY FIELD(hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'), jam_mulai ASC";
-                 
+
     $stmt_k = $conn->prepare($kuliah_q);
     $stmt_k->bind_param("i", $id_dosen);
     $stmt_k->execute();
     $kuliah_result = $stmt_k->get_result();
-    
+
     while ($row = $kuliah_result->fetch_assoc()) {
         $jam_mulai = $row['jam_mulai'];
         $sks_matkul = (int)($row['sks'] ?? 2);
-        
+
         // Menghitung jam selesai secara otomatis (1 SKS = 50 Menit)
         $durasi_menit = $sks_matkul * 50;
         $jam_selesai = date('H:i', strtotime("+$durasi_menit minutes", strtotime($jam_mulai)));
-        
+
         $jadwal_list[$row['hari']][] = [
             'kode_mk'     => $row['kode_mk'],
             'nama_mk'     => $row['nama_mk'],
             'sks'         => $row['sks'],
             'jam_mulai'   => $jam_mulai,
             'jam_selesai' => $jam_selesai,
-            'kelas'       => 'Reguler A', 
-            'ruangan'     => 'Ruang Kuliah Utama' 
+            'kelas'       => 'Reguler A',
+            'ruangan'     => 'Ruang Kuliah Utama'
         ];
     }
     $stmt_k->close();
@@ -63,14 +63,21 @@ $conn->close();
 // Array urutan hari untuk memastikan sorting tampilan tetap berurutan dari Senin dst.
 $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 
-function getHariClass($hari) {
+function getHariClass($hari)
+{
     switch (ucfirst(strtolower($hari))) {
-        case 'Senin': return 'card-senin';
-        case 'Selasa': return 'card-selasa';
-        case 'Rabu': return 'card-senin'; // Mengikuti style asli kamu
-        case 'Kamis': return 'card-kamis';
-        case 'Jumat': return 'card-jumat';
-        default: return 'card-jumat';
+        case 'Senin':
+            return 'card-senin';
+        case 'Selasa':
+            return 'card-selasa';
+        case 'Rabu':
+            return 'card-senin'; // Mengikuti style asli kamu
+        case 'Kamis':
+            return 'card-kamis';
+        case 'Jumat':
+            return 'card-jumat';
+        default:
+            return 'card-jumat';
     }
 }
 ?>
@@ -85,7 +92,8 @@ function getHariClass($hari) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        html, body {
+        html,
+        body {
             height: 100%;
             margin: 0;
             padding: 0;
@@ -263,17 +271,45 @@ function getHariClass($hari) {
         }
 
         /* Variasi warna strip hari */
-        .card-senin { border-left: 5px solid #2563eb; }
-        .card-senin .day-strip { background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%); color: #1d4ed8; border-right-color: #bfdbfe; }
-        
-        .card-selasa { border-left: 5px solid #16a34a; }
-        .card-selasa .day-strip { background: linear-gradient(180deg, #f0fdf4 0%, #dcfce7 100%); color: #15803d; border-right-color: #bbf7d0; }
-        
-        .card-kamis { border-left: 5px solid #ea580c; }
-        .card-kamis .day-strip { background: linear-gradient(180deg, #fff7ed 0%, #ffedd5 100%); color: #c2410c; border-right-color: #fed7aa; }
-        
-        .card-jumat { border-left: 5px solid #64748b; }
-        .card-jumat .day-strip { background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%); color: #475569; border-right-color: #e2e8f0; }
+        .card-senin {
+            border-left: 5px solid #2563eb;
+        }
+
+        .card-senin .day-strip {
+            background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%);
+            color: #1d4ed8;
+            border-right-color: #bfdbfe;
+        }
+
+        .card-selasa {
+            border-left: 5px solid #16a34a;
+        }
+
+        .card-selasa .day-strip {
+            background: linear-gradient(180deg, #f0fdf4 0%, #dcfce7 100%);
+            color: #15803d;
+            border-right-color: #bbf7d0;
+        }
+
+        .card-kamis {
+            border-left: 5px solid #ea580c;
+        }
+
+        .card-kamis .day-strip {
+            background: linear-gradient(180deg, #fff7ed 0%, #ffedd5 100%);
+            color: #c2410c;
+            border-right-color: #fed7aa;
+        }
+
+        .card-jumat {
+            border-left: 5px solid #d22ecc;
+        }
+
+        .card-jumat .day-strip {
+            background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+            color: #475569;
+            border-right-color: #e2e8f0;
+        }
 
         .time-badge {
             background-color: #f1f5f9;
@@ -307,13 +343,46 @@ function getHariClass($hari) {
         }
 
         @media (max-width: 767.98px) {
-            html, body { overflow: auto; height: auto; }
-            .main-wrapper { flex-direction: column; overflow: visible; }
-            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #e2e8f0; }
-            .right-layout { height: auto; overflow: visible; }
-            .content-scrollable { overflow-y: visible; height: auto; }
-            .day-strip { padding: 12px; border-right: none; border-bottom: 1px solid #e2e8f0; flex-direction: row; gap: 8px; }
-            .form-hero-header { border-radius: 0; }
+
+            html,
+            body {
+                overflow: auto;
+                height: auto;
+            }
+
+            .main-wrapper {
+                flex-direction: column;
+                overflow: visible;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            .right-layout {
+                height: auto;
+                overflow: visible;
+            }
+
+            .content-scrollable {
+                overflow-y: visible;
+                height: auto;
+            }
+
+            .day-strip {
+                padding: 12px;
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+                flex-direction: row;
+                gap: 8px;
+            }
+
+            .form-hero-header {
+                border-radius: 0;
+            }
         }
     </style>
 </head>
@@ -338,7 +407,7 @@ function getHariClass($hari) {
     </nav>
 
     <div class="main-wrapper">
-        
+
         <div class="sidebar py-3">
             <div class="text-center pb-4 px-3 border-bottom mb-3">
                 <div class="position-relative d-inline-block mb-2">
@@ -397,22 +466,22 @@ function getHariClass($hari) {
                     </div>
 
                     <div class="p-4 bg-white d-flex flex-column gap-3">
-                        <?php 
-                        if (empty($jadwal_list)): 
+                        <?php
+                        if (empty($jadwal_list)):
                         ?>
                             <div class="alert alert-info text-center py-4 border-0 shadow-sm" style="border-radius: 10px; background-color: #f0f9ff;">
                                 <i class="fa-solid fa-calendar-xmark text-primary mb-2" style="font-size: 24px;"></i>
                                 <h6 class="fw-bold text-dark mb-1">Belum Ada Jadwal Mengajar</h6>
                                 <p class="text-muted small mb-0">Anda tidak memiliki agenda kelas tatap muka yang terplot pada semester ini.</p>
                             </div>
-                        <?php 
+                            <?php
                         else:
                             // LOGIKA TERBARU: Loop hanya hari yang memiliki jadwal aktif
                             foreach ($urutan_hari as $hari):
                                 if (isset($jadwal_list[$hari])):
                                     foreach ($jadwal_list[$hari] as $item):
                                         $bgClass = getHariClass($hari);
-                        ?>
+                            ?>
                                         <div class="jadwal-card <?= $bgClass ?>">
                                             <div class="row g-0 align-items-stretch">
                                                 <div class="col-md-2 d-none d-md-flex day-strip">
@@ -443,10 +512,10 @@ function getHariClass($hari) {
                                                 </div>
                                             </div>
                                         </div>
-                        <?php 
+                        <?php
                                     endforeach;
                                 endif;
-                            endforeach; 
+                            endforeach;
                         endif;
                         ?>
                     </div>
@@ -471,4 +540,5 @@ function getHariClass($hari) {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
