@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $file_tmp = $_FILES['foto']['tmp_name'];
             $file_name = $_FILES['foto']['name'];
             $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-            
+
             $ekstensi_diizinkan = ['jpg', 'jpeg', 'png', 'webp'];
             if (!in_array($file_ext, $ekstensi_diizinkan)) {
                 throw new Exception("Format foto wajib JPG, JPEG, PNG, atau WEBP.");
@@ -63,14 +63,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $query_update = "UPDATE dosen SET no_hp = ?, alamat = ?, foto = ? WHERE id_dosen = ?";
         $stmt_update = $conn->prepare($query_update);
         $stmt_update->bind_param("sssi", $no_hp, $alamat, $nama_file_baru, $id_dosen);
-        
+
         if ($stmt_update->execute()) {
             echo json_encode(['status' => 'success', 'message' => 'Profil Anda berhasil diperbarui!']);
         } else {
             throw new Exception("Gagal memperbarui data di database.");
         }
         $stmt_update->close();
-
     } catch (Exception $e) {
         echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
     }
@@ -104,7 +103,8 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        html, body {
+        html,
+        body {
             height: 100%;
             margin: 0;
             padding: 0;
@@ -144,7 +144,7 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
             border: 1px solid rgba(255, 255, 255, 0.25);
         }
 
-        .btn-logout-custom:hover, 
+        .btn-logout-custom:hover,
         .btn-logout-custom:focus {
             background-color: #e11d48 !important;
             color: #ffffff !important;
@@ -158,19 +158,33 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
             overflow: hidden;
         }
 
-        /* SIDEBAR MODERN (SINKRON 100% DASHBOARD) */
+        /* ======================================================== */
+        /* SIDEBAR: ROYAL BLUE CAMPUS THEME (SINKRON & SERAGAM)     */
+        /* ======================================================== */
         .sidebar {
             width: 260px;
-            background-color: #ffffff;
-            border-right: 1px solid #e2e8f0;
+            background-color: #1e3a8a;
+            /* Biru Royal Kampus */
+            border-right: 1px solid #1d4ed8;
             display: flex;
             flex-direction: column;
             height: 100%;
             flex-shrink: 0;
         }
 
-        .sidebar .nav-link {
-            color: #475569;
+        .sidebar .border-bottom {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+        }
+
+        .sidebar .text-dark {
+            color: #ffffff !important;
+        }
+
+        /* Kita paksa semua jenis nav-link (termasuk class custom profil) agar warnanya sama */
+        .sidebar .nav-link,
+        .sidebar .nav-link-danger-custom {
+            color: #bfdbfe !important;
+            /* Biru muda pudar premium */
             font-size: 13.5px;
             font-weight: 600;
             padding: 12px 20px;
@@ -179,15 +193,18 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
             transition: all 0.2s ease;
         }
 
+        /* Efek hover untuk semua menu di sidebar */
         .sidebar .nav-link:hover,
-        .sidebar .nav-item-normal:hover {
-            color: #2563eb !important;
-            background-color: #f8fafc !important;
+        .sidebar .nav-item-normal:hover,
+        .sidebar .nav-link-danger-custom:hover {
+            color: #ffffff !important;
+            background-color: rgba(255, 255, 255, 0.1) !important;
         }
 
         .sidebar .nav-link.active {
-            background-color: #eff6ff;
-            color: #2563eb;
+            background-color: #172554;
+            /* Biru dongker pekat */
+            color: #ffffff !important;
             font-weight: 700;
         }
 
@@ -198,20 +215,28 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
             top: 0;
             height: 100%;
             width: 5px;
-            background-color: #2563eb;
+            background-color: #60a5fa;
             border-top-right-radius: 4px;
             border-bottom-right-radius: 4px;
         }
 
-        .sidebar .nav-link-danger-custom {
-            color: #64748b;
-            background-color: transparent;
-            transition: all 0.2s ease-in-out;
+        /* AKSEN MERAH MENYALA DI ATAS BACKGROUND BLUE ROYAL */
+        .sidebar .nav-link.active-merah {
+            background-color: #991b1b !important;
+            color: #fecdd3 !important;
+            font-weight: 700;
         }
 
-        .sidebar .nav-link-danger-custom:hover {
-            background-color: #fff1f2 !important;
-            color: #e11d48 !important;
+        .sidebar .nav-link.active-merah::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 5px;
+            background-color: #ef4444;
+            border-top-right-radius: 4px;
+            border-bottom-right-radius: 4px;
         }
 
         .right-layout {
@@ -330,11 +355,34 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
         }
 
         @media (max-width: 767.98px) {
-            html, body { overflow: auto; height: auto; }
-            .main-wrapper { flex-direction: column; overflow: visible; }
-            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #e2e8f0; }
-            .right-layout { height: auto; overflow: visible; }
-            .content-scrollable { overflow-y: visible; height: auto; }
+
+            html,
+            body {
+                overflow: auto;
+                height: auto;
+            }
+
+            .main-wrapper {
+                flex-direction: column;
+                overflow: visible;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            .right-layout {
+                height: auto;
+                overflow: visible;
+            }
+
+            .content-scrollable {
+                overflow-y: visible;
+                height: auto;
+            }
         }
     </style>
 </head>
@@ -359,7 +407,7 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
     </nav>
 
     <div class="main-wrapper">
-        
+
         <div class="sidebar py-3">
             <div class="text-center pb-4 px-3 border-bottom mb-3">
                 <div class="position-relative d-inline-block mb-2">
@@ -386,16 +434,16 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="input_nilai.php">
-                        <i class="fa-solid fa-file-pen me-2.5"></i> Input Nilai Mhs
+                        <i class="fa-solid fa-file-pen me-2.5"></i> Input Nilai
                     </a>
                 </li>
-                
+
                 <li class="nav-item mt-2 border-top pt-2">
                     <a class="nav-link active" href="edit_profil.php">
                         <i class="fa-solid fa-user-gear me-2.5"></i> Pengaturan Profil
                     </a>
                 </li>
-                
+
                 <li class="nav-item">
                     <a class="nav-link nav-link-danger-custom" href="ganti_password.php">
                         <i class="fa-solid fa-lock-open me-2.5"></i> Ganti Password
@@ -405,11 +453,11 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
         </div>
 
         <div class="right-layout">
-            
+
             <div class="content-scrollable px-4 py-4">
 
                 <div class="card-profile-container mx-auto" style="max-width: 850px;">
-                    
+
                     <div class="form-hero-header d-flex align-items-center gap-3">
                         <div class="header-icon-box d-none d-sm-flex">
                             <i class="fa-solid fa-user-gear"></i>
@@ -421,7 +469,7 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
                             </p>
                         </div>
                     </div>
-                    
+
                     <div class="p-4 bg-white">
                         <form id="formEditProfil" enctype="multipart/form-data">
                             <input type="hidden" name="id_dosen" value="<?= htmlspecialchars($dosen['id_dosen'] ?? $id_dosen ?? 0) ?>">
@@ -504,18 +552,18 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
             btn.disabled = true;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Menyimpan...';
             alertMsg.innerHTML = '';
-            
+
             const formData = new FormData(e.target);
             try {
                 const response = await fetch('edit_profil.php', {
                     method: 'POST',
                     body: formData
                 });
-                
+
                 const rawText = await response.text();
                 const jsonStart = rawText.indexOf('{');
                 if (jsonStart === -1) throw new Error("Respon dari server kotor");
-                
+
                 const result = JSON.parse(rawText.substring(jsonStart));
                 if (result.status === 'success') {
                     alertMsg.innerHTML = `<div class="alert alert-success border-0 text-center py-2.5 small fw-medium"><i class="fa-solid fa-circle-check me-2"></i>${result.message}</div>`;
@@ -533,4 +581,5 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
         });
     </script>
 </body>
+
 </html>

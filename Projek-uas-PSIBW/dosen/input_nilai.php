@@ -78,7 +78,7 @@ if (isset($_POST['proses_simpan_nilai'])) {
 
         if (mysqli_query($conn, $sql_aksi)) {
             $notif_status = "success";
-            $notif_pesan = "🎉 Data nilai berhasil disimpan!";
+            $notif_pesan = "Nilai berhasil disimpan!";
             $id_kuliah_terpilih = $id_kuliah_proses;
         } else {
             // Jika crash, muntahkan error MySQL asli
@@ -132,17 +132,21 @@ if (isset($_POST['proses_simpan_nilai'])) {
         }
 
         .btn-logout-custom {
-            color: rgba(255, 255, 255, 0.75);
-            font-weight: 500;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 600;
             font-size: 12.5px;
-            border-radius: 6px;
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            transition: all 0.2s ease-in-out;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.25);
         }
 
-        .btn-logout-custom:hover {
-            background-color: #dc2626 !important;
-            color: #fff !important;
+        .btn-logout-custom:hover, 
+        .btn-logout-custom:focus {
+            background-color: #e11d48 !important;
+            color: #ffffff !important;
+            border-color: #e11d48 !important;
+            box-shadow: 0 4px 14px rgba(225, 29, 72, 0.4);
         }
 
         .main-wrapper {
@@ -152,19 +156,31 @@ if (isset($_POST['proses_simpan_nilai'])) {
             width: 100%;
         }
 
-        /* SIDEBAR MODERN (SINKRON 100% DASHBOARD) */
+        /* ======================================================== */
+        /* SIDEBAR: ROYAL BLUE CAMPUS THEME (SINKRON & SERAGAM)     */
+        /* ======================================================== */
         .sidebar {
             width: 260px;
-            background-color: #ffffff;
-            border-right: 1px solid #e2e8f0;
+            background-color: #1e3a8a; /* Biru Royal Kampus */
+            border-right: 1px solid #1d4ed8;
             display: flex;
             flex-direction: column;
             height: 100%;
             flex-shrink: 0;
         }
 
-        .sidebar .nav-link {
-            color: #475569;
+        .sidebar .border-bottom {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+        }
+
+        .sidebar .text-dark {
+            color: #ffffff !important;
+        }
+
+        /* Kita paksa semua jenis nav-link (termasuk class custom profil) agar warnanya sama */
+        .sidebar .nav-link,
+        .sidebar .nav-link-danger-custom {
+            color: #bfdbfe !important; /* Biru muda pudar premium */
             font-size: 13.5px;
             font-weight: 600;
             padding: 12px 20px;
@@ -173,15 +189,17 @@ if (isset($_POST['proses_simpan_nilai'])) {
             transition: all 0.2s ease;
         }
 
+        /* Efek hover untuk semua menu di sidebar */
         .sidebar .nav-link:hover,
-        .sidebar .nav-item-normal:hover {
-            color: #2563eb !important;
-            background-color: #f8fafc !important;
+        .sidebar .nav-item-normal:hover,
+        .sidebar .nav-link-danger-custom:hover {
+            color: #ffffff !important;
+            background-color: rgba(255, 255, 255, 0.1) !important;
         }
 
         .sidebar .nav-link.active {
-            background-color: #eff6ff;
-            color: #2563eb;
+            background-color: #172554; /* Biru dongker pekat */
+            color: #ffffff !important;
             font-weight: 700;
         }
 
@@ -192,20 +210,28 @@ if (isset($_POST['proses_simpan_nilai'])) {
             top: 0;
             height: 100%;
             width: 5px;
-            background-color: #2563eb;
+            background-color: #60a5fa;
             border-top-right-radius: 4px;
             border-bottom-right-radius: 4px;
         }
 
-        .sidebar .nav-link-danger-custom {
-            color: #64748b;
-            background-color: transparent;
-            transition: all 0.2s ease-in-out;
+        /* AKSEN MERAH MENYALA DI ATAS BACKGROUND BLUE ROYAL */
+        .sidebar .nav-link.active-merah {
+            background-color: #991b1b !important;
+            color: #fecdd3 !important;
+            font-weight: 700;
         }
 
-        .sidebar .nav-link-danger-custom:hover {
-            background-color: #fff1f2 !important;
-            color: #e11d48 !important;
+        .sidebar .nav-link.active-merah::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 5px;
+            background-color: #ef4444;
+            border-top-right-radius: 4px;
+            border-bottom-right-radius: 4px;
         }
 
         .right-layout {
@@ -328,7 +354,7 @@ if (isset($_POST['proses_simpan_nilai'])) {
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" href="input_nilai.php">
-                        <i class="fa-solid fa-file-pen me-2.5"></i> Input Nilai Mhs
+                        <i class="fa-solid fa-file-pen me-2.5"></i> Input Nilai
                     </a>
                 </li>
 

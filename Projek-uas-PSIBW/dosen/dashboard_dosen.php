@@ -132,19 +132,31 @@ $conn->close();
             overflow: hidden;
         }
 
-        /* SIDEBAR MODERN */
+        /* ======================================================== */
+        /* SIDEBAR: ROYAL BLUE CAMPUS THEME (SINKRON & SERAGAM)     */
+        /* ======================================================== */
         .sidebar {
             width: 260px;
-            background-color: #ffffff;
-            border-right: 1px solid #e2e8f0;
+            background-color: #1e3a8a; /* Biru Royal Kampus */
+            border-right: 1px solid #1d4ed8;
             display: flex;
             flex-direction: column;
             height: 100%;
             flex-shrink: 0;
         }
 
-        .sidebar .nav-link {
-            color: #475569;
+        .sidebar .border-bottom {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+        }
+
+        .sidebar .text-dark {
+            color: #ffffff !important;
+        }
+
+        /* Kita paksa semua jenis nav-link (termasuk class custom profil) agar warnanya sama */
+        .sidebar .nav-link,
+        .sidebar .nav-link-danger-custom {
+            color: #bfdbfe !important; /* Biru muda pudar premium */
             font-size: 13.5px;
             font-weight: 600;
             padding: 12px 20px;
@@ -153,15 +165,17 @@ $conn->close();
             transition: all 0.2s ease;
         }
 
+        /* Efek hover untuk semua menu di sidebar */
         .sidebar .nav-link:hover,
-        .sidebar .nav-item-normal:hover {
-            color: #2563eb !important;
-            background-color: #f8fafc !important;
+        .sidebar .nav-item-normal:hover,
+        .sidebar .nav-link-danger-custom:hover {
+            color: #ffffff !important;
+            background-color: rgba(255, 255, 255, 0.1) !important;
         }
 
         .sidebar .nav-link.active {
-            background-color: #eff6ff;
-            color: #2563eb;
+            background-color: #172554; /* Biru dongker pekat */
+            color: #ffffff !important;
             font-weight: 700;
         }
 
@@ -172,20 +186,28 @@ $conn->close();
             top: 0;
             height: 100%;
             width: 5px;
-            background-color: #2563eb;
+            background-color: #60a5fa;
             border-top-right-radius: 4px;
             border-bottom-right-radius: 4px;
         }
 
-        .sidebar .nav-link-danger-custom {
-            color: #64748b;
-            background-color: transparent;
-            transition: all 0.2s ease-in-out;
+        /* AKSEN MERAH MENYALA DI ATAS BACKGROUND BLUE ROYAL */
+        .sidebar .nav-link.active-merah {
+            background-color: #991b1b !important;
+            color: #fecdd3 !important;
+            font-weight: 700;
         }
 
-        .sidebar .nav-link-danger-custom:hover {
-            background-color: #fff1f2 !important;
-            color: #e11d48 !important;
+        .sidebar .nav-link.active-merah::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 5px;
+            background-color: #ef4444;
+            border-top-right-radius: 4px;
+            border-bottom-right-radius: 4px;
         }
 
         .right-layout {
@@ -410,7 +432,7 @@ $conn->close();
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="input_nilai.php">
-                        <i class="fa-solid fa-file-pen me-2.5"></i> Input Nilai Mhs
+                        <i class="fa-solid fa-file-pen me-2.5"></i> Input Nilai
                     </a>
                 </li>
                 
