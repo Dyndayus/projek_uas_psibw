@@ -297,31 +297,37 @@ function getHariClass($hari)
             padding: 15px;
         }
 
-        /* Variasi warna strip hari */
+        /* VARIASI WARNA STRIP HARI */
         .card-senin {
-            border-left: 5px solid #2563eb;
+            border-left: 5px solid #f43f5e;
         }
-
         .card-senin .day-strip {
-            background: linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%);
-            color: #1d4ed8;
-            border-right-color: #bfdbfe;
+            background: linear-gradient(180deg, #fff1f2 0%, #ffe4e6 100%);
+            color: #be123c;
+            border-right-color: #fecdd3;
         }
 
         .card-selasa {
-            border-left: 5px solid #16a34a;
+            border-left: 5px solid #eab308;
+        }
+        .card-selasa .day-strip {
+            background: linear-gradient(180deg, #fefce8 0%, #fef9c3 100%);
+            color: #a16207;
+            border-right-color: #fef08a;
         }
 
-        .card-selasa .day-strip {
-            background: linear-gradient(180deg, #f0fdf4 0%, #dcfce7 100%);
-            color: #15803d;
-            border-right-color: #bbf7d0;
+        .card-rabu {
+            border-left: 5px solid #10b981; 
+        }
+        .card-rabu .day-strip {
+            background: linear-gradient(180deg, #ecfdf5 0%, #d1fae5 100%);
+            color: #047857;
+            border-right-color: #a7f3d0;
         }
 
         .card-kamis {
-            border-left: 5px solid #ea580c;
+            border-left: 5px solid #f97316; 
         }
-
         .card-kamis .day-strip {
             background: linear-gradient(180deg, #fff7ed 0%, #ffedd5 100%);
             color: #c2410c;
@@ -329,13 +335,12 @@ function getHariClass($hari)
         }
 
         .card-jumat {
-            border-left: 5px solid #d22ecc;
+            border-left: 5px solid #ec4899; 
         }
-
         .card-jumat .day-strip {
-            background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
-            color: #475569;
-            border-right-color: #e2e8f0;
+            background: linear-gradient(180deg, #fdf2f8 0%, #fce7f3 100%);
+            color: #be185d;
+            border-right-color: #fbcfe8;
         }
 
         .time-badge {
@@ -419,7 +424,7 @@ function getHariClass($hari)
     <nav class="navbar navbar-expand-lg navbar-dark custom-navbar shadow-sm sticky-top" style="z-index: 1050;">
         <div class="container-fluid px-4">
             <a class="navbar-brand fw-bold d-flex align-items-center" href="dashboard_dosen.php">
-                <img src="https://unri.ac.id/wp-content/uploads/2016/05/cropped-LogoUR-1-1.png" alt="Logo UNRI" class="logo-navbar me-2">
+                <img src="../assets/img/logo-unri.png" alt="Logo UNRI" class="logo-navbar me-2">
                 <span class="d-flex flex-column">
                     <span class="text-white fw-bold mb-0" style="font-size: 15px; line-height: 1.2; letter-spacing: 0.3px;">SIAKAD Portal</span>
                     <span class="text-white-50" style="font-size: 11px; font-weight: 400; opacity: 0.85;">Universitas Riau</span>

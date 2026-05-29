@@ -392,7 +392,7 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
     <nav class="navbar navbar-expand-lg navbar-dark custom-navbar shadow-sm sticky-top" style="z-index: 1050;">
         <div class="container-fluid px-4">
             <a class="navbar-brand fw-bold d-flex align-items-center" href="dashboard_dosen.php">
-                <img src="https://unri.ac.id/wp-content/uploads/2016/05/cropped-LogoUR-1-1.png" alt="Logo UNRI" class="logo-navbar me-2">
+                <img src="../assets/img/logo-unri.png" alt="Logo UNRI" class="logo-navbar me-2">
                 <span class="d-flex flex-column">
                     <span class="text-white fw-bold mb-0" style="font-size: 15px; line-height: 1.2; letter-spacing: 0.3px;">SIAKAD Portal</span>
                     <span class="text-white-50" style="font-size: 11px; font-weight: 400; opacity: 0.85;">Universitas Riau</span>
@@ -456,7 +456,7 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
 
             <div class="content-scrollable px-4 py-4">
 
-                <div class="card-profile-container mx-auto" style="max-width: 850px;">
+                <div class="card-profile-container mx-auto" style="max-width: 650px;">
 
                     <div class="form-hero-header d-flex align-items-center gap-3">
                         <div class="header-icon-box d-none d-sm-flex">

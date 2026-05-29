@@ -313,7 +313,7 @@ if (isset($_POST['proses_simpan_nilai'])) {
     <nav class="navbar navbar-expand-lg navbar-dark custom-navbar shadow-sm sticky-top" style="z-index: 1050;">
         <div class="container-fluid px-4">
             <a class="navbar-brand fw-bold d-flex align-items-center" href="dashboard_dosen.php">
-                <img src="https://unri.ac.id/wp-content/uploads/2016/05/cropped-LogoUR-1-1.png" alt="Logo UNRI" class="logo-navbar me-2">
+                <img src="../assets/img/logo-unri.png" alt="Logo UNRI" class="logo-navbar me-2">
                 <span class="d-flex flex-column">
                     <span class="text-white fw-bold mb-0" style="font-size: 15px; line-height: 1.2; letter-spacing: 0.3px;">SIAKAD Portal</span>
                     <span class="text-white-50" style="font-size: 11px; font-weight: 400; opacity: 0.85;">Universitas Riau</span>
@@ -374,7 +374,7 @@ if (isset($_POST['proses_simpan_nilai'])) {
 
         <div class="right-layout">
             <div class="content-scrollable px-4 py-4">
-                <div class="card-nilai-container mx-auto" style="max-width: 720px; margin-top: 15px;">
+                <div class="card-nilai-container mx-auto" style="max-width: 650px; margin-top: 15px;">
                     <div class="form-hero-header d-flex align-items-center gap-3">
                         <div>
                             <h5 class="fw-bold text-primary mb-1">Form Pengisian Nilai Akademik</h5>
