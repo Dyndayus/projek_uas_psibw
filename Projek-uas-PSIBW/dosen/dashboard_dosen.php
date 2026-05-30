@@ -30,8 +30,8 @@ $row_matkul = $stmt_m->get_result()->fetch_assoc();
 $total_matkul = $row_matkul['total_matkul'] ?? 0;
 $stmt_m->close();
 
-// B. Menghitung Total Mahasiswa unik yang diajar oleh dosen ini (berdasarkan mata kuliah yang diampunya)
-$q_mhs = "SELECT COUNT(DISTINCT n.id_mhs) AS total_mhs 
+// B. Menghitung Total Mahasiswa yang diajar oleh dosen ini (dihitung berdasarkan jumlah baris kelas yang disiapkan oleh admin)
+$q_mhs = "SELECT COUNT(n.id_mhs) AS total_mhs 
           FROM nilai n 
           JOIN kuliah k ON n.id_kuliah = k.id_kuliah 
           WHERE k.id_dosen = ?";

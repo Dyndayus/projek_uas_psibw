@@ -17,77 +17,90 @@ $id_dosen = $dosen_res['id_dosen'] ?? $dosen_res['id'] ?? 0;
 $nama_dosen = $dosen_res['nama'] ?? 'Dosen SIAKAD';
 $foto_path = !empty($dosen_res['foto']) ? '../uploads/foto_dosen/' . $dosen_res['foto'] : 'https://via.placeholder.com/150';
 
-// 2. KEMBALIKAN KE ALL MK: Mengambil SELURUH mata kuliah di kampus agar tidak ada error kosong
-$kuliah_q = "SELECT id_kuliah, nama_mk, kode_mk FROM kuliah ORDER BY nama_mk ASC";
+// ========================================================================
+// LOGIKA BARU: MENGAMBIL MATA KULIAH YANG HANYA DIAMPUI OLEH DOSEN INI
+// ========================================================================
+$kuliah_q = "SELECT id_kuliah, nama_mk, kode_mk FROM kuliah WHERE id_dosen = '$id_dosen' ORDER BY nama_mk ASC";
 $kuliah_result = mysqli_query($conn, $kuliah_q);
 
-// 3. Ambil id_kuliah yang sedang dipilih dari form
+// Ambil id_kuliah yang sedang dipilih dari form filter
 $id_kuliah_terpilih = "";
 if (isset($_REQUEST['id_kuliah'])) {
-    // Kita biarkan tipenya fleksibel sesuai input database kamu
     $id_kuliah_terpilih = mysqli_real_escape_string($conn, $_REQUEST['id_kuliah']);
 }
 
-// 4. Ambil daftar seluruh mahasiswa untuk diinput nilainya
+// ========================================================================
+// LOGIKA BARU: AMBIL DAFTAR MAHASISWA YANG HANYA MENGAMBIL MATAKULIAH TERPILIH
+// ========================================================================
 $mahasiswa_list = [];
-$mhs_q = "SELECT id_mhs, nim, nama FROM mhs ORDER BY nim ASC";
-$mhs_result = mysqli_query($conn, $mhs_q);
-while ($row = mysqli_fetch_assoc($mhs_result)) {
-    $mahasiswa_list[] = $row;
+if (!empty($id_kuliah_terpilih)) {
+    // Mengambil data dari tabel nilai yang sudah dijodohkan oleh admin sebelumnya
+    $mhs_q = "SELECT n.id_nilai, n.nilai_angka, n.nilai_huruf, n.tahun_ajaran, m.id_mhs, m.nim, m.nama 
+              FROM nilai n
+              JOIN mhs m ON n.id_mhs = m.id_mhs
+              WHERE n.id_kuliah = '$id_kuliah_terpilih'
+              ORDER BY m.nim ASC";
+    $mhs_result = mysqli_query($conn, $mhs_q);
+    while ($row = mysqli_fetch_assoc($mhs_result)) {
+        $mahasiswa_list[] = $row;
+    }
 }
 
-// 5. PROSES SIMPAN NILAI (LOGIKA FIX SESTEI DI SCREENSHOT DATABASE)
+// ========================================================================
+// PROSES SIMPAN NILAI SECARA MASSAL (ARRAY FOREACH LOOP)
+// ========================================================================
 $notif_status = "";
 $notif_pesan = "";
 
-if (isset($_POST['proses_simpan_nilai'])) {
-    $id_mhs_input = isset($_POST['id_mhs']) ? intval($_POST['id_mhs']) : 0;
-    $id_kuliah_proses = isset($_POST['id_kuliah']) ? mysqli_real_escape_string($conn, $_POST['id_kuliah']) : $id_kuliah_terpilih;
-    $nilai_angka = isset($_POST['nilai_angka']) ? floatval($_POST['nilai_angka']) : 0;
-    $tahun_ajaran = isset($_POST['tahun_ajaran']) ? mysqli_real_escape_string($conn, $_POST['tahun_ajaran']) : '';
+if (isset($_POST['proses_simpan_nilai_massal'])) {
+    if (isset($_POST['id_nilai']) && is_array($_POST['id_nilai'])) {
+        $array_id_nilai   = $_POST['id_nilai'];
+        $array_nilai_angka = $_POST['nilai_angka'];
+        $array_thn_ajaran  = $_POST['tahun_ajaran'];
 
-    // Konversi nilai angka ke huruf otomatis
-    $nilai_huruf = 'E';
-    if ($nilai_angka >= 85) $nilai_huruf = 'A';
-    elseif ($nilai_angka >= 75) $nilai_huruf = 'B+';
-    elseif ($nilai_angka >= 65) $nilai_huruf = 'B';
-    elseif ($nilai_angka >= 55) $nilai_huruf = 'C+';
-    elseif ($nilai_angka >= 45) $nilai_huruf = 'C';
+        $sukses_update = true;
 
-    if (empty($id_kuliah_proses) || $id_kuliah_proses == "0") {
-        $notif_status = "danger";
-        $notif_pesan = "Gagal: Anda belum memilih mata kuliah.";
-    } elseif ($id_mhs_input <= 0) {
-        $notif_status = "danger";
-        $notif_pesan = "Gagal: Anda belum memilih mahasiswa.";
-    } else {
-        // Cek data lama di tabel nilai
-        $cek_query = "SELECT id_nilai FROM nilai WHERE id_mhs = '$id_mhs_input' AND id_kuliah = '$id_kuliah_proses'";
-        $eksekusi_cek = mysqli_query($conn, $cek_query);
+        foreach ($array_id_nilai as $index => $id_nilai_raw) {
+            $id_nilai_input = intval($id_nilai_raw);
+            $n_angka        = floatval($array_nilai_angka[$index]);
+            $thn_ajaran     = mysqli_real_escape_string($conn, $array_thn_ajaran[$index]);
 
-        if (mysqli_num_rows($eksekusi_cek) > 0) {
-            // JIKA SUDAH ADA, UPDATE
-            $sql_aksi = "UPDATE nilai 
-                         SET nilai_angka = '$nilai_angka', nilai_huruf = '$nilai_huruf', tahun_ajaran = '$tahun_ajaran' 
-                         WHERE id_mhs = '$id_mhs_input' AND id_kuliah = '$id_kuliah_proses'";
-        } else {
-            // JIKA BELUM ADA, INSERT NEW
-            $sql_aksi = "INSERT INTO nilai (id_mhs, id_kuliah, nilai_angka, nilai_huruf, tahun_ajaran) 
-                         VALUES ('$id_mhs_input', '$id_kuliah_proses', '$nilai_angka', '$nilai_huruf', '$tahun_ajaran')";
+            // Hitung nilai huruf otomatis berdasarkan kriteria kamu
+            $n_huruf = 'E';
+            if ($n_angka >= 85) $n_huruf = 'A';
+            elseif ($n_angka >= 75) $n_huruf = 'B+';
+            elseif ($n_angka >= 65) $n_huruf = 'B';
+            elseif ($n_angka >= 55) $n_huruf = 'C+';
+            elseif ($n_angka >= 45) $n_huruf = 'C';
+
+            // Eksekusi UPDATE langsung ke baris data nilai mahasiswa bersangkutan
+            $sql_update = "UPDATE nilai 
+                           SET nilai_angka = '$n_angka', nilai_huruf = '$n_huruf', tahun_ajaran = '$thn_ajaran' 
+                           WHERE id_nilai = '$id_nilai_input'";
+            
+            if (!mysqli_query($conn, $sql_update)) {
+                $sukses_update = false;
+            }
         }
 
-        if (mysqli_query($conn, $sql_aksi)) {
+        if ($sukses_update) {
             $notif_status = "success";
-            $notif_pesan = "Nilai berhasil disimpan!";
-            $id_kuliah_terpilih = $id_kuliah_proses;
+            $notif_pesan = "Berhasil: Semua nilai mahasiswa pada kelas ini telah diperbarui!";
+            
+            // Refresh data mahasiswa di layar setelah berhasil disimpan
+            $mahasiswa_list = [];
+            $mhs_q = "SELECT n.id_nilai, n.nilai_angka, n.nilai_huruf, n.tahun_ajaran, m.id_mhs, m.nim, m.nama 
+                      FROM nilai n
+                      JOIN mhs m ON n.id_mhs = m.id_mhs
+                      WHERE n.id_kuliah = '$id_kuliah_terpilih'
+                      ORDER BY m.nim ASC";
+            $mhs_result = mysqli_query($conn, $mhs_q);
+            while ($row = mysqli_fetch_assoc($mhs_result)) {
+                $mahasiswa_list[] = $row;
+            }
         } else {
-            // Jika crash, muntahkan error MySQL asli
-            die("<div style='color:red; padding:20px; background:#ffebee; border:2px solid red; font-family:sans-serif;'>
-                    <h3>🚨 DATABASE ERROR ON INSERT/UPDATE!</h3>
-                    <p><b>Pesan Error:</b> " . mysqli_error($conn) . "</p>
-                    <p><b>Kueri SQL:</b> $sql_aksi</p>
-                    <a href='input_nilai.php'>Kembali</a>
-                 </div>");
+            $notif_status = "danger";
+            $notif_pesan = "Gagal: Terjadi kesalahan database saat menyimpan beberapa nilai.";
         }
     }
 }
@@ -177,7 +190,6 @@ if (isset($_POST['proses_simpan_nilai'])) {
             color: #ffffff !important;
         }
 
-        /* Kita paksa semua jenis nav-link (termasuk class custom profil) agar warnanya sama */
         .sidebar .nav-link,
         .sidebar .nav-link-danger-custom {
             color: #bfdbfe !important; /* Biru muda pudar premium */
@@ -189,7 +201,6 @@ if (isset($_POST['proses_simpan_nilai'])) {
             transition: all 0.2s ease;
         }
 
-        /* Efek hover untuk semua menu di sidebar */
         .sidebar .nav-link:hover,
         .sidebar .nav-item-normal:hover,
         .sidebar .nav-link-danger-custom:hover {
@@ -215,25 +226,6 @@ if (isset($_POST['proses_simpan_nilai'])) {
             border-bottom-right-radius: 4px;
         }
 
-        /* AKSEN MERAH MENYALA DI ATAS BACKGROUND BLUE ROYAL */
-        .sidebar .nav-link.active-merah {
-            background-color: #991b1b !important;
-            color: #fecdd3 !important;
-            font-weight: 700;
-        }
-
-        .sidebar .nav-link.active-merah::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 5px;
-            background-color: #ef4444;
-            border-top-right-radius: 4px;
-            border-bottom-right-radius: 4px;
-        }
-
         .right-layout {
             flex: 1;
             display: flex;
@@ -248,32 +240,53 @@ if (isset($_POST['proses_simpan_nilai'])) {
             background-color: #f8fafc;
         }
 
-        .card-nilai-container {
+        /* Styles Rombakan Konten Baru yang Lebih Selaras */
+        .card-filter-box {
             background-color: #ffffff;
             border: 1px solid #e2e8f0;
-            border-radius: 14px;
+            border-radius: 12px;
+            border-left: 4px solid #1e3a8a;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-table-box {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             overflow: hidden;
         }
 
-        .form-hero-header {
-            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-            padding: 24px 28px;
-            border-left: 5px solid #2563eb;
+        .table-theme thead {
+            background-color: rgba(30, 58, 138, 0.05);
         }
 
-        .form-label {
-            font-size: 12px;
+        .table-theme th {
+            color: #1e3a8a;
             font-weight: 700;
-            color: #475569;
             text-transform: uppercase;
+            font-size: 11.5px;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e2e8f0;
         }
 
-        .btn-primary-custom {
-            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
-            color: #ffffff;
-            border: none;
+        .form-control-nilai {
+            border-radius: 6px;
             font-weight: 600;
-            padding: 12px 24px;
+            padding: 5px 10px;
+            border: 1px solid #cbd5e1;
+            text-align: center;
+        }
+
+        .form-control-nilai:focus {
+            border-color: #1e3a8a;
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15);
+        }
+
+        .badge-grade {
+            font-size: 13px;
+            font-weight: 700;
+            padding: 6px 12px;
             border-radius: 6px;
         }
 
@@ -287,23 +300,10 @@ if (isset($_POST['proses_simpan_nilai'])) {
             flex-shrink: 0;
         }
 
-
         @media (max-width: 767.98px) {
-
-            html,
-            body {
-                overflow: auto;
-                height: auto;
-            }
-
-            .main-wrapper {
-                flex-direction: column;
-            }
-
-            .sidebar {
-                width: 100% !important;
-                height: auto;
-            }
+            html, body { overflow: auto; height: auto; }
+            .main-wrapper { flex-direction: column; }
+            .sidebar { width: 100% !important; height: auto; }
         }
     </style>
 </head>
@@ -357,13 +357,11 @@ if (isset($_POST['proses_simpan_nilai'])) {
                         <i class="fa-solid fa-file-pen me-2.5"></i> Input Nilai
                     </a>
                 </li>
-
                 <li class="nav-item mt-2 border-top pt-2">
                     <a class="nav-link" href="edit_profil.php">
                         <i class="fa-solid fa-user-gear me-2.5"></i> Pengaturan Profil
                     </a>
                 </li>
-
                 <li class="nav-item">
                     <a class="nav-link nav-link-danger-custom" href="ganti_password.php">
                         <i class="fa-solid fa-lock-open me-2.5"></i> Ganti Password
@@ -374,71 +372,124 @@ if (isset($_POST['proses_simpan_nilai'])) {
 
         <div class="right-layout">
             <div class="content-scrollable px-4 py-4">
-                <div class="card-nilai-container mx-auto" style="max-width: 650px; margin-top: 15px;">
-                    <div class="form-hero-header d-flex align-items-center gap-3">
-                        <div>
-                            <h5 class="fw-bold text-primary mb-1">Form Pengisian Nilai Akademik</h5>
-                            <p class="text-secondary mb-0" style="font-size: 12.5px;">Mode Kompatibilitas Penuh - Menampilkan Seluruh Mata Kuliah.</p>
-                        </div>
+                
+                <?php if (!empty($notif_pesan)): ?>
+                    <div class="alert alert-<?= $notif_status ?> alert-dismissible fade show shadow-sm py-3 px-4 mb-4" role="alert">
+                        <i class="fa-solid <?= $notif_status == 'success' ? 'fa-circle-check text-success' : 'fa-circle-exclamation text-danger' ?> me-2 fs-5"></i>
+                        <span class="fw-semibold"><?= $notif_pesan ?></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
+                <?php endif; ?>
 
-                    <div class="p-4 bg-white">
-
-                        <?php if (!empty($notif_pesan)): ?>
-                            <div class="alert alert-<?= $notif_status ?> alert-dismissible fade show text-center py-2.5 small fw-medium mb-3">
-                                <?= $notif_pesan ?>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        <?php endif; ?>
-
-                        <form action="input_nilai.php" method="POST" id="mainFormNilai">
-
-                            <div class="mb-4 pb-3 border-bottom">
-                                <label class="form-label text-primary fw-bold">Langkah 1: Pilih Mata Kuliah</label>
-                                <select name="id_kuliah" class="form-select" onchange="this.form.submit()" required>
-                                    <option value="">-- Pilih Mata Kuliah Kampus --</option>
+                <div class="card card-filter-box p-4 mb-4">
+                    <div class="row align-items-center">
+                        <div class="col-lg-7 mb-3 mb-lg-0">
+                            <h5 class="fw-bold text-dark mb-1"><i class="fa-solid fa-layer-group text-primary me-2"></i>Lembar Evaluasi & Input Nilai</h5>
+                            <p class="text-muted mb-0 small">Pilih salah satu kelas mata kuliah yang Anda ampu untuk mengelola nilai mahasiswa secara kolektif.</p>
+                        </div>
+                        <div class="col-lg-5">
+                            <form action="input_nilai.php" method="GET" id="formPilihMK">
+                                <label class="form-label mb-1.5 text-secondary">Mata Kuliah Anda</label>
+                                <select name="id_kuliah" class="form-select font-semibold py-2" onchange="document.getElementById('formPilihMK').submit();" required style="border-radius: 8px;">
+                                    <option value="">-- Pilih Kelas Mata Kuliah --</option>
                                     <?php
+                                    mysqli_data_seek($kuliah_result, 0); // Reset pointer
                                     while ($row = mysqli_fetch_assoc($kuliah_result)):
-                                        // MODIFIKASI KRUSIAL: Kita pakai KODE_MK atau ID_KULIAH sesuai kebutuhan pencarian nilai kamu
-                                        // Berdasarkan database kamu, kolom id_kuliah di tabel nilai diisi oleh value ini:
-                                        $val_kuliah = $row['id_kuliah'];
-                                        $selected = ($val_kuliah == $id_kuliah_terpilih) ? 'selected' : '';
+                                        $selected = ($row['id_kuliah'] == $id_kuliah_terpilih) ? 'selected' : '';
                                     ?>
-                                        <option value="<?= $val_kuliah ?>" <?= $selected ?>>
+                                        <option value="<?= $row['id_kuliah'] ?>" <?= $selected ?>>
                                             <?= htmlspecialchars($row['kode_mk'] . ' - ' . $row['nama_mk']) ?>
                                         </option>
                                     <?php endwhile; ?>
                                 </select>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label text-primary fw-bold">Langkah 2: Pilih Mahasiswa</label>
-                                <select name="id_mhs" class="form-select" required>
-                                    <option value="">-- Pilih Mahasiswa Terdaftar --</option>
-                                    <?php foreach ($mahasiswa_list as $mhs): ?>
-                                        <option value="<?= $mhs['id_mhs'] ?>"><?= htmlspecialchars($mhs['nim'] . ' - ' . $mhs['nama']) ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Nilai Angka (0 - 100)</label>
-                                    <input type="number" name="nilai_angka" class="form-control" min="0" max="100" placeholder="Contoh: 85.50" step="0.01" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Tahun Ajaran</label>
-                                    <input type="text" name="tahun_ajaran" class="form-control" placeholder="Contoh: 2025/2026" required>
-                                </div>
-                            </div>
-
-                            <button type="submit" name="proses_simpan_nilai" class="btn btn-primary-custom w-100 py-2.5 mt-2">
-                                <i class="fa-solid fa-floppy-disk me-2"></i>Simpan Komponen Nilai
-                            </button>
-                        </form>
-
+                            </form>
+                        </div>
                     </div>
                 </div>
+
+                <?php if (!empty($id_kuliah_terpilih)): ?>
+                    <form action="input_nilai.php?id_kuliah=<?= $id_kuliah_terpilih ?>" method="POST">
+                        <div class="card card-table-box">
+                            <div class="bg-light px-4 py-3 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                <h6 class="fw-bold text-primary mb-0 d-flex align-items-center">
+                                    <i class="fa-solid fa-users me-2"></i>Daftar Peserta Kelas & Komponen Nilai
+                                </h6>
+                                <span class="badge bg-primary text-white px-3 py-1.5 rounded-pill fw-bold" style="font-size: 11px;">
+                                    Total: <?= count($mahasiswa_list) ?> Mahasiswa
+                                </span>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-hover table-theme align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center" style="width: 6%;">No</th>
+                                            <th style="width: 15%;">NIM</th>
+                                            <th style="width: 35%;">Nama Mahasiswa</th>
+                                            <th class="text-center" style="width: 18%;">Nilai Angka (0-100)</th>
+                                            <th class="text-center" style="width: 11%;">Grade</th>
+                                            <th class="text-center" style="width: 15%;">Tahun Ajaran</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php if (count($mahasiswa_list) > 0): ?>
+                                            <?php foreach ($mahasiswa_list as $index => $mhs): ?>
+                                                <tr>
+                                                    <td class="text-center fw-semibold text-muted"><?= $index + 1 ?></td>
+                                                    <td class="fw-bold text-dark"><?= htmlspecialchars($mhs['nim']) ?></td>
+                                                    <td class="fw-semibold text-secondary"><?= htmlspecialchars($mhs['nama']) ?></td>
+                                                    
+                                                    <td class="text-center">
+                                                        <input type="hidden" name="id_nilai[]" value="<?= $mhs['id_nilai'] ?>">
+                                                        <input type="number" name="nilai_angka[]" class="form-control form-control-nilai mx-auto" min="0" max="100" step="0.01" value="<?= floatval($mhs['nilai_angka']) ?>" placeholder="0.00" style="max-width: 100px;" required>
+                                                    </td>
+                                                    
+                                                    <td class="text-center">
+                                                        <?php 
+                                                        $badge_color = 'bg-secondary';
+                                                        if($mhs['nilai_huruf'] == 'A') $badge_color = 'bg-success';
+                                                        elseif(in_array($mhs['nilai_huruf'], ['B+', 'B'])) $badge_color = 'bg-primary';
+                                                        elseif(in_array($mhs['nilai_huruf'], ['C+', 'C'])) $badge_color = 'bg-warning text-dark';
+                                                        elseif(in_array($mhs['nilai_huruf'], ['D', 'E'])) $badge_color = 'bg-danger';
+                                                        ?>
+                                                        <span class="badge badge-grade <?= $badge_color ?>"><?= htmlspecialchars($mhs['nilai_huruf'] ?? '-') ?></span>
+                                                    </td>
+                                                    
+                                                    <td>
+                                                        <input type="text" name="tahun_ajaran[]" class="form-control form-control-nilai text-center mx-auto" value="<?= htmlspecialchars($mhs['tahun_ajaran'] ?? '2025/2026') ?>" placeholder="Contoh: 2025/2026" style="max-width: 130px;" required>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <tr>
+                                                <td colspan="6" class="text-center py-5 text-muted">
+                                                    <i class="fa-solid fa-folder-open fs-2 d-block mb-2 text-secondary" style="opacity: 0.5;"></i>
+                                                    <span class="fw-bold d-block">Belum Ada Mahasiswa Di Kelas Ini</span>
+                                                    Silakan koordinasi dengan Admin untuk mendaftarkan mahasiswa ke mata kuliah Anda.
+                                                </td>
+                                            </tr>
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <?php if (count($mahasiswa_list) > 0): ?>
+                            <div class="d-flex justify-content-end mt-4">
+                                <button type="submit" name="proses_simpan_nilai_massal" class="btn btn-success fw-bold px-4 py-2.5 shadow-sm" style="border-radius: 8px; background-color: #16a34a; border: none;">
+                                    <i class="fa-solid fa-floppy-disk me-2"></i>Simpan Seluruh Nilai Kelas
+                                </button>
+                            </div>
+                        <?php endif; ?>
+                    </form>
+                <?php else: ?>
+                    <div class="text-center py-5 px-4 card border-0 shadow-sm mt-2" style="border-radius: 12px; background: #ffffff;">
+                        <i class="fa-solid fa-arrow-pointer text-primary fs-1 mb-3 animate-bounce" style="opacity: 0.4;"></i>
+                        <h6 class="fw-bold text-dark">Mata Kuliah Belum Dipilih</h6>
+                        <p class="text-muted small mb-0">Silakan pilih salah satu kelas mata kuliah di sudut kanan atas panel filter untuk memuat lembar penilaian mahasiswa.</p>
+                    </div>
+                <?php endif; ?>
+
             </div>
 
             <footer class="footer py-3">
