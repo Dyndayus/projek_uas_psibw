@@ -133,7 +133,7 @@ function getHariClass($hari)
             border: 1px solid rgba(255, 255, 255, 0.25);
         }
 
-        .btn-logout-custom:hover, 
+        .btn-logout-custom:hover,
         .btn-logout-custom:focus {
             background-color: #e11d48 !important;
             color: #ffffff !important;
@@ -242,127 +242,106 @@ function getHariClass($hari)
             background-color: #f8fafc;
         }
 
-        /* HERO HEADER JADWAL */
-        .form-hero-header {
-            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-            padding: 24px 28px;
-            border-bottom: 1px solid #bfdbfe;
-            border-left: 5px solid #2563eb;
-            border-radius: 12px 12px 0 0;
-        }
-
-        .header-icon-box {
-            width: 44px;
-            height: 44px;
+        /* ======================================================== */
+        /* RE-DESIGN AREA: REAL CAMPUS PORTAL STYLE                 */
+        /* ======================================================== */
+        .academic-header {
             background-color: #ffffff;
-            border: 1px solid #bfdbfe;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #1d4ed8;
-            font-size: 18px;
-            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.06);
+            border-bottom: 1px solid #e2e8f0;
+            padding: 20px 24px;
         }
 
-        /* CARD JADWAL */
-        .jadwal-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
-            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-            overflow: hidden;
-        }
-
-        .jadwal-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.08);
-            border-color: #cbd5e1;
-        }
-
-        .day-strip {
-            background-color: #f1f5f9;
-            border-right: 1px solid #e2e8f0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            color: #334155;
+        .academic-tabs .nav-link {
+            color: #64748b;
+            font-weight: 600;
             font-size: 14px;
-            letter-spacing: 0.8px;
-            text-transform: uppercase;
-            min-height: 100%;
-            padding: 15px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            transition: all 0.2s ease;
         }
 
-        /* VARIASI WARNA STRIP HARI */
-        .card-senin {
-            border-left: 5px solid #f43f5e;
-        }
-        .card-senin .day-strip {
-            background: linear-gradient(180deg, #fff1f2 0%, #ffe4e6 100%);
-            color: #be123c;
-            border-right-color: #fecdd3;
-        }
-
-        .card-selasa {
-            border-left: 5px solid #eab308;
-        }
-        .card-selasa .day-strip {
-            background: linear-gradient(180deg, #fefce8 0%, #fef9c3 100%);
-            color: #a16207;
-            border-right-color: #fef08a;
-        }
-
-        .card-rabu {
-            border-left: 5px solid #10b981; 
-        }
-        .card-rabu .day-strip {
-            background: linear-gradient(180deg, #ecfdf5 0%, #d1fae5 100%);
-            color: #047857;
-            border-right-color: #a7f3d0;
-        }
-
-        .card-kamis {
-            border-left: 5px solid #f97316; 
-        }
-        .card-kamis .day-strip {
-            background: linear-gradient(180deg, #fff7ed 0%, #ffedd5 100%);
-            color: #c2410c;
-            border-right-color: #fed7aa;
-        }
-
-        .card-jumat {
-            border-left: 5px solid #ec4899; 
-        }
-        .card-jumat .day-strip {
-            background: linear-gradient(180deg, #fdf2f8 0%, #fce7f3 100%);
-            color: #be185d;
-            border-right-color: #fbcfe8;
-        }
-
-        .time-badge {
+        .academic-tabs .nav-link:hover:not(.disabled) {
+            color: #1e3a8a;
             background-color: #f1f5f9;
+        }
+
+        .academic-tabs .nav-link.active {
+            background-color: #1e3a8a !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.15);
+        }
+
+        .academic-tabs .nav-link.disabled {
+            color: #cbd5e1;
+            cursor: not-allowed;
+            background-color: #f8fafc;
+        }
+
+        .table-academic {
             border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        /* Menggunakan sistem table-layout auto agar kolom fleksibel dan sejajar sempurna */
+        .table-academic table {
+            table-layout: auto !important;
+            width: 100% !important;
+            border-collapse: collapse;
+        }
+
+        .table-academic thead {
+            background-color: #f8fafc;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        /* Padding disamakan persis (16px atas-bawah, 24px kiri-kanan) agar titik mulai teks lurus vertikal */
+        .table-academic th {
+            color: #475569;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            padding: 16px 24px !important;
+            vertical-align: middle;
+            text-align: left;
+            /* Memastikan semua header rata kiri */
+        }
+
+        .table-academic td {
+            padding: 16px 24px !important;
+            /* Wajib sama dengan padding th */
+            vertical-align: middle;
+            color: #334155;
+            border-bottom: 1px solid #f1f5f9;
+            white-space: nowrap;
+            text-align: left;
+            /* Memastikan semua isi data rata kiri */
+        }
+
+        .table-academic tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .badge-sks {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        .badge-time {
+            background-color: #f1f5f9;
             color: #1e293b;
             font-weight: 600;
+            border: 1px solid #e2e8f0;
+            padding: 5px 10px;
+            border-radius: 6px;
             font-size: 13px;
-            padding: 6px 12px;
-            border-radius: 8px;
-            display: inline-flex;
-            align-items: center;
-        }
-
-        .meta-info-badge {
-            font-size: 12px;
-            font-weight: 500;
-            color: #64748b;
-            background-color: #f8fafc;
-            border: 1px solid #f1f5f9;
-            padding: 3px 10px;
-            border-radius: 20px;
         }
 
         .footer {
@@ -404,16 +383,8 @@ function getHariClass($hari)
                 height: auto;
             }
 
-            .day-strip {
-                padding: 12px;
-                border-right: none;
-                border-bottom: 1px solid #e2e8f0;
-                flex-direction: row;
-                gap: 8px;
-            }
-
-            .form-hero-header {
-                border-radius: 0;
+            .table-academic table {
+                table-layout: auto;
             }
         }
     </style>
@@ -483,74 +454,124 @@ function getHariClass($hari)
         </div>
 
         <div class="right-layout">
-            <div class="content-scrollable px-4 py-4">
-                <div class="card shadow-sm border-0 mx-auto mb-4" style="max-width: 1000px; border-radius: 12px; overflow: hidden;">
-                    <div class="form-hero-header d-flex align-items-center gap-3">
-                        <div class="header-icon-box d-none d-sm-flex">
-                            <i class="fa-solid fa-calendar-week"></i>
-                        </div>
-                        <div>
-                            <h5 class="fw-bold text-primary mb-1" style="letter-spacing: -0.3px; color: #1e3a8a !important;">Jadwal Perkuliahan Mingguan</h5>
-                            <p class="text-secondary mb-0" style="font-size: 12.5px; line-height: 1.4; color: #475569 !important;">
-                                Daftar waktu dan lokasi pelaksanaan kelas tatap muka akademik yang ditugaskan resmi kepada Anda.
-                            </p>
-                        </div>
-                    </div>
 
-                    <div class="p-4 bg-white d-flex flex-column gap-3">
-                        <?php
-                        if (empty($jadwal_list)):
-                        ?>
-                            <div class="alert alert-info text-center py-4 border-0 shadow-sm" style="border-radius: 10px; background-color: #f0f9ff;">
-                                <i class="fa-solid fa-calendar-xmark text-primary mb-2" style="font-size: 24px;"></i>
-                                <h6 class="fw-bold text-dark mb-1">Belum Ada Jadwal Mengajar</h6>
-                                <p class="text-muted small mb-0">Anda tidak memiliki agenda kelas tatap muka yang terplot pada semester ini.</p>
+            <div class="academic-header">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <i class="fa-solid fa-calendar-week text-primary fs-5"></i>
+                    <h5 class="fw-bold text-dark mb-0" style="letter-spacing: -0.3px;">Jadwal Mengajar Mingguan</h5>
+                </div>
+
+                <ul class="nav nav-pills academic-tabs gap-1" id="jadwalTab" role="tablist">
+                    <?php
+                    // Cari hari pertama yang punya jadwal untuk dijadikan tab active otomatis
+                    $hari_aktif_pertama = '';
+                    foreach ($urutan_hari as $hari) {
+                        if (isset($jadwal_list[$hari])) {
+                            $hari_aktif_pertama = $hari;
+                            break;
+                        }
+                    }
+                    // Jika sama sekali tidak ada jadwal, default ke Senin
+                    if (empty($hari_aktif_pertama)) $hari_aktif_pertama = 'Senin';
+
+                    foreach ($urutan_hari as $hari):
+                        $has_jadwal = isset($jadwal_list[$hari]);
+                        $isActive = ($hari === $hari_aktif_pertama) ? 'active' : '';
+                        $isDisabled = !$has_jadwal ? 'disabled' : '';
+                    ?>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link <?= $isActive ?> <?= $isDisabled ?>"
+                                id="tab-<?= $hari ?>"
+                                data-bs-toggle="tab"
+                                data-bs-target="#panel-<?= $hari ?>"
+                                type="button"
+                                role="tab"
+                                <?= !$has_jadwal ? 'disabled' : '' ?>>
+                                <?= $hari ?>
+                                <?php if ($has_jadwal): ?>
+                                    <span class="badge bg-white text-dark ms-1 rounded-circle" style="font-size: 10px; padding: 3px 6px;"><?= count($jadwal_list[$hari]) ?></span>
+                                <?php endif; ?>
+                            </button>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+
+            <div class="content-scrollable px-4 py-4">
+                <div class="mx-auto" style="max-width: 1000px;">
+
+                    <?php if (empty($jadwal_list)): ?>
+                        <div class="card border-0 shadow-sm text-center py-5" style="border-radius: 8px;">
+                            <div class="card-body">
+                                <i class="fa-solid fa-calendar-xmark text-muted mb-3" style="font-size: 40px;"></i>
+                                <h6 class="fw-bold text-dark mb-1">Tidak Ada Jadwal Mengajar</h6>
+                                <p class="text-muted small mb-0">Anda tidak memiliki agenda perkuliahan aktif pada semester ini.</p>
                             </div>
+                        </div>
+                    <?php else: ?>
+
+                        <div class="tab-content" id="jadwalTabContent">
                             <?php
-                        else:
-                            // LOGIKA TERBARU: Loop hanya hari yang memiliki jadwal aktif
                             foreach ($urutan_hari as $hari):
                                 if (isset($jadwal_list[$hari])):
-                                    foreach ($jadwal_list[$hari] as $item):
-                                        $bgClass = getHariClass($hari);
+                                    $isActivePanel = ($hari === $hari_aktif_pertama) ? 'show active' : '';
                             ?>
-                                        <div class="jadwal-card <?= $bgClass ?>">
-                                            <div class="row g-0 align-items-stretch">
-                                                <div class="col-md-2 d-none d-md-flex day-strip">
-                                                    <i class="fa-solid fa-calendar-day mb-1 opacity-75"></i>
-                                                    <span><?= $hari ?></span>
-                                                </div>
-                                                <div class="col-12 col-md-10 p-3">
-                                                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
-                                                        <div>
-                                                            <span class="d-md-none badge bg-primary mb-2"><?= $hari ?></span>
-                                                            <div class="d-flex align-items-center gap-2 mb-1">
-                                                                <h6 class="fw-bold text-dark mb-0" style="font-size: 16px;"><?= htmlspecialchars($item['nama_mk']) ?></h6>
-                                                                <span class="meta-info-badge"><?= htmlspecialchars($item['sks']) ?> SKS</span>
-                                                            </div>
-                                                            <p class="text-muted mb-0 small fw-medium">
-                                                                <i class="fa-solid fa-layer-group me-1"></i> <?= htmlspecialchars($item['kode_mk']) ?> &bull; <?= htmlspecialchars($item['kelas']) ?>
-                                                            </p>
-                                                        </div>
-                                                        <div class="text-md-end d-flex flex-column align-items-start align-items-md-end">
-                                                            <div class="time-badge mb-2">
-                                                                <i class="fa-regular fa-clock me-2 text-primary fw-bold"></i><?= date('H:i', strtotime($item['jam_mulai'])) ?> - <?= date('H:i', strtotime($item['jam_selesai'])) ?>
-                                                            </div>
-                                                            <div class="text-secondary small fw-medium">
-                                                                <i class="fa-solid fa-location-dot me-1.5 text-danger"></i><?= htmlspecialchars($item['ruangan']) ?>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                    <div class="tab-pane fade <?= $isActivePanel ?>" id="panel-<?= $hari ?>" role="tabpanel">
+                                        <div class="table-responsive table-academic shadow-sm bg-white">
+                                            <table class="table mb-0 align-middle">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width: 20%; text-align: left;">Waktu</th>
+                                                        <th style="width: 12%; text-align: left;">Kode MK</th>
+                                                        <th style="width: 33%; text-align: left;">Nama Mata Kuliah</th>
+                                                        <th style="width: 10%; text-align: left;">SKS</th>
+                                                        <th style="width: 10%; text-align: left;">Kelas</th>
+                                                        <th style="width: 15%; text-align: left;">Ruangan</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <?php foreach ($jadwal_list[$hari] as $item): ?>
+                                                        <tr>
+                                                            <td style="text-align: left;">
+                                                                <span class="badge badge-time d-inline-block m-0">
+                                                                    <i class="fa-regular fa-clock me-1.5 text-secondary"></i>
+                                                                    <?= date('H:i', strtotime($item['jam_mulai'])) ?> - <?= date('H:i', strtotime($item['jam_selesai'])) ?>
+                                                                </span>
+                                                            </td>
+                                                            <td class="font-monospace text-secondary small fw-bold" style="text-align: left;">
+                                                                <?= htmlspecialchars($item['kode_mk']) ?>
+                                                            </td>
+                                                            <td style="text-align: left;">
+                                                                <div class="fw-bold text-dark text-truncate" style="font-size: 14px;" title="<?= htmlspecialchars($item['nama_mk']) ?>">
+                                                                    <?= htmlspecialchars($item['nama_mk']) ?>
+                                                                </div>
+                                                            </td>
+                                                            <td style="text-align: left;">
+                                                                <span class="badge badge-sks d-inline-block m-0"><?= htmlspecialchars($item['sks']) ?> SKS</span>
+                                                            </td>
+                                                            <td style="text-align: left;">
+                                                                <span class="text-secondary fw-medium small"><?= htmlspecialchars($item['kelas']) ?></span>
+                                                            </td>
+                                                            <td style="text-align: left;">
+                                                                <span class="text-dark small fw-semibold text-truncate d-block" title="<?= htmlspecialchars($item['ruangan']) ?>">
+                                                                    <i class="fa-solid fa-location-dot text-danger me-1.5 small"></i>
+                                                                    <?= htmlspecialchars($item['ruangan']) ?>
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    <?php endforeach; ?>
+                                                </tbody>
+                                            </table>
                                         </div>
-                        <?php
-                                    endforeach;
+                                    </div>
+                            <?php
                                 endif;
                             endforeach;
-                        endif;
-                        ?>
-                    </div>
+                            ?>
+                        </div>
+
+                    <?php endif; ?>
+
                 </div>
             </div>
 
