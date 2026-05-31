@@ -77,7 +77,7 @@ if (isset($_POST['proses_simpan_nilai_massal'])) {
             $sql_update = "UPDATE nilai 
                            SET nilai_angka = '$n_angka', nilai_huruf = '$n_huruf', tahun_ajaran = '$thn_ajaran' 
                            WHERE id_nilai = '$id_nilai_input'";
-            
+
             if (!mysqli_query($conn, $sql_update)) {
                 $sukses_update = false;
             }
@@ -86,7 +86,7 @@ if (isset($_POST['proses_simpan_nilai_massal'])) {
         if ($sukses_update) {
             $notif_status = "success";
             $notif_pesan = "Berhasil: Semua nilai mahasiswa pada kelas ini telah diperbarui!";
-            
+
             // Refresh data mahasiswa di layar setelah berhasil disimpan
             $mahasiswa_list = [];
             $mhs_q = "SELECT n.id_nilai, n.nilai_angka, n.nilai_huruf, n.tahun_ajaran, m.id_mhs, m.nim, m.nama 
@@ -124,8 +124,8 @@ if (isset($_POST['proses_simpan_nilai_massal'])) {
             overflow: hidden;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             font-size: 14px;
-            color: #2d3748;
-            background-color: #f8fafc;
+            color: #1e293b;
+            background-color: #f1f5f9;
         }
 
         body {
@@ -154,7 +154,7 @@ if (isset($_POST['proses_simpan_nilai_massal'])) {
             border: 1px solid rgba(255, 255, 255, 0.25);
         }
 
-        .btn-logout-custom:hover, 
+        .btn-logout-custom:hover,
         .btn-logout-custom:focus {
             background-color: #e11d48 !important;
             color: #ffffff !important;
@@ -169,12 +169,9 @@ if (isset($_POST['proses_simpan_nilai_massal'])) {
             width: 100%;
         }
 
-        /* ======================================================== */
-        /* SIDEBAR: ROYAL BLUE CAMPUS THEME (SINKRON & SERAGAM)     */
-        /* ======================================================== */
         .sidebar {
             width: 260px;
-            background-color: #1e3a8a; /* Biru Royal Kampus */
+            background-color: #1e3a8a;
             border-right: 1px solid #1d4ed8;
             display: flex;
             flex-direction: column;
@@ -192,7 +189,7 @@ if (isset($_POST['proses_simpan_nilai_massal'])) {
 
         .sidebar .nav-link,
         .sidebar .nav-link-danger-custom {
-            color: #bfdbfe !important; /* Biru muda pudar premium */
+            color: #bfdbfe !important;
             font-size: 13.5px;
             font-weight: 600;
             padding: 12px 20px;
@@ -209,7 +206,7 @@ if (isset($_POST['proses_simpan_nilai_massal'])) {
         }
 
         .sidebar .nav-link.active {
-            background-color: #172554; /* Biru dongker pekat */
+            background-color: #172554;
             color: #ffffff !important;
             font-weight: 700;
         }
@@ -240,57 +237,171 @@ if (isset($_POST['proses_simpan_nilai_massal'])) {
             background-color: #f8fafc;
         }
 
-        /* Styles Rombakan Konten Baru yang Lebih Selaras */
         .card-filter-box {
-            background-color: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            border-left: 4px solid #1e3a8a;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            background: linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%);
+            border: none;
+            border-radius: 14px;
+            box-shadow: 0 10px 25px -5px rgba(30, 58, 138, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-filter-box::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            right: -15%;
+            width: 280px;
+            height: 280px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 50%;
+            pointer-events: none;
         }
 
         .card-table-box {
             background-color: #ffffff;
             border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border-radius: 14px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
             overflow: hidden;
         }
 
-        .table-theme thead {
-            background-color: rgba(30, 58, 138, 0.05);
+        .table-theme {
+            margin-top: 0 !important;
+            /* Mencegah margin ganda atas tabel */
+        }
+
+        .table-theme tragedies {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
         }
 
         .table-theme th {
-            color: #1e3a8a;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 11.5px;
-            letter-spacing: 0.5px;
-            border-bottom: 2px solid #e2e8f0;
+            color: #ffffff !important;
+            background: #1e3a8a !important;
+            /* Penyeragaman warna latar header */
+            font-weight: 600;
+            text-transform: none;
+            font-size: 13px;
+            border-bottom: none;
+            padding: 10px 16px !important;
+            /* Memadatkan jarak vertikal header */
+        }
+
+        .table-theme tbody tr td {
+            padding: 8px 16px !important;
+            /* Memadatkan jarak baris antar mahasiswa */
+        }
+
+        .table-theme tbody tr:nth-of-type(even) {
+            background-color: #f8fafc;
+        }
+
+        .table-theme tbody tr:hover {
+            background-color: #f1f5f9 !important;
         }
 
         .form-control-nilai {
-            border-radius: 6px;
-            font-weight: 600;
+            border-radius: 8px;
+            font-weight: 700;
             padding: 5px 10px;
-            border: 1px solid #cbd5e1;
+            border: 1.5px solid #cbd5e1;
             text-align: center;
+            color: #0f172a;
+            transition: all 0.2s ease-in-out;
+            background-color: #ffffff;
+        }
+
+        .form-control-nilai:hover {
+            border-color: #94a3b8;
         }
 
         .form-control-nilai:focus {
-            border-color: #1e3a8a;
-            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15);
+            color: #0f172a;
+            background-color: #fff;
+            border-color: #0284c7;
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2);
+            transform: scale(1.02);
         }
 
         .badge-grade {
-            font-size: 13px;
-            font-weight: 700;
-            padding: 6px 12px;
-            border-radius: 6px;
+            font-size: 12.5px;
+            font-weight: 800;
+            padding: 5px 12px;
+            border-radius: 8px;
+            letter-spacing: 0.3px;
+            display: inline-block;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
 
-        /* FOOTER (SINKRON 100% DASHBOARD) */
+        .bg-grade-a {
+            background-color: #dcfce7;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+        }
+
+        .bg-grade-b {
+            background-color: #dbeafe;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+        }
+
+        .bg-grade-c {
+            background-color: #fef3c7;
+            color: #b45309;
+            border: 1px solid #fde68a;
+        }
+
+        .bg-grade-danger {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+
+        .btn-simpan-custom {
+            border-radius: 10px;
+            background: linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%);
+            border: none;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .btn-simpan-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(2, 132, 199, 0.45);
+            background: linear-gradient(135deg, #172554 0%, #1e3a8a 100%);
+        }
+
+        .btn-simpan-custom:active {
+            transform: translateY(0);
+        }
+
+        .state-empty-box {
+            border-radius: 14px;
+            background: #ffffff;
+            border: 1px dashed #cbd5e1;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s ease;
+        }
+
+        .state-empty-box:hover {
+            border-color: #0284c7;
+            background: rgba(240, 247, 255, 0.5);
+        }
+
+        .icon-circle-box {
+            color: #0284c7;
+            background-color: #f0f7ff;
+            width: 64px;
+            height: 64px;
+            line-height: 64px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 16px rgba(2, 132, 199, 0.1);
+        }
+
         .footer {
             background-color: #ffffff;
             border-top: 1px solid #e2e8f0;
@@ -301,9 +412,21 @@ if (isset($_POST['proses_simpan_nilai_massal'])) {
         }
 
         @media (max-width: 767.98px) {
-            html, body { overflow: auto; height: auto; }
-            .main-wrapper { flex-direction: column; }
-            .sidebar { width: 100% !important; height: auto; }
+
+            html,
+            body {
+                overflow: auto;
+                height: auto;
+            }
+
+            .main-wrapper {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100% !important;
+                height: auto;
+            }
         }
     </style>
 </head>
@@ -372,9 +495,9 @@ if (isset($_POST['proses_simpan_nilai_massal'])) {
 
         <div class="right-layout">
             <div class="content-scrollable px-4 py-4">
-                
+
                 <?php if (!empty($notif_pesan)): ?>
-                    <div class="alert alert-<?= $notif_status ?> alert-dismissible fade show shadow-sm py-3 px-4 mb-4" role="alert">
+                    <div class="alert alert-<?= $notif_status ?> alert-dismissible fade show shadow-sm py-3 px-4 mb-4" role="alert" style="border-radius: 10px;">
                         <i class="fa-solid <?= $notif_status == 'success' ? 'fa-circle-check text-success' : 'fa-circle-exclamation text-danger' ?> me-2 fs-5"></i>
                         <span class="fw-semibold"><?= $notif_pesan ?></span>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -382,16 +505,23 @@ if (isset($_POST['proses_simpan_nilai_massal'])) {
                 <?php endif; ?>
 
                 <div class="card card-filter-box p-4 mb-4">
-                    <div class="row align-items-center">
+                    <div class="row align-items-center position-relative" style="z-index: 2;">
                         <div class="col-lg-7 mb-3 mb-lg-0">
-                            <h5 class="fw-bold text-dark mb-1"><i class="fa-solid fa-layer-group text-primary me-2"></i>Lembar Evaluasi & Input Nilai</h5>
-                            <p class="text-muted mb-0 small">Pilih salah satu kelas mata kuliah yang Anda ampu untuk mengelola nilai mahasiswa secara kolektif.</p>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="flex-shrink-0" style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                                    <i class="fa-solid fa-file-pen text-white"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1 text-white fw-bold" style="letter-spacing: -0.5px; line-height: 1.2;">Lembar Evaluasi & Input Nilai</h5>
+                                    <p class="mb-0 text-white-50" style="font-size: 12.5px; opacity: 0.9;">Pilih salah satu kelas mata kuliah yang Anda ampu untuk mengelola nilai mahasiswa secara kolektif.</p>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-lg-5">
                             <form action="input_nilai.php" method="GET" id="formPilihMK">
-                                <label class="form-label mb-1.5 text-secondary">Mata Kuliah Anda</label>
-                                <select name="id_kuliah" class="form-select font-semibold py-2" onchange="document.getElementById('formPilihMK').submit();" required style="border-radius: 8px;">
-                                    <option value="">-- Pilih Kelas Mata Kuliah --</option>
+                                <label class="form-label mb-1.5 fw-semibold text-white small" style="opacity: 0.95;">Mata Kuliah Anda</label>
+                                <select name="id_kuliah" class="form-select fw-bold py-2.5 text-dark shadow-sm" onchange="document.getElementById('formPilihMK').submit();" required style="border-radius: 8px; border: none; background-color: #ffffff;">
+                                    <option value="" class="fw-normal">-- Pilih Kelas Mata Kuliah --</option>
                                     <?php
                                     mysqli_data_seek($kuliah_result, 0); // Reset pointer
                                     while ($row = mysqli_fetch_assoc($kuliah_result)):
@@ -410,11 +540,11 @@ if (isset($_POST['proses_simpan_nilai_massal'])) {
                 <?php if (!empty($id_kuliah_terpilih)): ?>
                     <form action="input_nilai.php?id_kuliah=<?= $id_kuliah_terpilih ?>" method="POST">
                         <div class="card card-table-box">
-                            <div class="bg-light px-4 py-3 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2">
-                                <h6 class="fw-bold text-primary mb-0 d-flex align-items-center">
-                                    <i class="fa-solid fa-users me-2"></i>Daftar Peserta Kelas & Komponen Nilai
+                            <div class="bg-light px-4 py-2 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                <h6 class="fw-bold text-primary mb-0 d-flex align-items-center" style="color: #1e3a8a !important; font-size: 13.5px;">
+                                    <i class="fa-solid fa-users me-2 text-primary" style="color: #1e3a8a !important;"></i>Daftar Peserta Kelas & Komponen Nilai
                                 </h6>
-                                <span class="badge bg-primary text-white px-3 py-1.5 rounded-pill fw-bold" style="font-size: 11px;">
+                                <span class="badge px-3 py-1.5 rounded-pill fw-bold" style="font-size: 11px; background-color: #1e3a8a; color: #ffffff; box-shadow: 0 2px 6px rgba(30,58,138,0.25)">
                                     Total: <?= count($mahasiswa_list) ?> Mahasiswa
                                 </span>
                             </div>
@@ -435,36 +565,38 @@ if (isset($_POST['proses_simpan_nilai_massal'])) {
                                         <?php if (count($mahasiswa_list) > 0): ?>
                                             <?php foreach ($mahasiswa_list as $index => $mhs): ?>
                                                 <tr>
-                                                    <td class="text-center fw-semibold text-muted"><?= $index + 1 ?></td>
-                                                    <td class="fw-bold text-dark"><?= htmlspecialchars($mhs['nim']) ?></td>
+                                                    <td class="text-center fw-bold text-muted"><?= $index + 1 ?></td>
+                                                    <td class="fw-bold text-dark" style="letter-spacing: 0.3px;"><?= htmlspecialchars($mhs['nim']) ?></td>
                                                     <td class="fw-semibold text-secondary"><?= htmlspecialchars($mhs['nama']) ?></td>
-                                                    
+
                                                     <td class="text-center">
                                                         <input type="hidden" name="id_nilai[]" value="<?= $mhs['id_nilai'] ?>">
-                                                        <input type="number" name="nilai_angka[]" class="form-control form-control-nilai mx-auto" min="0" max="100" step="0.01" value="<?= floatval($mhs['nilai_angka']) ?>" placeholder="0.00" style="max-width: 100px;" required>
+                                                        <input type="number" name="nilai_angka[]" class="form-control form-control-nilai mx-auto" min="0" max="100" step="0.01" value="<?= floatval($mhs['nilai_angka']) ?>" placeholder="0.00" style="max-width: 110px;" required>
                                                     </td>
-                                                    
+
                                                     <td class="text-center">
-                                                        <?php 
-                                                        $badge_color = 'bg-secondary';
-                                                        if($mhs['nilai_huruf'] == 'A') $badge_color = 'bg-success';
-                                                        elseif(in_array($mhs['nilai_huruf'], ['B+', 'B'])) $badge_color = 'bg-primary';
-                                                        elseif(in_array($mhs['nilai_huruf'], ['C+', 'C'])) $badge_color = 'bg-warning text-dark';
-                                                        elseif(in_array($mhs['nilai_huruf'], ['D', 'E'])) $badge_color = 'bg-danger';
+                                                        <?php
+                                                        $grade = $mhs['nilai_huruf'] ?? '-';
+                                                        $badge_class = 'bg-secondary text-white';
+
+                                                        if ($grade == 'A') $badge_class = 'bg-grade-a';
+                                                        elseif (in_array($grade, ['B+', 'B'])) $badge_class = 'bg-grade-b';
+                                                        elseif (in_array($grade, ['C+', 'C'])) $badge_class = 'bg-grade-c';
+                                                        elseif (in_array($grade, ['D', 'E'])) $badge_class = 'bg-grade-danger';
                                                         ?>
-                                                        <span class="badge badge-grade <?= $badge_color ?>"><?= htmlspecialchars($mhs['nilai_huruf'] ?? '-') ?></span>
+                                                        <span class="badge-grade <?= $badge_class ?>"><?= htmlspecialchars($grade) ?></span>
                                                     </td>
-                                                    
+
                                                     <td>
-                                                        <input type="text" name="tahun_ajaran[]" class="form-control form-control-nilai text-center mx-auto" value="<?= htmlspecialchars($mhs['tahun_ajaran'] ?? '2025/2026') ?>" placeholder="Contoh: 2025/2026" style="max-width: 130px;" required>
+                                                        <input type="text" name="tahun_ajaran[]" class="form-control form-control-nilai text-center mx-auto" value="<?= htmlspecialchars($mhs['tahun_ajaran'] ?? '2025/2026') ?>" placeholder="Contoh: 2025/2026" style="max-width: 130px; font-weight:600;" required>
                                                     </td>
                                                 </tr>
                                             <?php endforeach; ?>
                                         <?php else: ?>
                                             <tr>
                                                 <td colspan="6" class="text-center py-5 text-muted">
-                                                    <i class="fa-solid fa-folder-open fs-2 d-block mb-2 text-secondary" style="opacity: 0.5;"></i>
-                                                    <span class="fw-bold d-block">Belum Ada Mahasiswa Di Kelas Ini</span>
+                                                    <i class="fa-solid fa-folder-open fs-2 d-block mb-3 text-secondary" style="opacity: 0.4;"></i>
+                                                    <span class="fw-bold d-block text-dark mb-1">Belum Ada Mahasiswa Di Kelas Ini</span>
                                                     Silakan koordinasi dengan Admin untuk mendaftarkan mahasiswa ke mata kuliah Anda.
                                                 </td>
                                             </tr>
@@ -475,18 +607,22 @@ if (isset($_POST['proses_simpan_nilai_massal'])) {
                         </div>
 
                         <?php if (count($mahasiswa_list) > 0): ?>
-                            <div class="d-flex justify-content-end mt-4">
-                                <button type="submit" name="proses_simpan_nilai_massal" class="btn btn-success fw-bold px-4 py-2.5 shadow-sm" style="border-radius: 8px; background-color: #16a34a; border: none;">
-                                    <i class="fa-solid fa-floppy-disk me-2"></i>Simpan Seluruh Nilai Kelas
+                            <div class="d-flex justify-content-end mt-4 mb-2">
+                                <button type="submit" name="proses_simpan_nilai_massal" class="btn btn-success btn-simpan-custom fw-bold px-4 py-2.5 text-white">
+                                    <i class="fa-solid fa-cloud-arrow-up me-2"></i>Simpan Seluruh Nilai Kelas
                                 </button>
                             </div>
                         <?php endif; ?>
                     </form>
                 <?php else: ?>
-                    <div class="text-center py-5 px-4 card border-0 shadow-sm mt-2" style="border-radius: 12px; background: #ffffff;">
-                        <i class="fa-solid fa-arrow-pointer text-primary fs-1 mb-3 animate-bounce" style="opacity: 0.4;"></i>
-                        <h6 class="fw-bold text-dark">Mata Kuliah Belum Dipilih</h6>
-                        <p class="text-muted small mb-0">Silakan pilih salah satu kelas mata kuliah di sudut kanan atas panel filter untuk memuat lembar penilaian mahasiswa.</p>
+                    <div class="text-center py-5 px-4 state-empty-box mt-2">
+                        <div class="icon-circle-box">
+                            <i class="fa-solid fa-arrow-pointer fs-3"></i>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-1">Mata Kuliah Belum Dipilih</h6>
+                        <p class="text-muted small mb-0 mx-auto" style="max-width: 480px;">
+                            Silakan pilih salah satu kelas mata kuliah di sudut kanan atas panel filter untuk memuat lembar penilaian mahasiswa.
+                        </p>
                     </div>
                 <?php endif; ?>
 

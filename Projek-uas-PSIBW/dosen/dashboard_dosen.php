@@ -57,7 +57,6 @@ $daftar_hari = [
 $hari_ini = $daftar_hari[$hari_inggris];
 
 // Kueri mengambil jadwal kuliah khusus untuk dosen ini dan hari ini saja
-// (Pastikan kolom 'hari' dan 'jam' sudah kamu tambahkan di tabel kuliah seperti langkah sebelumnya)
 $q_jadwal = "SELECT kode_mk, nama_mk, jam, semester FROM kuliah WHERE id_dosen = ? AND hari = ? ORDER BY jam ASC";
 $stmt_j = $conn->prepare($q_jadwal);
 $stmt_j->bind_param("is", $id_dosen, $hari_ini);
@@ -78,7 +77,8 @@ $conn->close();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        html, body {
+        html,
+        body {
             height: 100%;
             margin: 0;
             padding: 0;
@@ -118,7 +118,7 @@ $conn->close();
             border: 1px solid rgba(255, 255, 255, 0.25);
         }
 
-        .btn-logout-custom:hover, 
+        .btn-logout-custom:hover,
         .btn-logout-custom:focus {
             background-color: #e11d48 !important;
             color: #ffffff !important;
@@ -132,10 +132,10 @@ $conn->close();
             overflow: hidden;
         }
 
-        /* SIDEBAR: ROYAL BLUE CAMPUS THEME (SINKRON & SERAGAM)     */
+        /* SIDEBAR: ROYAL BLUE CAMPUS THEME */
         .sidebar {
             width: 260px;
-            background-color: #1e3a8a; /* Biru Royal Kampus */
+            background-color: #1e3a8a;
             border-right: 1px solid #1d4ed8;
             display: flex;
             flex-direction: column;
@@ -151,10 +151,9 @@ $conn->close();
             color: #ffffff !important;
         }
 
-        /* Kita paksa semua jenis nav-link (termasuk class custom profil) agar warnanya sama */
         .sidebar .nav-link,
         .sidebar .nav-link-danger-custom {
-            color: #bfdbfe !important; 
+            color: #bfdbfe !important;
             font-size: 13.5px;
             font-weight: 600;
             padding: 12px 20px;
@@ -163,7 +162,6 @@ $conn->close();
             transition: all 0.2s ease;
         }
 
-        /* Efek hover untuk semua menu di sidebar */
         .sidebar .nav-link:hover,
         .sidebar .nav-item-normal:hover,
         .sidebar .nav-link-danger-custom:hover {
@@ -172,7 +170,7 @@ $conn->close();
         }
 
         .sidebar .nav-link.active {
-            background-color: #172554; /* Biru dongker pekat */
+            background-color: #172554;
             color: #ffffff !important;
             font-weight: 700;
         }
@@ -185,25 +183,6 @@ $conn->close();
             height: 100%;
             width: 5px;
             background-color: #60a5fa;
-            border-top-right-radius: 4px;
-            border-bottom-right-radius: 4px;
-        }
-
-        /* AKSEN MERAH MENYALA DI ATAS BACKGROUND BLUE ROYAL */
-        .sidebar .nav-link.active-merah {
-            background-color: #991b1b !important;
-            color: #fecdd3 !important;
-            font-weight: 700;
-        }
-
-        .sidebar .nav-link.active-merah::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 5px;
-            background-color: #ef4444;
             border-top-right-radius: 4px;
             border-bottom-right-radius: 4px;
         }
@@ -224,12 +203,13 @@ $conn->close();
 
         /* CARD WELCOME */
         .card-welcome-premium {
-            background: linear-gradient(135deg, #0f172a 0%, #115e59 100%);
+            background: linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%);
             border: none;
             border-radius: 18px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 10px 25px -5px rgba(17, 94, 89, 0.3);
+            box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.25);
+            border-bottom: 4px solid #38bdf8;
         }
 
         .welcome-watermark {
@@ -237,31 +217,79 @@ $conn->close();
             right: 20px;
             bottom: -35px;
             font-size: 9rem;
-            color: #2dd4bf;
-            opacity: 0.15;
+            color: #ffffff;
+            opacity: 0.12;
             pointer-events: none;
             transform: rotate(-12deg);
         }
 
-        /* CARD STATISTIK */
+        /* 3 CARD STATISTIK: MERAH, KUNING, HIJAU */
         .card-stat-variant {
-            border: none;
             border-radius: 18px;
             position: relative;
             overflow: hidden;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
-            background: #ffffff;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 4px 15px rgba(15, 23, 42, 0.04);
         }
 
         .card-stat-variant:hover {
             transform: translateY(-5px);
-            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
         }
 
-        .card-blue { border-top: 4px solid #2563eb; }
-        .card-green { border-top: 4px solid #10b981; }
-        .card-purple { border-top: 4px solid #7c3aed; }
+        .card-merah {
+            background: linear-gradient(180deg, #fff5f5 0%, #ffe3e3 100%);
+            border-top: 4px solid #e11d48;
+            border-left: 1px solid #ffc9c9;
+            border-right: 1px solid #ffc9c9;
+            border-bottom: 1px solid #ffc9c9;
+        }
+
+        .card-merah .watermark-icon-vibrant {
+            color: rgba(225, 29, 72, 0.04);
+        }
+
+        .bg-soft-merah {
+            background-color: #ffffff;
+            color: #e11d48;
+            border: 1px solid #ffc9c9;
+        }
+
+        .card-kuning {
+            background: linear-gradient(180deg, #fefce8 0%, #fef08a 100%);
+            border-top: 4px solid #ca8a04;
+            border-left: 1px solid #fef08a;
+            border-right: 1px solid #fef08a;
+            border-bottom: 1px solid #fef08a;
+        }
+
+        .card-kuning .watermark-icon-vibrant {
+            color: rgba(202, 138, 44, 0.05);
+        }
+
+        .bg-soft-kuning {
+            background-color: #ffffff;
+            color: #ca8a04;
+            border: 1px solid #fde047;
+        }
+
+        .card-hijau {
+            background: linear-gradient(180deg, #f0fdf4 0%, #dcfce7 100%);
+            border-top: 4px solid #16a34a;
+            border-left: 1px solid #bbf7d0;
+            border-right: 1px solid #bbf7d0;
+            border-bottom: 1px solid #bbf7d0;
+        }
+
+        .card-hijau .watermark-icon-vibrant {
+            color: rgba(22, 163, 74, 0.04);
+        }
+
+        .bg-soft-hijau {
+            background-color: #ffffff;
+            color: #16a34a;
+            border: 1px solid #bbf7d0;
+        }
 
         .watermark-icon-vibrant {
             position: absolute;
@@ -271,98 +299,120 @@ $conn->close();
             pointer-events: none;
             transform: scale(1.05);
         }
-        .card-blue .watermark-icon-vibrant { color: rgba(37, 99, 235, 0.18); }
-        .card-green .watermark-icon-vibrant { color: rgba(16, 185, 129, 0.18); }
-        .card-purple .watermark-icon-vibrant { color: rgba(124, 58, 237, 0.18); }
 
-        .bg-soft-primary { background-color: #dbeafe; color: #1d4ed8; }
-        .bg-soft-success { background-color: #d1fae5; color: #065f46; }
-        .bg-soft-purple { background-color: #ede9fe; color: #6d28d9; }
-
-        /* CONTAINER JADWAL GLASSMORPHISM */
+        /* ==========================================================================
+           FORMAL & ACADEMIC GRID TABLE (BIRU GELAP FIELD KOLOM)
+           ========================================================================== */
         .card-table-container-grid {
-            background-color: rgba(30, 58, 138, 0.09);
-            backdrop-filter: blur(14px); 
-            -webkit-backdrop-filter: blur(14px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 16px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            /* Lebih patah dikit agar formal instansi */
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
             overflow: hidden;
-            padding: 5px;
         }
 
         .table-header-minimalist {
-            background-color: transparent;
-            padding: 18px 20px;
+            background-color: #ffffff;
+            padding: 20px 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            border-bottom: 2px solid #e2e8f0;
         }
 
         .table-custom-grid {
             width: 100%;
             margin-bottom: 0;
             border-collapse: collapse;
-            background-color: transparent !important;
         }
 
-        .table-custom-grid, 
-        .table-custom-grid th, 
-        .table-custom-grid td {
-            border: none !important; 
-        }
-
+        /* FIELD KOLOM UTAMA: WARNA BIRU GELAP PREMIUM */
         .table-custom-grid thead tr {
-            background-color: rgba(30, 58, 138, 0.07) !important; 
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%) !important;
         }
 
         .table-custom-grid th {
             font-size: 12px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: #1e3a8a; 
-            padding: 14px 20px;
+            letter-spacing: 1px;
+            color: #ffffff !important;
+            /* Teks Putih Kontras di Atas Biru Gelap */
+            padding: 16px 24px;
+            border: none;
         }
 
         .table-custom-grid td {
-            padding: 16px 20px;
+            padding: 18px 24px;
             vertical-align: middle;
-            color: #1e293b;
-            background-color: transparent !important;
+            color: #334155;
+            background-color: #ffffff;
+            border-bottom: 1px solid #e2e8f0 !important;
         }
 
+        /* Hover efek baris formal lembut */
         .table-custom-grid tbody tr:hover td {
-            background-color: rgba(30, 58, 138, 0.05) !important; 
+            background-color: #f8fafc !important;
         }
 
-        .icon-jam-vibrant { color: #f59e0b !important; }
-        .icon-matkul-vibrant { color: #2563eb !important; }
-        .icon-lab-vibrant { color: #10b981 !important; }
-        .icon-gedung-vibrant { color: #8b5cf6 !important; }
+        .table-custom-grid tbody tr:last-child td {
+            border-bottom: none !important;
+        }
 
-        .badge-time-vibrant, .badge-room-vibrant-1 {
-            background-color: rgba(255, 255, 255, 0.85);
+        /* Aksen komponen dalam tabel */
+        .badge-time-formal {
+            background-color: #f1f5f9;
             color: #0f172a;
-            border: 1px solid rgba(148, 163, 184, 0.25);
-            font-weight: 600;
-            padding: 6px 12px;
+            border: 1px solid #cbd5e1;
+            font-weight: 700;
+            padding: 6px 14px;
             border-radius: 6px;
-            font-size: 12.5px;
+            font-size: 12px;
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            font-family: monospace;
+            /* Jam kuliah format rapi */
         }
 
-        .class-pill-matchy {
+        .badge-room-formal {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            border: 1px solid #bae6fd;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .class-code-pill {
             background-color: #1e3a8a;
             color: #ffffff;
             font-size: 11px;
             font-weight: 700;
             padding: 3px 8px;
             border-radius: 4px;
+            letter-spacing: 0.3px;
         }
+
+        /* Kopi Kosong State */
+        .empty-state-icon {
+            color: #0284c7;
+            background-color: #e0f2fe;
+            width: 64px;
+            height: 64px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin-bottom: 16px;
+        }
+
+        /* ========================================================================== */
 
         .footer {
             background-color: #ffffff;
@@ -374,11 +424,34 @@ $conn->close();
         }
 
         @media (max-width: 767.98px) {
-            html, body { overflow: auto; height: auto; }
-            .main-wrapper { flex-direction: column; overflow: visible; }
-            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #e2e8f0; }
-            .right-layout { height: auto; overflow: visible; }
-            .content-scrollable { overflow-y: visible; height: auto; }
+
+            html,
+            body {
+                overflow: auto;
+                height: auto;
+            }
+
+            .main-wrapper {
+                flex-direction: column;
+                overflow: visible;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            .right-layout {
+                height: auto;
+                overflow: visible;
+            }
+
+            .content-scrollable {
+                overflow-y: visible;
+                height: auto;
+            }
         }
     </style>
 </head>
@@ -403,7 +476,7 @@ $conn->close();
     </nav>
 
     <div class="main-wrapper">
-        
+
         <div class="sidebar py-3">
             <div class="text-center pb-4 px-3 border-bottom mb-3">
                 <div class="position-relative d-inline-block mb-2">
@@ -433,13 +506,11 @@ $conn->close();
                         <i class="fa-solid fa-file-pen me-2.5"></i> Input Nilai
                     </a>
                 </li>
-                
                 <li class="nav-item mt-2 border-top pt-2">
                     <a class="nav-link text-secondary nav-item-normal" href="edit_profil.php">
                         <i class="fa-solid fa-user-gear me-2.5"></i> Pengaturan Profil
                     </a>
                 </li>
-                
                 <li class="nav-item">
                     <a class="nav-link nav-link-danger-custom" href="ganti_password.php">
                         <i class="fa-solid fa-lock-open me-2.5"></i> Ganti Password
@@ -449,7 +520,7 @@ $conn->close();
         </div>
 
         <div class="right-layout">
-            
+
             <div class="content-scrollable px-4 py-4">
 
                 <div class="card-welcome-premium p-4 mb-4">
@@ -466,14 +537,14 @@ $conn->close();
 
                 <div class="row g-3 mb-4">
                     <div class="col-md-4">
-                        <div class="card card-stat-variant card-blue">
+                        <div class="card card-stat-variant card-merah">
                             <i class="fa-solid fa-graduation-cap watermark-icon-vibrant"></i>
                             <div class="card-body p-3.5 d-flex align-items-center" style="position: relative; z-index: 2;">
-                                <div class="p-3 rounded-3 bg-soft-primary me-3">
+                                <div class="p-3 rounded-3 bg-soft-merah me-3">
                                     <i class="fa-solid fa-graduation-cap fa-lg"></i>
                                 </div>
                                 <div>
-                                    <div class="text-muted fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">MATA KULIAH DIAMPU</div>
+                                    <div class="fw-bold" style="font-size: 11px; letter-spacing: 0.5px; color: #b91c1c !important;">MATA KULIAH DIAMPU</div>
                                     <h3 class="fw-bold text-dark mb-0 mt-0.5" style="letter-spacing: -0.5px;"><?= $total_matkul ?> <span class="fs-6 text-muted fw-normal">Kelas</span></h3>
                                 </div>
                             </div>
@@ -481,14 +552,14 @@ $conn->close();
                     </div>
 
                     <div class="col-md-4">
-                        <div class="card card-stat-variant card-green">
+                        <div class="card card-stat-variant card-kuning">
                             <i class="fa-solid fa-user-graduate watermark-icon-vibrant"></i>
                             <div class="card-body p-3.5 d-flex align-items-center" style="position: relative; z-index: 2;">
-                                <div class="p-3 rounded-3 bg-soft-success me-3">
+                                <div class="p-3 rounded-3 bg-soft-kuning me-3">
                                     <i class="fa-solid fa-user-graduate fa-lg"></i>
                                 </div>
                                 <div>
-                                    <div class="text-muted fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">MAHASISWA DIAJAR</div>
+                                    <div class="fw-bold" style="font-size: 11px; letter-spacing: 0.5px; color: #a16207 !important;">MAHASISWA DIAJAR</div>
                                     <h3 class="fw-bold text-dark mb-0 mt-0.5" style="letter-spacing: -0.5px;"><?= $total_mhs ?> <span class="fs-6 text-muted fw-normal">Siswa</span></h3>
                                 </div>
                             </div>
@@ -496,14 +567,14 @@ $conn->close();
                     </div>
 
                     <div class="col-md-4">
-                        <div class="card card-stat-variant card-purple">
+                        <div class="card card-stat-variant card-hijau">
                             <i class="fa-solid fa-circle-check watermark-icon-vibrant"></i>
                             <div class="card-body p-3.5 d-flex align-items-center" style="position: relative; z-index: 2;">
-                                <div class="p-3 rounded-3 bg-soft-purple me-3">
+                                <div class="p-3 rounded-3 bg-soft-hijau me-3">
                                     <i class="fa-solid fa-circle-check fa-lg"></i>
                                 </div>
                                 <div>
-                                    <div class="text-muted fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">STATUS AKTIVITAS</div>
+                                    <div class="fw-bold" style="font-size: 11px; letter-spacing: 0.5px; color: #15803d !important;">STATUS AKTIVITAS</div>
                                     <h4 class="fw-bold text-dark mb-0 mt-1" style="font-size: 14px;">Dosen Aktif Mengajar</h4>
                                 </div>
                             </div>
@@ -513,21 +584,21 @@ $conn->close();
 
                 <div class="card-table-container-grid">
                     <div class="table-header-minimalist">
-                        <h6 class="fw-bold text-dark mb-0 d-flex align-items-center" style="font-size: 15px; color: #1e3a8a !important;">
-                            <i class="fa-solid fa-calendar-day me-2.5 icon-matkul-vibrant"></i>Jadwal Perkuliahan Hari Ini (<?= $hari_ini ?>)
+                        <h6 class="fw-bold text-dark mb-0 d-flex align-items-center" style="font-size: 14.5px; color: #0f172a !important;">
+                            Jadwal Perkuliahan Hari Ini (<?= $hari_ini ?>)
                         </h6>
-                        <span class="badge bg-white text-primary border rounded-pill px-3 py-1.5 fw-bold" style="font-size: 11.5px; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
-                            <?= date('d M Y') ?>
+                        <span class="badge bg-light border text-dark rounded px-3 py-1.5 fw-bold" style="font-size: 12px; font-family: monospace;">
+                            <?= date('d-m-Y') ?>
                         </span>
                     </div>
-                    
+
                     <div class="table-responsive">
                         <table class="table table-custom-grid mb-0">
                             <thead>
                                 <tr>
-                                    <th style="width: 25%;" class="text-center">Sesi Jam</th>
-                                    <th style="width: 53%;">Mata Kuliah & Semester</th>
-                                    <th style="width: 22%;" class="text-center">Keterangan</th>
+                                    <th style="width: 20%;" class="text-center">Sesi Jam</th>
+                                    <th style="width: 55%;">Mata Kuliah & Semester</th>
+                                    <th style="width: 25%;" class="text-center">Keterangan / Lokasi</th>
                                 </tr>
                             </thead>
                             <tbody style="font-size: 13.5px;">
@@ -535,34 +606,36 @@ $conn->close();
                                     <?php while ($row = $result_jadwal->fetch_assoc()): ?>
                                         <tr>
                                             <td class="text-center">
-                                                <div class="badge-time-vibrant">
-                                                    <i class="fa-regular fa-clock icon-jam-vibrant"></i> <?= htmlspecialchars($row['jam']) ?>
+                                                <div class="badge-time-formal">
+                                                    <i class="fa-regular fa-clock text-secondary me-1"></i> <?= htmlspecialchars($row['jam']) ?>
                                                 </div>
                                             </td>
                                             <td>
                                                 <div class="d-flex align-items-center gap-2 mb-1">
-                                                    <span class="class-pill-matchy"><?= htmlspecialchars($row['kode_mk']) ?></span>
-                                                    <span class="fw-bold text-dark" style="font-size: 14.5px; letter-spacing: -0.2px;">
-                                                        <i class="fa-solid fa-book-open-reader icon-matkul-vibrant me-1"></i> <?= htmlspecialchars($row['nama_mk']) ?>
+                                                    <span class="class-code-pill"><?= htmlspecialchars($row['kode_mk']) ?></span>
+                                                    <span class="fw-bold text-dark" style="font-size: 14px;">
+                                                        <?= htmlspecialchars($row['nama_mk']) ?>
                                                     </span>
                                                 </div>
-                                                <span class="text-secondary ms-1" style="font-size: 12px; font-weight: 500; padding-left: 20px; display: block;">
-                                                    Semester <?= htmlspecialchars($row['semester']) ?> &bull; Reguler
+                                                <span class="text-muted" style="font-size: 12px; font-weight: 500; display: block;">
+                                                    Program Studi S1 &bull; Semester <?= htmlspecialchars($row['semester']) ?>
                                                 </span>
                                             </td>
                                             <td class="text-center">
-                                                <div class="badge-room-vibrant-1">
-                                                    <i class="fa-solid fa-school icon-gedung-vibrant"></i> Ruang Kuliah
+                                                <div class="badge-room-formal">
+                                                    <i class="fa-solid fa-location-dot me-1"></i> Ruang Kuliah
                                                 </div>
                                             </td>
                                         </tr>
                                     <?php endwhile; ?>
                                 <?php else: ?>
                                     <tr>
-                                        <td colspan="3" class="text-center py-5 text-muted">
-                                            <i class="fa-solid fa-mug-hot d-block mb-2 fs-3 text-secondary" style="opacity: 0.5;"></i>
-                                            <span class="fw-semibold d-block">Tidak Ada Jadwal Mengajar</span>
-                                            Hari ini (<?= $hari_ini ?>) Anda tidak memiliki jadwal perkuliahan.
+                                        <td colspan="3" class="text-center py-5 bg-white">
+                                            <div class="empty-state-icon">
+                                                <i class="fa-solid fa-mug-hot fs-4"></i>
+                                            </div>
+                                            <h6 class="fw-bold text-dark mb-1" style="font-size: 14px;">Tidak Ada Jadwal Mengajar Hari Ini</h6>
+                                            <p class="text-muted small mb-0">Hari ini (<?= $hari_ini ?>) Anda bebas dari kelas perkuliahan tatap muka.</p>
                                         </td>
                                     </tr>
                                 <?php endif; ?>
@@ -577,7 +650,7 @@ $conn->close();
                 <div class="container-fluid px-4">
                     <div class="row align-items-center justify-content-between flex-column flex-sm-row">
                         <div class="col-auto text-center text-sm-start mb-2 mb-sm-0">
-                            <span class="fw-semibold text-secondary">SIAKAD Universitas Riau</span> &copy; <?= date('Y'); ?>. Seluruh Hak Cipta Dilindungi.
+                            <span class="fw-semibold text-secondary">SIAKAD Universitas Riau</span> &copy; <?= date('Y'); ?>.
                         </div>
                         <div class="col-auto text-center text-sm-end">
                             <span class="me-3" style="font-size: 12px; font-weight: 500;"><i class="fa-solid fa-circle-shield text-success me-1"></i> Sesi Dosen Aman</span>
@@ -593,4 +666,5 @@ $conn->close();
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

@@ -545,7 +545,7 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
                                     <div class="locked-fields-bg">
                                         <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom border-info-subtle">
                                             <i class="fa-solid fa-circle-info text-info fs-5"></i>
-                                            <span class="fw-bold text-dark small" style="letter-spacing: 0.3px;">DATA UTAMA AKADEMIK (TERKUNCI)</span>
+                                            <span class="fw-bold text-dark small" style="letter-spacing: 0.3px;">DATA UTAMA AKADEMIK</span>
                                         </div>
                                         <div class="row g-3">
                                             <div class="col-sm-6 custom-form-group">

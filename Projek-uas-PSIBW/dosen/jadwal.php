@@ -52,7 +52,6 @@ if ($id_dosen > 0) {
             'sks'         => $row['sks'],
             'jam_mulai'   => $jam_mulai,
             'jam_selesai' => $jam_selesai,
-            'kelas'       => 'Reguler A',
             'ruangan'     => 'Ruang Kuliah Utama'
         ];
     }
@@ -60,26 +59,7 @@ if ($id_dosen > 0) {
 }
 $conn->close();
 
-// Array urutan hari untuk memastikan sorting tampilan tetap berurutan dari Senin dst.
 $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-
-function getHariClass($hari)
-{
-    switch (ucfirst(strtolower($hari))) {
-        case 'Senin':
-            return 'card-senin';
-        case 'Selasa':
-            return 'card-selasa';
-        case 'Rabu':
-            return 'card-senin'; // Mengikuti style asli kamu
-        case 'Kamis':
-            return 'card-kamis';
-        case 'Jumat':
-            return 'card-jumat';
-        default:
-            return 'card-jumat';
-    }
-}
 ?>
 
 <!DOCTYPE html>
@@ -100,8 +80,8 @@ function getHariClass($hari)
             overflow: hidden;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             font-size: 14px;
-            color: #334155;
-            background-color: #f8fafc;
+            color: #1e293b;
+            background-color: #f1f5f9;
         }
 
         body {
@@ -109,10 +89,10 @@ function getHariClass($hari)
             flex-direction: column;
         }
 
-        /* NAVBAR SINKRON */
+        /* NAVBAR KONSISTEN */
         .custom-navbar {
             background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(10px);
         }
 
@@ -133,8 +113,7 @@ function getHariClass($hari)
             border: 1px solid rgba(255, 255, 255, 0.25);
         }
 
-        .btn-logout-custom:hover,
-        .btn-logout-custom:focus {
+        .btn-logout-custom:hover {
             background-color: #e11d48 !important;
             color: #ffffff !important;
             border-color: #e11d48 !important;
@@ -147,13 +126,10 @@ function getHariClass($hari)
             overflow: hidden;
         }
 
-        /* ======================================================== */
-        /* SIDEBAR: ROYAL BLUE CAMPUS THEME (SINKRON & SERAGAM)     */
-        /* ======================================================== */
+        /* SIDEBAR KONSISTEN */
         .sidebar {
             width: 260px;
             background-color: #1e3a8a;
-            /* Biru Royal Kampus */
             border-right: 1px solid #1d4ed8;
             display: flex;
             flex-direction: column;
@@ -169,11 +145,16 @@ function getHariClass($hari)
             color: #ffffff !important;
         }
 
-        /* Kita paksa semua jenis nav-link (termasuk class custom profil) agar warnanya sama */
+        .sidebar .text-dosen-nama {
+            color: #ffffff !important;
+            font-size: 14px !important;
+            font-weight: 700 !important;
+            letter-spacing: -0.1px;
+        }
+
         .sidebar .nav-link,
         .sidebar .nav-link-danger-custom {
             color: #bfdbfe !important;
-            /* Biru muda pudar premium */
             font-size: 13.5px;
             font-weight: 600;
             padding: 12px 20px;
@@ -182,9 +163,7 @@ function getHariClass($hari)
             transition: all 0.2s ease;
         }
 
-        /* Efek hover untuk semua menu di sidebar */
         .sidebar .nav-link:hover,
-        .sidebar .nav-item-normal:hover,
         .sidebar .nav-link-danger-custom:hover {
             color: #ffffff !important;
             background-color: rgba(255, 255, 255, 0.1) !important;
@@ -192,7 +171,6 @@ function getHariClass($hari)
 
         .sidebar .nav-link.active {
             background-color: #172554;
-            /* Biru dongker pekat */
             color: #ffffff !important;
             font-weight: 700;
         }
@@ -205,25 +183,6 @@ function getHariClass($hari)
             height: 100%;
             width: 5px;
             background-color: #60a5fa;
-            border-top-right-radius: 4px;
-            border-bottom-right-radius: 4px;
-        }
-
-        /* AKSEN MERAH MENYALA DI ATAS BACKGROUND BLUE ROYAL */
-        .sidebar .nav-link.active-merah {
-            background-color: #991b1b !important;
-            color: #fecdd3 !important;
-            font-weight: 700;
-        }
-
-        .sidebar .nav-link.active-merah::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 5px;
-            background-color: #ef4444;
             border-top-right-radius: 4px;
             border-bottom-right-radius: 4px;
         }
@@ -242,108 +201,180 @@ function getHariClass($hari)
             background-color: #f8fafc;
         }
 
-        /* ======================================================== */
-        /* RE-DESIGN AREA: REAL CAMPUS PORTAL STYLE                 */
-        /* ======================================================== */
-        .academic-header {
-            background-color: #ffffff;
-            border-bottom: 1px solid #e2e8f0;
-            padding: 20px 24px;
+        .profile-clean-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.06);
+            overflow: hidden;
         }
 
-        .academic-tabs .nav-link {
+        .colorful-header-block {
+            background: linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%);
+            padding: 24px 30px;
+            color: #ffffff;
+            border-bottom: 4px solid #38bdf8;
+        }
+
+        .header-badge-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #ffffff;
+        }
+
+        /* TABS MINGGUAN */
+        .academic-tabs-line {
+            border-bottom: 2px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+
+        .academic-tabs-line .nav-link {
             color: #64748b;
             font-weight: 600;
-            font-size: 14px;
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: 1px solid transparent;
-            transition: all 0.2s ease;
+            font-size: 13.5px;
+            padding: 10px 16px;
+            border: none;
+            border-bottom: 3px solid transparent;
+            background: none;
+            border-radius: 0;
+            margin-bottom: -2px;
+            transition: all 0.15s ease-in-out;
         }
 
-        .academic-tabs .nav-link:hover:not(.disabled) {
+        .academic-tabs-line .nav-link:hover:not(.disabled) {
             color: #1e3a8a;
+            border-bottom-color: #cbd5e1;
+        }
+
+        .academic-tabs-line .nav-link.active {
+            color: #1e3a8a !important;
+            font-weight: 700;
+            background: none !important;
+            border-bottom: 3px solid #1e3a8a !important;
+        }
+
+        .academic-tabs-line .badge-count {
+            font-size: 11px;
             background-color: #f1f5f9;
-        }
-
-        .academic-tabs .nav-link.active {
-            background-color: #1e3a8a !important;
-            color: #ffffff !important;
-            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.15);
-        }
-
-        .academic-tabs .nav-link.disabled {
-            color: #cbd5e1;
-            cursor: not-allowed;
-            background-color: #f8fafc;
-        }
-
-        .table-academic {
+            color: #475569;
+            padding: 1px 6px;
+            border-radius: 4px;
+            margin-left: 5px;
+            font-weight: 500;
             border: 1px solid #e2e8f0;
+        }
+
+        .academic-tabs-line .nav-link.active .badge-count {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            border-color: #bae6fd;
+        }
+
+        /* ======================================================== */
+        /* SOLUSI FINAL: MENERAPKAN CSS GRID AGAR SELARAS TOTAL       */
+        /* ======================================================== */
+        .grid-table-container {
+            border: 1px solid #cbd5e1;
             border-radius: 8px;
             overflow: hidden;
             background: #ffffff;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
-        /* Menggunakan sistem table-layout auto agar kolom fleksibel dan sejajar sempurna */
-        .table-academic table {
-            table-layout: auto !important;
-            width: 100% !important;
-            border-collapse: collapse;
+        /* Cetakan kolom dikunci mutlak lewat grid-template-columns */
+        .grid-table-header, 
+        .grid-table-row {
+            display: grid !important;
+            grid-template-columns: 1.6fr 1.2fr 4.6fr 1.2fr 1.4fr; /* Rasio proporsi kolom yang pakem */
+            align-items: center;
+            padding: 12px 16px;
         }
 
-        .table-academic thead {
-            background-color: #f8fafc;
-            border-bottom: 2px solid #e2e8f0;
+        /* Header Style */
+        .grid-table-header {
+            background-color: #1e3a8a !important;
+            color: #ffffff !important;
+            font-weight: 600;
+            font-size: 13.5px;
+            border-bottom: none;
         }
 
-        /* Padding disamakan persis (16px atas-bawah, 24px kiri-kanan) agar titik mulai teks lurus vertikal */
-        .table-academic th {
-            color: #475569;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 12px;
-            letter-spacing: 0.5px;
-            padding: 16px 24px !important;
-            vertical-align: middle;
-            text-align: left;
-            /* Memastikan semua header rata kiri */
+        /* Row Style */
+        .grid-table-row {
+            border-bottom: 1px solid #e2e8f0;
+            background-color: #ffffff;
+            font-size: 13.5px;
+            transition: background-color 0.15s ease;
         }
 
-        .table-academic td {
-            padding: 16px 24px !important;
-            /* Wajib sama dengan padding th */
-            vertical-align: middle;
-            color: #334155;
-            border-bottom: 1px solid #f1f5f9;
-            white-space: nowrap;
-            text-align: left;
-            /* Memastikan semua isi data rata kiri */
-        }
-
-        .table-academic tbody tr:hover {
+        .grid-table-row:hover {
             background-color: #f8fafc;
         }
 
-        .badge-sks {
-            background-color: #e0f2fe;
-            color: #0369a1;
-            font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 12px;
+        .grid-table-row:last-child {
+            border-bottom: none;
         }
 
-        .badge-time {
-            background-color: #f1f5f9;
-            color: #1e293b;
-            font-weight: 600;
-            border: 1px solid #e2e8f0;
+        /* Pengondisian teks turun ke bawah tetap aman di dalam grid */
+        .col-nama {
+            white-space: normal !important;
+            word-break: break-word;
+            padding-right: 15px;
+        }
+
+        .col-ruangan {
+            white-space: normal !important;
+            word-break: break-word;
+        }
+
+        /* Penyelarasan Alignment Konten */
+        .col-waktu-align { text-align: center; justify-self: center; }
+        .col-bobot-align { text-align: center; justify-self: center; }
+
+        /* Badge Styling */
+        .badge-waktu-custom {
+            background-color: #f0f4f8;
+            border: 1px solid #d9e2ec;
+            color: #102a43;
             padding: 5px 10px;
             border-radius: 6px;
+            font-weight: 600;
+            display: inline-block;
+            font-size: 12px;
+        }
+
+        .badge-sks-custom {
+            background-color: #e0f2fe;
+            border: 1px solid #bae6fd;
+            color: #0369a1;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            display: inline-block;
+            font-size: 11.5px;
+        }
+
+        .txt-code {
+            font-family: var(--bs-font-monospace);
+            font-size: 13px;
+            color: #475569;
+            font-weight: 600;
+        }
+
+        .txt-ruangan {
+            font-weight: 600;
+            color: #334155;
             font-size: 13px;
         }
 
+        /* FOOTER */
         .footer {
             background-color: #ffffff;
             border-top: 1px solid #e2e8f0;
@@ -353,39 +384,23 @@ function getHariClass($hari)
             flex-shrink: 0;
         }
 
+        /* Responsivitas HP */
         @media (max-width: 767.98px) {
-
-            html,
-            body {
-                overflow: auto;
-                height: auto;
+            html, body { overflow: auto; height: auto; }
+            .main-wrapper { flex-direction: column; overflow: visible; }
+            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #e2e8f0; }
+            .right-layout { height: auto; overflow: visible; }
+            .content-scrollable { overflow-y: visible; height: auto; }
+            
+            .grid-table-header { display: none !important; }
+            .grid-table-row { 
+                display: flex !important; /* Kembali ke flex vertikal di mobile */
+                flex-direction: column; 
+                align-items: flex-start; 
+                gap: 6px; 
+                padding: 12px; 
             }
-
-            .main-wrapper {
-                flex-direction: column;
-                overflow: visible;
-            }
-
-            .sidebar {
-                width: 100%;
-                height: auto;
-                border-right: none;
-                border-bottom: 1px solid #e2e8f0;
-            }
-
-            .right-layout {
-                height: auto;
-                overflow: visible;
-            }
-
-            .content-scrollable {
-                overflow-y: visible;
-                height: auto;
-            }
-
-            .table-academic table {
-                table-layout: auto;
-            }
+            .col-waktu-align, .col-bobot-align { text-align: left; justify-self: flex-start; }
         }
     </style>
 </head>
@@ -416,7 +431,7 @@ function getHariClass($hari)
                 <div class="position-relative d-inline-block mb-2">
                     <img src="<?= $foto_path ?>" class="rounded-circle border border-2 border-primary-subtle" style="width: 78px; height: 78px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
                 </div>
-                <div class="fw-bold text-dark text-truncate small px-2" style="font-size: 14px; letter-spacing: -0.1px;"><?= htmlspecialchars($nama_dosen) ?></div>
+                <div class="text-dosen-nama text-truncate small px-2"><?= htmlspecialchars($nama_dosen) ?></div>
             </div>
 
             <ul class="nav flex-column" style="flex: 1;">
@@ -455,124 +470,129 @@ function getHariClass($hari)
 
         <div class="right-layout">
 
-            <div class="academic-header">
-                <div class="d-flex align-items-center gap-2 mb-3">
-                    <i class="fa-solid fa-calendar-week text-primary fs-5"></i>
-                    <h5 class="fw-bold text-dark mb-0" style="letter-spacing: -0.3px;">Jadwal Mengajar Mingguan</h5>
-                </div>
+            <div class="content-scrollable px-3 px-sm-4 py-4">
+                
+                <div class="profile-clean-card mx-auto" style="max-width: 1100px;">
 
-                <ul class="nav nav-pills academic-tabs gap-1" id="jadwalTab" role="tablist">
-                    <?php
-                    // Cari hari pertama yang punya jadwal untuk dijadikan tab active otomatis
-                    $hari_aktif_pertama = '';
-                    foreach ($urutan_hari as $hari) {
-                        if (isset($jadwal_list[$hari])) {
-                            $hari_aktif_pertama = $hari;
-                            break;
-                        }
-                    }
-                    // Jika sama sekali tidak ada jadwal, default ke Senin
-                    if (empty($hari_aktif_pertama)) $hari_aktif_pertama = 'Senin';
+                    <div class="colorful-header-block d-flex align-items-center gap-3">
+                        <div class="header-badge-icon flex-shrink-0">
+                            <i class="fa-solid fa-calendar-days"></i>
+                        </div>
+                        <div>
+                            <h4 class="fw-bold mb-1" style="letter-spacing: -0.5px;">Jadwal Mengajar Mingguan</h4>
+                            <p class="mb-0 text-white-50" style="font-size: 12.5px;">Pantau agenda perkuliahan rutin dan alokasi ruang kelas Anda pada semester berjalan.</p>
+                        </div>
+                    </div>
 
-                    foreach ($urutan_hari as $hari):
-                        $has_jadwal = isset($jadwal_list[$hari]);
-                        $isActive = ($hari === $hari_aktif_pertama) ? 'active' : '';
-                        $isDisabled = !$has_jadwal ? 'disabled' : '';
-                    ?>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link <?= $isActive ?> <?= $isDisabled ?>"
-                                id="tab-<?= $hari ?>"
-                                data-bs-toggle="tab"
-                                data-bs-target="#panel-<?= $hari ?>"
-                                type="button"
-                                role="tab"
-                                <?= !$has_jadwal ? 'disabled' : '' ?>>
-                                <?= $hari ?>
-                                <?php if ($has_jadwal): ?>
-                                    <span class="badge bg-white text-dark ms-1 rounded-circle" style="font-size: 10px; padding: 3px 6px;"><?= count($jadwal_list[$hari]) ?></span>
-                                <?php endif; ?>
-                            </button>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
+                    <div class="p-4 bg-white">
+                        
+                        <ul class="nav nav-tabs academic-tabs-line" id="jadwalTab" role="tablist">
+                            <?php
+                            $hari_aktif_pertama = '';
+                            foreach ($urutan_hari as $hari) {
+                                if (isset($jadwal_list[$hari])) {
+                                    $hari_aktif_pertama = $hari;
+                                    break;
+                                }
+                            }
+                            if (empty($hari_aktif_pertama)) $hari_aktif_pertama = 'Senin';
 
-            <div class="content-scrollable px-4 py-4">
-                <div class="mx-auto" style="max-width: 1000px;">
+                            foreach ($urutan_hari as $hari):
+                                $has_jadwal = isset($jadwal_list[$hari]);
+                                $isActive = ($hari === $hari_aktif_pertama) ? 'active' : '';
+                                $isDisabled = !$has_jadwal ? 'disabled' : '';
+                            ?>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link <?= $isActive ?> <?= $isDisabled ?>"
+                                        id="tab-<?= $hari ?>"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#panel-<?= $hari ?>"
+                                        type="button"
+                                        role="tab"
+                                        <?= !$has_jadwal ? 'disabled' : '' ?>>
+                                        <?= $hari ?>
+                                        <?php if ($has_jadwal): ?>
+                                            <span class="badge-count"><?= count($jadwal_list[$hari]) ?></span>
+                                        <?php endif; ?>
+                                    </button>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
 
-                    <?php if (empty($jadwal_list)): ?>
-                        <div class="card border-0 shadow-sm text-center py-5" style="border-radius: 8px;">
-                            <div class="card-body">
-                                <i class="fa-solid fa-calendar-xmark text-muted mb-3" style="font-size: 40px;"></i>
+                        <?php if (empty($jadwal_list)): ?>
+                            <div class="text-center py-5 border rounded-3 bg-light-subtle">
+                                <i class="fa-solid fa-calendar-xmark text-muted mb-3" style="font-size: 36px;"></i>
                                 <h6 class="fw-bold text-dark mb-1">Tidak Ada Jadwal Mengajar</h6>
                                 <p class="text-muted small mb-0">Anda tidak memiliki agenda perkuliahan aktif pada semester ini.</p>
                             </div>
-                        </div>
-                    <?php else: ?>
+                        <?php else: ?>
 
-                        <div class="tab-content" id="jadwalTabContent">
-                            <?php
-                            foreach ($urutan_hari as $hari):
-                                if (isset($jadwal_list[$hari])):
-                                    $isActivePanel = ($hari === $hari_aktif_pertama) ? 'show active' : '';
-                            ?>
-                                    <div class="tab-pane fade <?= $isActivePanel ?>" id="panel-<?= $hari ?>" role="tabpanel">
-                                        <div class="table-responsive table-academic shadow-sm bg-white">
-                                            <table class="table mb-0 align-middle">
-                                                <thead>
-                                                    <tr>
-                                                        <th style="width: 20%; text-align: left;">Waktu</th>
-                                                        <th style="width: 12%; text-align: left;">Kode MK</th>
-                                                        <th style="width: 33%; text-align: left;">Nama Mata Kuliah</th>
-                                                        <th style="width: 10%; text-align: left;">SKS</th>
-                                                        <th style="width: 10%; text-align: left;">Kelas</th>
-                                                        <th style="width: 15%; text-align: left;">Ruangan</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <?php foreach ($jadwal_list[$hari] as $item): ?>
-                                                        <tr>
-                                                            <td style="text-align: left;">
-                                                                <span class="badge badge-time d-inline-block m-0">
-                                                                    <i class="fa-regular fa-clock me-1.5 text-secondary"></i>
-                                                                    <?= date('H:i', strtotime($item['jam_mulai'])) ?> - <?= date('H:i', strtotime($item['jam_selesai'])) ?>
-                                                                </span>
-                                                            </td>
-                                                            <td class="font-monospace text-secondary small fw-bold" style="text-align: left;">
-                                                                <?= htmlspecialchars($item['kode_mk']) ?>
-                                                            </td>
-                                                            <td style="text-align: left;">
-                                                                <div class="fw-bold text-dark text-truncate" style="font-size: 14px;" title="<?= htmlspecialchars($item['nama_mk']) ?>">
-                                                                    <?= htmlspecialchars($item['nama_mk']) ?>
-                                                                </div>
-                                                            </td>
-                                                            <td style="text-align: left;">
-                                                                <span class="badge badge-sks d-inline-block m-0"><?= htmlspecialchars($item['sks']) ?> SKS</span>
-                                                            </td>
-                                                            <td style="text-align: left;">
-                                                                <span class="text-secondary fw-medium small"><?= htmlspecialchars($item['kelas']) ?></span>
-                                                            </td>
-                                                            <td style="text-align: left;">
-                                                                <span class="text-dark small fw-semibold text-truncate d-block" title="<?= htmlspecialchars($item['ruangan']) ?>">
-                                                                    <i class="fa-solid fa-location-dot text-danger me-1.5 small"></i>
-                                                                    <?= htmlspecialchars($item['ruangan']) ?>
-                                                                </span>
-                                                            </td>
-                                                        </tr>
-                                                    <?php endforeach; ?>
-                                                </tbody>
-                                            </table>
+                            <div class="tab-content" id="jadwalTabContent">
+                                <?php
+                                foreach ($urutan_hari as $hari):
+                                    if (isset($jadwal_list[$hari])):
+                                        $isActivePanel = ($hari === $hari_aktif_pertama) ? 'show active' : '';
+                                ?>
+                                        <div class="tab-pane fade <?= $isActivePanel ?>" id="panel-<?= $hari ?>" role="tabpanel">
+                                            
+                                            <div class="grid-table-container">
+                                                
+                                                <div class="grid-table-header">
+                                                    <div class="col-waktu-align">Waktu</div>
+                                                    <div>Kode MK</div>
+                                                    <div>Nama Mata Kuliah</div>
+                                                    <div class="col-bobot-align">Bobot</div>
+                                                    <div>Ruangan</div>
+                                                </div>
+
+                                                <?php foreach ($jadwal_list[$hari] as $item): ?>
+                                                    <div class="grid-table-row">
+                                                        
+                                                        <div class="col-waktu-align">
+                                                            <div class="badge-waktu-custom">
+                                                                <i class="fa-regular fa-clock me-1 text-primary"></i>
+                                                                <?= date('H:i', strtotime($item['jam_mulai'])) ?> - <?= date('H:i', strtotime($item['jam_selesai'])) ?>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div>
+                                                            <span class="txt-code"><?= htmlspecialchars($item['kode_mk']) ?></span>
+                                                        </div>
+                                                        
+                                                        <div class="col-nama">
+                                                            <span class="fw-bold text-dark">
+                                                                <?= htmlspecialchars($item['nama_mk']) ?>
+                                                            </span>
+                                                        </div>
+                                                        
+                                                        <div class="col-bobot-align">
+                                                            <span class="badge-sks-custom"><?= htmlspecialchars($item['sks']) ?> SKS</span>
+                                                        </div>
+                                                        
+                                                        <div class="col-ruangan">
+                                                            <div class="txt-ruangan">
+                                                                <i class="fa-solid fa-location-dot text-danger me-1"></i><?= htmlspecialchars($item['ruangan']) ?>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                <?php endforeach; ?>
+
+                                            </div>
+
                                         </div>
-                                    </div>
-                            <?php
-                                endif;
-                            endforeach;
-                            ?>
-                        </div>
+                                <?php
+                                    endif;
+                                endforeach;
+                                ?>
+                            </div>
 
-                    <?php endif; ?>
+                        <?php endif; ?>
+
+                    </div>
 
                 </div>
+
             </div>
 
             <footer class="footer py-3">
@@ -588,7 +608,9 @@ function getHariClass($hari)
                     </div>
                 </div>
             </footer>
+
         </div>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
