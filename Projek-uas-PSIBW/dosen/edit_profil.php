@@ -120,7 +120,7 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
             flex-direction: column;
         }
 
-        /* NAVBAR PREMIUM (SINKRON 100% DASHBOARD) */
+        /* NAVBAR PREMIUM */
         .custom-navbar {
             background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
             border-bottom: 1px solid rgba(255, 255, 255, 0.15);
@@ -158,13 +158,10 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
             overflow: hidden;
         }
 
-        /* ======================================================== */
-        /* SIDEBAR: ROYAL BLUE CAMPUS THEME (SINKRON & SERAGAM)     */
-        /* ======================================================== */
+        /* SIDEBAR KONSISTEN & SERAGAM */
         .sidebar {
             width: 260px;
             background-color: #1e3a8a;
-            /* Biru Royal Kampus */
             border-right: 1px solid #1d4ed8;
             display: flex;
             flex-direction: column;
@@ -180,11 +177,16 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
             color: #ffffff !important;
         }
 
-        /* Kita paksa semua jenis nav-link (termasuk class custom profil) agar warnanya sama */
+        .sidebar .text-dosen-nama {
+            color: #ffffff !important;
+            font-size: 14px !important;
+            font-weight: 700 !important;
+            letter-spacing: -0.1px;
+        }
+
         .sidebar .nav-link,
         .sidebar .nav-link-danger-custom {
             color: #bfdbfe !important;
-            /* Biru muda pudar premium */
             font-size: 13.5px;
             font-weight: 600;
             padding: 12px 20px;
@@ -193,7 +195,6 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
             transition: all 0.2s ease;
         }
 
-        /* Efek hover untuk semua menu di sidebar */
         .sidebar .nav-link:hover,
         .sidebar .nav-item-normal:hover,
         .sidebar .nav-link-danger-custom:hover {
@@ -203,7 +204,6 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
 
         .sidebar .nav-link.active {
             background-color: #172554;
-            /* Biru dongker pekat */
             color: #ffffff !important;
             font-weight: 700;
         }
@@ -220,23 +220,10 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
             border-bottom-right-radius: 4px;
         }
 
-        /* AKSEN MERAH MENYALA DI ATAS BACKGROUND BLUE ROYAL */
         .sidebar .nav-link.active-merah {
             background-color: #991b1b !important;
             color: #fecdd3 !important;
             font-weight: 700;
-        }
-
-        .sidebar .nav-link.active-merah::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 5px;
-            background-color: #ef4444;
-            border-top-right-radius: 4px;
-            border-bottom-right-radius: 4px;
         }
 
         .right-layout {
@@ -253,98 +240,170 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
             background-color: #f8fafc;
         }
 
-        /* CARD EDIT PROFILE STYLING */
-        .card-profile-container {
-            background-color: #ffffff;
+        /* ======================================================== */
+        /* COLORFUL & VIBRANT INTERIOR CONTENT STYLING              */
+        /* ======================================================== */
+        .profile-clean-card {
+            background: #ffffff;
             border: 1px solid #e2e8f0;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.06);
             overflow: hidden;
         }
 
-        .form-hero-header {
-            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-            padding: 24px 28px;
-            border-bottom: 1px solid #bfdbfe;
-            border-left: 5px solid #2563eb;
+        /* Colorful Gradient Header Block */
+        .colorful-header-block {
+            background: linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%);
+            padding: 24px 30px;
+            color: #ffffff;
+            border-bottom: 4px solid #38bdf8;
         }
 
-        .header-icon-box {
-            width: 44px;
-            height: 44px;
-            background-color: #ffffff;
-            border: 1px solid #bfdbfe;
-            border-radius: 10px;
+        .header-badge-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #2563eb;
-            font-size: 18px;
-            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.06);
+            font-size: 20px;
+            color: #ffffff;
         }
 
-        .form-label {
-            font-size: 12px;
+        .custom-form-group label {
+            font-size: 13px;
             font-weight: 700;
-            color: #475569;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .form-control,
-        .form-select {
-            font-size: 13.5px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            padding: 10px 14px;
             color: #1e293b;
+            margin-bottom: 6px;
+        }
+
+        /* Input Form Dinamis Lebih Berwarna */
+        .custom-form-group .form-control,
+        .custom-form-group .form-select {
+            font-size: 14px;
+            padding: 11px 14px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 10px;
+            color: #0f172a;
+            background-color: #fff;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .custom-form-group .form-control:focus,
+        .custom-form-group .form-select:focus {
+            border-color: #0284c7 !important;
+            box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.12) !important;
+            outline: 0;
+            background-color: #fafafa;
+        }
+
+        /* Kotak Informasi Terkunci Berwarna Ice Blue */
+        .locked-fields-bg {
+            background: linear-gradient(180deg, #f0f7ff 0%, #e0f2fe 100%);
+            border: 1px solid #bae6fd;
+            border-radius: 14px;
+            padding: 24px;
+            height: 100%;
+        }
+
+        .locked-fields-bg label {
+            color: #0369a1;
+        }
+
+        .locked-fields-bg .form-control:disabled,
+        .locked-fields-bg .form-select:disabled {
             background-color: #ffffff;
-        }
-
-        .form-control:focus,
-        .form-select:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-        }
-
-        .form-control:disabled,
-        .form-select:disabled {
-            background-color: #f8fafc;
-            color: #64748b;
-            border-color: #e2e8f0;
+            color: #334155;
+            border-color: #bae6fd;
             font-weight: 500;
             cursor: not-allowed;
+            opacity: 0.9;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
         }
 
-        .btn-primary-custom {
-            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+        /* Uploader Box Berwarna Cerah */
+        .avatar-uploader-box {
+            background: #f8fafc;
+            border: 2px dashed #0284c7;
+            border-radius: 14px;
+            padding: 24px;
+        }
+
+        .avatar-preview-wrapper img {
+            width: 88px;
+            height: 88px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid #ffffff;
+            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.2);
+        }
+
+        /* Tombol Upload Berwarna Indigo */
+        .file-upload-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .btn-custom-file {
+            background: #4f46e5;
+            color: #ffffff;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+        }
+
+        .btn-custom-file:hover {
+            background: #4338ca;
+            box-shadow: 0 6px 16px rgba(79, 70, 229, 0.3);
+        }
+
+        .file-upload-wrapper input[type=file] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* Tombol Simpan Bergradasi Royal Blue */
+        .btn-action-save {
+            background: linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%);
             color: #ffffff;
             border: none;
             font-weight: 600;
             font-size: 14px;
-            border-radius: 6px;
-            padding: 12px 24px;
-            transition: all 0.2s ease-in-out;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+            border-radius: 10px;
+            padding: 12px 28px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 16px rgba(2, 132, 199, 0.3);
         }
 
-        .btn-primary-custom:hover {
-            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
-            color: #ffffff;
+        .btn-action-save:hover {
             transform: translateY(-1px);
-            box-shadow: 0 6px 18px rgba(37, 99, 235, 0.25);
+            box-shadow: 0 6px 20px rgba(2, 132, 199, 0.45);
+            color: #ffffff;
         }
 
-        .btn-primary-custom:disabled {
-            background: #cbd5e1;
-            color: #94a3b8;
-            box-shadow: none;
+        .btn-action-save:disabled {
+            background: #94a3b8;
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
         }
 
-        /* FOOTER (SINKRON 100% DASHBOARD) */
+        /* FOOTER SINKRON */
         .footer {
             background-color: #ffffff;
             border-top: 1px solid #e2e8f0;
@@ -355,34 +414,11 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
         }
 
         @media (max-width: 767.98px) {
-
-            html,
-            body {
-                overflow: auto;
-                height: auto;
-            }
-
-            .main-wrapper {
-                flex-direction: column;
-                overflow: visible;
-            }
-
-            .sidebar {
-                width: 100%;
-                height: auto;
-                border-right: none;
-                border-bottom: 1px solid #e2e8f0;
-            }
-
-            .right-layout {
-                height: auto;
-                overflow: visible;
-            }
-
-            .content-scrollable {
-                overflow-y: visible;
-                height: auto;
-            }
+            html, body { overflow: auto; height: auto; }
+            .main-wrapper { flex-direction: column; overflow: visible; }
+            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #e2e8f0; }
+            .right-layout { height: auto; overflow: visible; }
+            .content-scrollable { overflow-y: visible; height: auto; }
         }
     </style>
 </head>
@@ -413,7 +449,7 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
                 <div class="position-relative d-inline-block mb-2">
                     <img src="<?= $foto_path ?>" class="rounded-circle border border-2 border-primary-subtle" style="width: 78px; height: 78px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
                 </div>
-                <div class="fw-bold text-dark text-truncate small px-2" style="font-size: 14px; letter-spacing: -0.1px;"><?= htmlspecialchars($nama_dosen) ?></div>
+                <div class="text-dosen-nama text-truncate small px-2"><?= htmlspecialchars($nama_dosen) ?></div>
             </div>
 
             <ul class="nav flex-column" style="flex: 1;">
@@ -454,73 +490,107 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
 
         <div class="right-layout">
 
-            <div class="content-scrollable px-4 py-4">
+            <div class="content-scrollable px-3 px-sm-4 py-4">
 
-                <div class="card-profile-container mx-auto" style="max-width: 650px;">
-
-                    <div class="form-hero-header d-flex align-items-center gap-3">
-                        <div class="header-icon-box d-none d-sm-flex">
+                <div class="profile-clean-card mx-auto" style="max-width: 1100px;">
+                    
+                    <div class="colorful-header-block d-flex align-items-center gap-3">
+                        <div class="header-badge-icon flex-shrink-0">
                             <i class="fa-solid fa-user-gear"></i>
                         </div>
                         <div>
-                            <h5 class="fw-bold text-primary mb-1" style="letter-spacing: -0.3px; color: #1e3a8a !important;">Pengaturan Profil Pengguna</h5>
-                            <p class="text-secondary mb-0" style="font-size: 12.5px; line-height: 1.4; color: #475569 !important;">
-                                Kolom dengan tanda (<span class="text-danger fw-bold">*</span>) merupakan data kepegawaian resmi yang dikunci oleh pusat akademik.
-                            </p>
+                            <h4 class="fw-bold mb-1" style="letter-spacing: -0.5px;">Edit Profil Pengguna</h4>
+                            <p class="mb-0 text-white-50" style="font-size: 12.5px;">Kelola berkas pasfoto dan nomor operasional aktif Anda secara mandiri.</p>
                         </div>
                     </div>
 
-                    <div class="p-4 bg-white">
-                        <form id="formEditProfil" enctype="multipart/form-data">
+                    <div class="p-4 p-sm-5 bg-white">
+                        <form id="formEditProfil" enctype="multipart/form-data" autocomplete="off">
                             <input type="hidden" name="id_dosen" value="<?= htmlspecialchars($dosen['id_dosen'] ?? $id_dosen ?? 0) ?>">
-                            <div class="row g-3">
+                            
+                            <div class="row g-4">
+                                
+                                <div class="col-md-6 d-flex flex-column gap-4">
+                                    
+                                    <div class="avatar-uploader-box d-flex flex-column flex-sm-row align-items-center gap-4">
+                                        <div class="avatar-preview-wrapper flex-shrink-0">
+                                            <img src="<?= $foto_path ?>" id="imgPreview" alt="Pasfoto">
+                                        </div>
+                                        <div class="text-center text-sm-start custom-form-group flex-grow-1">
+                                            <label class="d-block mb-2">Berkas Pasfoto Baru</label>
+                                            <div class="file-upload-wrapper">
+                                                <button type="button" class="btn-custom-file">
+                                                    <i class="fa-solid fa-cloud-arrow-up"></i> Pilih Foto
+                                                </button>
+                                                <input type="file" name="foto" id="inputFoto" accept="image/*">
+                                            </div>
+                                            <span id="fileNameDisplay" class="d-block text-primary mt-1 small fw-medium ms-1"></span>
+                                            <div class="text-muted mt-2" style="font-size: 11px; line-height: 1.4;">Batas ukuran maksimal 2MB (JPG, PNG, WEBP).</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="custom-form-group">
+                                        <label>Nomor HP / WhatsApp Aktif</label>
+                                        <input type="text" name="no_hp" class="form-control" value="<?= htmlspecialchars($dosen['no_hp'] ?? '') ?>" placeholder="Masukkan nomor handphone aktif">
+                                    </div>
+                                    
+                                    <div class="custom-form-group">
+                                        <label>Alamat Rumah / Domisili Tinggal</label>
+                                        <textarea name="alamat" class="form-control" rows="4" placeholder="Tuliskan alamat lengkap tempat tinggal Anda saat ini"><?= htmlspecialchars($dosen['alamat'] ?? '') ?></textarea>
+                                    </div>
+
+                                </div>
+
                                 <div class="col-md-6">
-                                    <label class="form-label">NIDN <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" value="<?= htmlspecialchars($dosen['nidn'] ?? '') ?>" disabled>
+                                    <div class="locked-fields-bg">
+                                        <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom border-info-subtle">
+                                            <i class="fa-solid fa-circle-info text-info fs-5"></i>
+                                            <span class="fw-bold text-dark small" style="letter-spacing: 0.3px;">DATA UTAMA AKADEMIK (TERKUNCI)</span>
+                                        </div>
+                                        <div class="row g-3">
+                                            <div class="col-sm-6 custom-form-group">
+                                                <label>NIDN <span class="text-danger fw-bold">*</span></label>
+                                                <input type="text" class="form-control" value="<?= htmlspecialchars($dosen['nidn'] ?? '') ?>" disabled>
+                                            </div>
+                                            <div class="col-sm-6 custom-form-group">
+                                                <label>Nama Lengkap & Gelar <span class="text-danger fw-bold">*</span></label>
+                                                <input type="text" class="form-control" value="<?= htmlspecialchars($dosen['nama'] ?? '') ?>" disabled>
+                                            </div>
+                                            <div class="col-sm-6 custom-form-group">
+                                                <label>Jenis Kelamin <span class="text-danger fw-bold">*</span></label>
+                                                <select class="form-select" disabled>
+                                                    <option value="L" <?= isset($dosen['jenis_kelamin']) && $dosen['jenis_kelamin'] === 'L' ? 'selected' : '' ?>>Laki-laki</option>
+                                                    <option value="P" <?= isset($dosen['jenis_kelamin']) && $dosen['jenis_kelamin'] === 'P' ? 'selected' : '' ?>>Perempuan</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-6 custom-form-group">
+                                                <label>Tanggal Lahir <span class="text-danger fw-bold">*</span></label>
+                                                <input type="date" class="form-control" value="<?= $dosen['tgl_lahir'] ?? '' ?>" disabled>
+                                            </div>
+                                            <div class="col-sm-6 custom-form-group">
+                                                <label>Pendidikan Terakhir <span class="text-danger fw-bold">*</span></label>
+                                                <input type="text" class="form-control" value="<?= htmlspecialchars($dosen['pendidikan_terakhir'] ?? '') ?>" disabled>
+                                            </div>
+                                            <div class="col-sm-6 custom-form-group">
+                                                <label>Jabatan Fungsional <span class="text-danger fw-bold">*</span></label>
+                                                <input type="text" class="form-control" value="<?= htmlspecialchars($dosen['jabatan'] ?? '') ?>" disabled>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" value="<?= htmlspecialchars($dosen['nama'] ?? '') ?>" disabled>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Tanggal Lahir <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" value="<?= $dosen['tgl_lahir'] ?? '' ?>" disabled>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Jenis Kelamin <span class="text-danger">*</span></label>
-                                    <select class="form-select" disabled>
-                                        <option value="L" <?= isset($dosen['jenis_kelamin']) && $dosen['jenis_kelamin'] === 'L' ? 'selected' : '' ?>>Laki-laki</option>
-                                        <option value="P" <?= isset($dosen['jenis_kelamin']) && $dosen['jenis_kelamin'] === 'P' ? 'selected' : '' ?>>Perempuan</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Nomor HP / WhatsApp</label>
-                                    <input type="text" name="no_hp" class="form-control" value="<?= htmlspecialchars($dosen['no_hp'] ?? '') ?>" placeholder="Contoh: 081234567890">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Pendidikan Terakhir <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" value="<?= htmlspecialchars($dosen['pendidikan_terakhir'] ?? '') ?>" disabled>
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label">Jabatan Struktural <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" value="<?= htmlspecialchars($dosen['jabatan'] ?? '') ?>" disabled>
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label">Alamat Rumah / Tempat Tinggal</label>
-                                    <textarea name="alamat" class="form-control" rows="3" placeholder="Masukkan alamat domisili lengkap"><?= htmlspecialchars($dosen['alamat'] ?? '') ?></textarea>
-                                </div>
-                                <div class="col-12">
-                                    <label class="form-label">Pembaruan Berkas Foto Profil</label>
-                                    <input type="file" name="foto" class="form-control" accept="image/*">
-                                </div>
+
                             </div>
 
-                            <button type="submit" id="btnSimpan" class="btn btn-primary-custom w-100 py-2.5 mt-4">
-                                <i class="fa-solid fa-floppy-disk me-2"></i>Simpan Perubahan Data
-                            </button>
+                            <div id="alertMessage" class="mt-4"></div>
+
+                            <div class="d-flex justify-content-end mt-4 pt-2 border-top border-light">
+                                <button type="submit" id="btnSimpan" class="btn btn-action-save px-4 py-2.5">
+                                    <i class="fa-solid fa-floppy-disk me-2"></i> Simpan Perubahan Profil
+                                </button>
+                            </div>
                         </form>
-                        <div id="alertMessage" class="mt-3"></div>
                     </div>
+
                 </div>
 
             </div>
@@ -543,8 +613,28 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
 
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bundle.min.js"></script>
     <script>
+        // Update Nama File & Live Preview Gambar Saat Memilih Foto Baru
+        document.getElementById('inputFoto').addEventListener('change', function(e) {
+            const fileNameDisplay = document.getElementById('fileNameDisplay');
+            const imgPreview = document.getElementById('imgPreview');
+            
+            if (this.files && this.files[0]) {
+                fileNameDisplay.textContent = 'Terpilih: ' + this.files[0].name;
+                
+                // Live preview instan
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imgPreview.src = e.target.result;
+                }
+                reader.readAsDataURL(this.files[0]);
+            } else {
+                fileNameDisplay.textContent = '';
+            }
+        });
+
+        // AJAX Fetch Form Submission
         document.getElementById('formEditProfil').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnSimpan');
@@ -566,7 +656,7 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
 
                 const result = JSON.parse(rawText.substring(jsonStart));
                 if (result.status === 'success') {
-                    alertMsg.innerHTML = `<div class="alert alert-success border-0 text-center py-2.5 small fw-medium"><i class="fa-solid fa-circle-check me-2"></i>${result.message}</div>`;
+                    alertMsg.innerHTML = `<div class="alert alert-success border-0 text-center py-2.5 small fw-medium" style="border-radius:8px;"><i class="fa-solid fa-circle-check me-2"></i>${result.message}</div>`;
                     setTimeout(() => {
                         location.reload();
                     }, 1500);
@@ -574,9 +664,9 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
                     throw new Error(result.message);
                 }
             } catch (error) {
-                alertMsg.innerHTML = `<div class="alert alert-danger border-0 text-center py-2.5 small fw-medium"><i class="fa-solid fa-circle-exclamation me-2"></i>${error.message}</div>`;
+                alertMsg.innerHTML = `<div class="alert alert-danger border-0 text-center py-2.5 small fw-medium" style="border-radius:8px;"><i class="fa-solid fa-circle-exclamation me-2"></i>${error.message}</div>`;
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-floppy-disk me-2"></i>Simpan Perubahan Data';
+                btn.innerHTML = '<i class="fa-solid fa-floppy-disk me-2"></i>Simpan Perubahan Profil';
             }
         });
     </script>
