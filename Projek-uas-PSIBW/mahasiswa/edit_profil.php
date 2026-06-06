@@ -110,7 +110,7 @@ body{
     height:150px;
     object-fit:cover;
     border-radius:50%;
-    border:4px solid #0d6efd;
+    border:4px solid #081120;
 }
 
 </style>
@@ -123,7 +123,7 @@ body{
 
     <div class="card shadow">
 
-        <div class="card-header bg-primary text-white">
+        <div class="card-header bg-warning text-black">
             <h3 class="mb-0">Edit Profil Mahasiswa</h3>
         </div>
 
@@ -215,7 +215,7 @@ body{
 
                 <button
                 type="submit"
-                class="btn btn-primary">
+                class="btn btn-warning">
                     Simpan Perubahan
                 </button>
 

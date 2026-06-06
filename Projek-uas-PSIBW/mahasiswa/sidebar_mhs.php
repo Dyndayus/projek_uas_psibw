@@ -78,7 +78,7 @@
 
     <div class="logo-section">
 
-        <img src="../assets/logo_unri.png" alt="Logo">
+        <img src="../assets/logo-unri.png" alt="Logo">
 
         <h3>SIAKAD</h3>
 

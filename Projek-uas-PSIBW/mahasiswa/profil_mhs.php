@@ -54,7 +54,7 @@ body{
 }
 
 .profile-header{
-    background:linear-gradient(135deg,#0d6efd,#4e73df);
+    background:linear-gradient(135deg, #081120, #0d1a32);
     color:white;
     padding:20px;
 }
@@ -64,7 +64,7 @@ body{
     height:180px;
     border-radius:50%;
     object-fit:cover;
-    border:5px solid white;
+    border:5px solid #081120;
     box-shadow:0 5px 15px rgba(0,0,0,.2);
 }
 
@@ -144,7 +144,7 @@ body{
 
                 <div class="col-md-6 mb-2">
                     <a href="edit_profil.php"
-                    class="btn btn-primary w-100">
+                    class="btn btn-warning  w-100">
                         <i class="bi bi-pencil-square"></i>
                         Edit Profil
                     </a>

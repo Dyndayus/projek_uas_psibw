@@ -117,8 +117,8 @@ input{
 
 button{
     width:100%;
-    background:#2563eb;
-    color:white;
+    background: #ffad0a;
+    color:black;
     border:none;
     padding:14px;
     border-radius:10px;
@@ -127,20 +127,20 @@ button{
 }
 
 button:hover{
-    background:#1d4ed8;
+    background: #cd8800;
 }
 
 .success{
-    background:#dcfce7;
-    color:#166534;
+    background: #dcfce7;
+    color: #166534;
     padding:12px;
     border-radius:10px;
     margin-bottom:15px;
 }
 
 .error{
-    background:#fee2e2;
-    color:#991b1b;
+    background: #fee2e2;
+    color: #991b1b;
     padding:12px;
     border-radius:10px;
     margin-bottom:15px;
@@ -150,7 +150,7 @@ button:hover{
     display:inline-block;
     margin-bottom:20px;
     text-decoration:none;
-    color:#2563eb;
+    color: #eb2525;
 }
 
 </style>

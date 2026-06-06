@@ -9,9 +9,11 @@ if (!isset($_SESSION['id_user']) || $_SESSION['role'] !== 'mahasiswa') {
 }
 
 $db = getDB();
+$id_mhs = $_SESSION['id_ref'];
 
 $query = "
 SELECT
+    k.id_kuliah,
     k.kode_mk,
     k.nama_mk,
     k.sks,
@@ -57,11 +59,11 @@ body{
 }
 
 .header h1{
-    color:#1e293b;
+    color: #1e293b;
 }
 
 .header p{
-    color:#64748b;
+    color: #64748b;
 }
 
 .table-box{
@@ -113,6 +115,18 @@ table tr:hover{
     background:#1d4ed8;
 }
 
+.ambil-btn{
+    background:#16a34a;
+    color:white;
+    border:none;
+    padding:8px 14px;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.ambil-btn:hover{
+    background:#15803d;
+}
 </style>
 </head>
 
@@ -141,6 +155,7 @@ table tr:hover{
                     <th>SKS</th>
                     <th>Semester</th>
                     <th>Dosen Pengampu</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
 
@@ -170,6 +185,14 @@ table tr:hover{
 
                     <td><?= $row['nama_dosen']; ?></td>
 
+                    <td>
+    <button
+        class="ambil-btn"
+        onclick="ambilMK(<?= $row['id_kuliah']; ?>)">
+        Ambil
+    </button>
+</td>
+
                 </tr>
 
                 <?php endwhile; ?>
@@ -191,6 +214,52 @@ table tr:hover{
     </div>
 
 </div>
+<script>
 
+const idMahasiswa = <?= $id_mhs ?>;
+
+function ambilMK(idKuliah){
+
+    if(!confirm('Ambil mata kuliah ini?')){
+        return;
+    }
+
+    fetch('../api/nilai/ambil_krs.php', {
+
+        method:'POST',
+
+        headers:{
+            'Content-Type':'application/json'
+        },
+
+        body:JSON.stringify({
+            id_kuliah:idKuliah
+        })
+
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        alert(data.message);
+
+        if(data.success){
+            location.reload();
+        }
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert('Terjadi kesalahan');
+
+    });
+
+}
+
+</script>
 </body>
 </html>

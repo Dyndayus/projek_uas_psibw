@@ -4,12 +4,21 @@ session_start();
 require_once '../config/db.php';
 
 // Cek login mahasiswa
-if (!isset($_SESSION['id_user']) || $_SESSION['role'] !== 'mahasiswa') {
+if (
+    !isset($_SESSION['id_user']) ||
+    !isset($_SESSION['role']) ||
+    $_SESSION['role'] !== 'mahasiswa'
+) {
     header('Location: ../login.php');
     exit;
 }
 
 $db = getDB();
+
+if (!$db) {
+    die("Koneksi database gagal");
+}
+
 $id_mhs = $_SESSION['id_ref'];
 
 // Ambil data mahasiswa
@@ -18,25 +27,37 @@ $stmt->bind_param("i", $id_mhs);
 $stmt->execute();
 $mahasiswa = $stmt->get_result()->fetch_assoc();
 
+if (!$mahasiswa) {
+    die("Data mahasiswa tidak ditemukan");
+}
+
 // Total mata kuliah
-$totalMK = $db->query("SELECT COUNT(*) as total FROM kuliah")
+$totalMK = $db->query("SELECT COUNT(*) AS total FROM kuliah")
               ->fetch_assoc()['total'];
 
 // Total nilai mahasiswa
-$stmtNilai = $db->prepare("SELECT COUNT(*) as total FROM nilai WHERE id_mhs = ?");
+$stmtNilai = $db->prepare("
+    SELECT COUNT(*) AS total
+    FROM nilai
+    WHERE id_mhs = ?
+");
 $stmtNilai->bind_param("i", $id_mhs);
 $stmtNilai->execute();
 $totalNilai = $stmtNilai->get_result()->fetch_assoc()['total'];
 
 // Rata-rata nilai
-$stmtAvg = $db->prepare("SELECT AVG(nilai_angka) as rata FROM nilai WHERE id_mhs = ?");
+$stmtAvg = $db->prepare("
+    SELECT AVG(nilai_angka) AS rata
+    FROM nilai
+    WHERE id_mhs = ?
+");
 $stmtAvg->bind_param("i", $id_mhs);
 $stmtAvg->execute();
 $rataNilai = $stmtAvg->get_result()->fetch_assoc()['rata'];
 
 // Riwayat nilai
 $stmtRiwayat = $db->prepare("
-    SELECT 
+    SELECT
         k.nama_mk,
         n.nilai_angka,
         n.nilai_huruf,
@@ -44,7 +65,7 @@ $stmtRiwayat = $db->prepare("
     FROM nilai n
     JOIN kuliah k ON n.id_kuliah = k.id_kuliah
     WHERE n.id_mhs = ?
-    ORDER BY n.created_at DESC
+    ORDER BY n.id_nilai DESC
 ");
 
 $stmtRiwayat->bind_param("i", $id_mhs);
@@ -55,325 +76,283 @@ $riwayat = $stmtRiwayat->get_result();
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Mahasiswa</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Mahasiswa</title>
 
-    <style>
+<style>
 
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-            font-family:Arial, sans-serif;
-        }
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
 
-        body{
-            background:#f4f7fc;
-            display:flex;
-        }
+body{
+    background: #fffef0;;
+    display:flex;
+}
 
-        /* SIDEBAR */
+.sidebar{
+    width:300px;
+    background: #081120;
+    color:white;
+    min-height:100vh;
+}
 
-        .sidebar{
-            width:260px;
-            height:100vh;
-            background:linear-gradient(180deg,#2563eb,#1e40af);
-            padding:25px;
-            position:fixed;
-            color:white;
-        }
+.logo-section{
+    text-align:center;
+    padding:40px 20px;
+}
 
-        .profile{
-            text-align:center;
-            margin-bottom:40px;
-        }
+.logo-section img{
+    width:80px;
+    margin-bottom:15px;
+}
 
-        .profile img{
-            width:95px;
-            height:95px;
-            border-radius:50%;
-            object-fit:cover;
-            border:4px solid white;
-            margin-bottom:10px;
-        }
+.logo-section h2{
+    color:white;
+    font-size:28px;
+}
 
-        .profile h2{
-            font-size:20px;
-            margin-bottom:5px;
-        }
+.logo-section p{
+    color:#4ea3ff;
+    margin-top:5px;
+}
 
-        .profile p{
-            font-size:14px;
-            opacity:0.8;
-        }
+.menu{
+    list-style:none;
+}
 
-        .menu a{
-            display:block;
-            padding:14px 16px;
-            color:white;
-            text-decoration:none;
-            margin-bottom:12px;
-            border-radius:12px;
-            transition:0.3s;
-            font-weight:500;
-        }
+.menu li{
+    margin:5px 0;
+}
 
-        .menu a:hover{
-            background:rgba(255,255,255,0.2);
-            transform:translateX(5px);
-        }
+.menu a{
+    display:block;
+    padding:15px 25px;
+    color:#cbd5e1;
+    text-decoration:none;
+}
 
-        /* CONTENT */
+.menu a.logout{
+    color:#ef4444;
+}
 
-        .content{
-            margin-left:260px;
-            width:100%;
-            padding:35px;
-        }
+.menu a.logout:hover{
+    color:#dc2626;
+}
 
-        .header{
-            margin-bottom:30px;
-        }
+.menu a:hover{
+    background:#0f2747;
+    color:white;
+}
 
-        .header h1{
-            font-size:34px;
-            color:#1e293b;
-            margin-bottom:8px;
-        }
+.content{
+    flex:1;
+    padding:35px;
+}
 
-        .header p{
-            color:#64748b;
-            font-size:16px;
-        }
+.header{
+    margin-bottom:30px;
+}
 
-        /* CARDS */
+.header h1{
+    font-size:34px;
+    color:#1e293b;
+}
 
-        .cards{
-            display:grid;
-            grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-            gap:20px;
-            margin-bottom:35px;
-        }
+.header p{
+    color:#64748b;
+}
 
-        .card{
-            padding:25px;
-            border-radius:18px;
-            color:white;
-            position:relative;
-            overflow:hidden;
-            box-shadow:0 10px 25px rgba(0,0,0,0.08);
-        }
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+    margin-bottom:35px;
+}
 
-        .card h3{
-            font-size:17px;
-            margin-bottom:10px;
-        }
+.card{
+    padding:25px;
+    border-radius:18px;
+    color:white;
+}
 
-        .card h1{
-            font-size:38px;
-        }
+.blue,
+.green,
+.orange{
+    background:linear-gradient(135deg, #ffc74d, #ffad0a);
+    color: #111827;
+}
 
-        .blue{
-            background:linear-gradient(135deg,#3b82f6,#1d4ed8);
-        }
+.card h3{
+    margin-bottom:10px;
+}
 
-        .green{
-            background:linear-gradient(135deg,#22c55e,#15803d);
-        }
+.card h1{
+    font-size:38px;
+}
 
-        .orange{
-            background:linear-gradient(135deg,#f59e0b,#d97706);
-        }
+.table-box{
+    background:white;
+    border-radius:18px;
+    padding:25px;
+    box-shadow:0 10px 25px rgba(0,0,0,.05);
+}
 
-        /* TABLE */
+.table-box h2{
+    margin-bottom:20px;
+}
 
-        .table-box{
-            background:white;
-            border-radius:18px;
-            padding:25px;
-            box-shadow:0 10px 25px rgba(0,0,0,0.05);
-        }
+table{
+    width:100%;
+    border-collapse:collapse;
+}
 
-        .table-box h2{
-            margin-bottom:20px;
-            color:#1e293b;
-        }
+th{
+    background:linear-gradient(to bottom, #ffc74d, #ffad0a);
+    color: #111827;
+    padding:14px;
+    text-align:left;
+}
 
-        table{
-            width:100%;
-            border-collapse:collapse;
-        }
+td{
+    padding:14px;
+    border-bottom:1px solid #e2e8f0;
+}
 
-        table th{
-            background:#2563eb;
-            color:white;
-            padding:14px;
-            text-align:left;
-        }
+.badge{
+    background:#16a34a;
+    color:white;
+    padding:6px 12px;
+    border-radius:10px;
+    font-size:12px;
+    font-weight:bold;
+}
 
-        table td{
-            padding:14px;
-            border-bottom:1px solid #e2e8f0;
-        }
+@media(max-width:768px){
 
-        table tr:hover{
-            background:#f8fafc;
-        }
+    body{
+        flex-direction:column;
+    }
 
-        .badge{
-            background:#16a34a;
-            color:white;
-            padding:6px 12px;
-            border-radius:10px;
-            font-size:12px;
-            font-weight:bold;
-        }
+    .sidebar{
+        width:100%;
+        min-height:auto;
+    }
 
-        /* RESPONSIVE */
+    .content{
+        padding:20px;
+    }
+}
 
-        @media(max-width:768px){
-
-            body{
-                flex-direction:column;
-            }
-
-            .sidebar{
-                width:100%;
-                height:auto;
-                position:relative;
-            }
-
-            .content{
-                margin-left:0;
-                padding:20px;
-            }
-
-        }
-
-    </style>
-
+</style>
 </head>
+
 <body>
 
-    <!-- SIDEBAR -->
+<div class="sidebar">
 
-    <div class="sidebar">
+    <div class="logo-section">
+        <img src="../assets/img/logo-unri.png" alt="Logo UNRI">
+        <h2>SIAKAD</h2>
+        <p>Universitas Riau</p>
+    </div>
 
-        <div class="profile">
+    <ul class="menu">
+        <li><a href="dashboard_mahasiswa.php">Dashboard</a></li>
+        <li><a href="profil_mhs.php">Profil</a></li>
+        <li><a href="matkul.php">Mata Kuliah</a></li>
+        <li><a href="nilai.php">Nilai</a></li>
+        <li><a href="logout.php" class="logout">Logout</a></li>
+    </ul>
 
-            <?php if(!empty($mahasiswa['foto'])): ?>
+</div>
 
-                <img src="../assets/img/profile/<?= $mahasiswa['foto']; ?>">
+<div class="content">
+
+    <div class="header">
+        <h1>Dashboard Mahasiswa</h1>
+        <p>
+            Selamat datang kembali,
+            <?= htmlspecialchars($mahasiswa['nama']); ?> 👋
+        </p>
+    </div>
+
+    <div class="cards">
+
+        <div class="card blue">
+            <h3>Total Mata Kuliah</h3>
+            <h1><?= $totalMK; ?></h1>
+        </div>
+
+        <div class="card green">
+            <h3>Total Nilai</h3>
+            <h1><?= $totalNilai; ?></h1>
+        </div>
+
+        <div class="card orange">
+            <h3>Rata-rata Nilai</h3>
+            <h1><?= number_format($rataNilai ?? 0, 2); ?></h1>
+        </div>
+
+    </div>
+
+    <div class="table-box">
+
+        <h2>Riwayat Nilai</h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Mata Kuliah</th>
+                    <th>Nilai Angka</th>
+                    <th>Nilai Huruf</th>
+                    <th>Tahun Ajaran</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            <?php if($riwayat->num_rows > 0): ?>
+
+                <?php $no = 1; ?>
+
+                <?php while($row = $riwayat->fetch_assoc()): ?>
+
+                <tr>
+                    <td><?= $no++; ?></td>
+                    <td><?= htmlspecialchars($row['nama_mk']); ?></td>
+                    <td><?= $row['nilai_angka']; ?></td>
+                    <td>
+                        <span class="badge">
+                            <?= htmlspecialchars($row['nilai_huruf']); ?>
+                        </span>
+                    </td>
+                    <td><?= htmlspecialchars($row['tahun_ajaran']); ?></td>
+                </tr>
+
+                <?php endwhile; ?>
 
             <?php else: ?>
 
-                <img src="https://ui-avatars.com/api/?name=<?= urlencode($mahasiswa['nama']); ?>">
+                <tr>
+                    <td colspan="5">Belum ada data nilai</td>
+                </tr>
 
             <?php endif; ?>
 
-            <h2><?= $mahasiswa['nama']; ?></h2>
-            <p><?= $mahasiswa['nim']; ?></p>
+            </tbody>
 
-        </div>
-
-        <div class="menu">
-            <a href="#">🏠 Dashboard</a>
-            <a href="profil_mhs.php">👤 Profil</a>
-            <a href="matkul.php">📚 Mata Kuliah</a>
-            <a href="nilai.php">📝 Nilai</a>
-            <a href="../logout.php">🚪 Logout</a>
-        </div>
+        </table>
 
     </div>
 
-    <!-- CONTENT -->
-
-    <div class="content">
-
-        <div class="header">
-            <h1>Dashboard Mahasiswa</h1>
-            <p>Selamat datang kembali, <?= $mahasiswa['nama']; ?> 👋</p>
-        </div>
-
-        <!-- CARD -->
-
-        <div class="cards">
-
-            <div class="card blue">
-                <h3>Total Mata Kuliah</h3>
-                <h1><?= $totalMK; ?></h1>
-            </div>
-
-            <div class="card green">
-                <h3>Total Nilai</h3>
-                <h1><?= $totalNilai; ?></h1>
-            </div>
-
-            <div class="card orange">
-                <h3>Rata-rata Nilai</h3>
-                <h1><?= number_format($rataNilai ?? 0,2); ?></h1>
-            </div>
-
-        </div>
-
-        <!-- TABLE -->
-
-        <div class="table-box">
-
-            <h2>Riwayat Nilai</h2>
-
-            <table>
-
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Mata Kuliah</th>
-                        <th>Nilai Angka</th>
-                        <th>Nilai Huruf</th>
-                        <th>Tahun Ajaran</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-
-                    <?php if($riwayat->num_rows > 0): ?>
-
-                        <?php $no = 1; ?>
-
-                        <?php while($row = $riwayat->fetch_assoc()): ?>
-
-                        <tr>
-                            <td><?= $no++; ?></td>
-                            <td><?= $row['nama_mk']; ?></td>
-                            <td><?= $row['nilai_angka']; ?></td>
-                            <td>
-                                <span class="badge">
-                                    <?= $row['nilai_huruf']; ?>
-                                </span>
-                            </td>
-                            <td><?= $row['tahun_ajaran']; ?></td>
-                        </tr>
-
-                        <?php endwhile; ?>
-
-                    <?php else: ?>
-
-                        <tr>
-                            <td colspan="5">
-                                Belum ada data nilai
-                            </td>
-                        </tr>
-
-                    <?php endif; ?>
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </div>
+</div>
 
 </body>
 </html>
