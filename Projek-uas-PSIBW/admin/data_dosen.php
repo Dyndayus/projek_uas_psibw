@@ -211,7 +211,7 @@ $jumlah_data_sekarang = ($result) ? $result->num_rows : 0;
     <title>Data Dosen - SIAKAD</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
@@ -619,14 +619,14 @@ $jumlah_data_sekarang = ($result) ? $result->num_rows : 0;
                             </select>
                         </div>
                         <div class="col-md-12">
-                            <label class="form-label fw-semibold small text-secondary">Foto Profil (Biarkan kosong jika tidak diubah)</label>
+                            <label class="form-label fw-semibold small text-secondary">Ganti Foto Profil (Biarkan kosong jika tidak diubah)</label>
                             <input type="file" name="foto" class="form-control rounded-3" accept="image/*">
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer bg-light p-3 border-top-0">
                     <button type="button" class="btn btn-light border rounded-3" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-warning rounded-3 px-4 text-darkfw-semibold">Update Data</button>
+                    <button type="submit" class="btn btn-dark rounded-3 px-4" style="background-color: #1e2640; border: none;">Simpan Perubahan</button>
                 </div>
             </form>
         </div>
@@ -636,6 +636,7 @@ $jumlah_data_sekarang = ($result) ? $result->num_rows : 0;
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 function bukaModalEdit(data) {
+    // Isi data ke dalam input form modal edit berdasarkan ID komponennya
     document.getElementById('edit_id_dosen').value = data.id_dosen;
     document.getElementById('edit_nidn').value = data.nidn;
     document.getElementById('edit_nama').value = data.nama;
@@ -648,8 +649,9 @@ function bukaModalEdit(data) {
     document.getElementById('edit_jabatan').value = data.jabatan;
     document.getElementById('edit_status').value = data.status;
 
-    var modal = new Bootstrap.Modal(document.getElementById('modalEditDosen'));
-    modal.show();
+    // Tampilkan modal edit secara manual menggunakan JavaScript Bootstrap
+    var modalEdit = new bootstrap.Modal(document.getElementById('modalEditDosen'));
+    modalEdit.show();
 }
 </script>
 </body>
