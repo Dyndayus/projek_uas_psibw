@@ -389,22 +389,22 @@ $mkBaru = $db->query("SELECT kode_mk, nama_mk FROM kuliah ORDER BY id_kuliah DES
             <form id="formGenerateUser" enctype="multipart/form-data">
                 <div class="modal-body p-4 bg-light-subtle">
                     <div class="mb-4">
-                        <label class="form-label fw-bold text-secondary">Pilih Tipe Civitas Akademika</label>
+                        <label class="form-label fw-bold text-secondary">Pilih Peran Civitas Akademika</label>
                         <select name="role" id="selectRole" class="form-select border-2" style="border-color: #e2e8f0" required onchange="toggleForm(this.value)">
-                            <option value="">-- Pilih Akses Peran --</option>
-                            <option value="dosen">Dosen Pengajar</option>
-                            <option value="mahasiswa">Mahasiswa Aktif</option>
+                            <option value="">-- Pilih Peran --</option>
+                            <option value="dosen">Dosen </option>
+                            <option value="mahasiswa">Mahasiswa </option>
                         </select>
                     </div>
 
                     <div id="formContainer" style="display:none;" class="row g-3">
                         <div class="col-md-6">
                             <label id="labelID" class="form-label fw-bold text-dark">ID (NIM/NIDN)</label>
-                            <input type="text" name="username" class="form-control" required placeholder="Masukkan nomor identitas...">
+                            <input type="text" name="username" class="form-control" required placeholder="Masukkan nomor identitas">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-bold text-dark">Nama Lengkap</label>
-                            <input type="text" name="nama" class="form-control" required placeholder="Nama tanpa gelar untuk mhs...">
+                            <input type="text" name="nama" class="form-control" required placeholder="Nama tanpa gelar">
                         </div>
 
                         <div class="col-md-12">
@@ -426,10 +426,10 @@ $mkBaru = $db->query("SELECT kode_mk, nama_mk FROM kuliah ORDER BY id_kuliah DES
                         </div>
                         <div class="col-md-12">
                             <label class="form-label fw-bold text-secondary small">Alamat Rumah</label>
-                            <textarea name="alamat" class="form-control" rows="2" placeholder="Tuliskan nama jalan, kota, dan kode pos..."></textarea>
+                            <textarea name="alamat" class="form-control" rows="2" placeholder=""></textarea>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-bold text-secondary small">No. Handphone WhatsApp</label>
+                            <label class="form-label fw-bold text-secondary small">No. Handphone</label>
                             <input type="text" name="no_hp" class="form-control" placeholder="08xxxxxxxx">
                         </div>
                         <div class="col-md-6">

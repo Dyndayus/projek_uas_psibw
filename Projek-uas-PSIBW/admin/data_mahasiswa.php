@@ -38,17 +38,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['proses_simpan'])) {
         move_uploaded_file($file_tmp, $target_dir . $nama_foto_database);
     }
 
-    // MEMULAI TRANSAKSI DATABASE AGAR KEDUA TABEL SINKRON
     $db->begin_transaction();
 
     try {
-        // Validasi Awal: Pastikan email belum pernah digunakan sebagai username di tabel user
         $checkUser = $db->query("SELECT username FROM user WHERE username = '$email'");
         if ($checkUser && $checkUser->num_rows > 0) {
             throw new Exception("Email '" . htmlspecialchars($email) . "' sudah terdaftar sebagai username di sistem!");
         }
 
-        // Query 1: Insert ke tabel mahasiswa (mhs)
         $query_insert_mhs = "INSERT INTO mhs (nim, nama, tgl_lahir, jenis_kelamin, alamat, no_hp, email, program_studi, angkatan, semester, status, foto) 
                              VALUES ('$nim', '$nama', '$tgl_lahir', '$jenis_kelamin', '$alamat', '$no_hp', '$email', '$program_studi', $angkatan, $semester, '$status', '$nama_foto_database')";
         
@@ -56,10 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['proses_simpan'])) {
             throw new Exception("Gagal menyimpan biodata mahasiswa: " . $db->error);
         }
 
-        // Ambil ID mahasiswa baru yang baru saja digenerate otomatis oleh MySQL
         $last_id_mhs = $db->insert_id;
 
-        // Query 2: Insert ke tabel user (Password langsung menggunakan $nim asli tanpa hash)
         $query_insert_user = "INSERT INTO user (username, password, role, id_ref) 
                               VALUES ('$email', '$nim', 'mahasiswa', $last_id_mhs)";
 
@@ -67,12 +62,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['proses_simpan'])) {
             throw new Exception("Gagal membuat akun login mahasiswa di tabel user: " . $db->error);
         }
 
-        // Jika kedua query berhasil tanpa kendala, kunci data ke database
         $db->commit();
         $pesan_sukses = "Data mahasiswa atas nama " . htmlspecialchars($nama) . " beserta akun loginnya berhasil disimpan!";
 
     } catch (Exception $e) {
-        // Jika ada salah satu yang gagal atau email bentrok, batalkan semua perubahan
         $db->rollback();
         $pesan_gagal = $e->getMessage();
     }
@@ -93,9 +86,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['proses_update'])) {
     $semester = intval($_POST['semester']);
     $status = mysqli_real_escape_string($db, $_POST['status']);
     
-    $foto_lama_result = $db->query("SELECT foto FROM mhs WHERE id_mhs = $id_mhs");
-    $foto_lama_row = $foto_lama_result->fetch_assoc();
-    $nama_foto_database = $foto_lama_row['foto'];
+    $mhs_lama_result = $db->query("SELECT nim, email, foto FROM mhs WHERE id_mhs = $id_mhs");
+    $mhs_lama_row = $mhs_lama_result->fetch_assoc();
+    $nim_lama = $mhs_lama_row['nim'];
+    $email_lama = $mhs_lama_row['email'];
+    $nama_foto_database = $mhs_lama_row['foto'];
 
     if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
         $file_tmp = $_FILES['foto']['tmp_name'];
@@ -109,15 +104,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['proses_update'])) {
         }
 
         if (move_uploaded_file($file_tmp, $target_dir . $nama_foto_database)) {
-            if (!empty($foto_lama_row['foto']) && file_exists($target_dir . $foto_lama_row['foto'])) {
-                unlink($target_dir . $foto_lama_row['foto']);
+            if (!empty($mhs_lama_row['foto']) && file_exists($target_dir . $mhs_lama_row['foto'])) {
+                unlink($target_dir . $mhs_lama_row['foto']);
             }
         }
     }
 
     $db->begin_transaction();
     try {
-        // Update data di tabel mhs
+        if ($nim !== $nim_lama) {
+            $checkNim = $db->query("SELECT nim FROM mhs WHERE nim = '$nim' AND id_mhs != $id_mhs");
+            if ($checkNim && $checkNim->num_rows > 0) {
+                throw new Exception("Gagal memperbarui! NIM '<strong>" . htmlspecialchars($nim) . "</strong>' sudah digunakan oleh mahasiswa lain.");
+            }
+        }
+
+        if ($email !== $email_lama) {
+            $checkUserEdit = $db->query("SELECT username FROM user WHERE username = '$email'");
+            if ($checkUserEdit && $checkUserEdit->num_rows > 0) {
+                throw new Exception("Gagal memperbarui! Alamat email/username '<strong>" . htmlspecialchars($email) . "</strong>' sudah terdaftar di sistem.");
+            }
+        }
+
         $query_update = "UPDATE mhs SET 
                             nim = '$nim', nama = '$nama', tgl_lahir = '$tgl_lahir', 
                             jenis_kelamin = '$jenis_kelamin', alamat = '$alamat', no_hp = '$no_hp', 
@@ -126,13 +134,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['proses_update'])) {
                          WHERE id_mhs = $id_mhs";
 
         if (!$db->query($query_update)) {
-            throw new Exception("Gagal memperbarui data profil: " . $db->error);
+            throw new Exception("Gagal memperbarui data profil mhs: " . $db->error);
         }
 
-        // Sinkronisasi tabel user jika admin mengubah email di form edit (karena email = username)
-        $query_update_user = "UPDATE user SET username = '$email' WHERE role = 'mahasiswa' AND id_ref = $id_mhs";
+        $query_update_user = "UPDATE user SET username = '$email', password = '$nim' WHERE role = 'mahasiswa' AND id_ref = $id_mhs";
         if (!$db->query($query_update_user)) {
-            throw new Exception("Gagal memperbarui username login: " . $db->error);
+            throw new Exception("Gagal memperbarui akun login di tabel user: " . $db->error);
         }
 
         $db->commit();
@@ -156,10 +163,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
 
     $db->begin_transaction();
     try {
-        // Hapus akun loginnya dulu di tabel user (untuk mencegah kendala relasi data)
         $db->query("DELETE FROM user WHERE role = 'mahasiswa' AND id_ref = $id_hapus");
 
-        // Hapus data mahasiswa di tabel mhs
         if (!$db->query("DELETE FROM mhs WHERE id_mhs = $id_hapus")) {
             throw new Exception("Gagal menghapus data mahasiswa.");
         }
@@ -172,8 +177,13 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     }
 }
 
-// --- FITUR PAGINATION KONSISTEN MAKSIMAL 7 DATA ---
-$limit = 7; 
+// --- FITUR SORT BY DINAMIS ---
+$valid_columns = ['id_mhs', 'nim', 'nama', 'angkatan', 'semester'];
+$sort = isset($_GET['sort']) && in_array($_GET['sort'], $valid_columns) ? $_GET['sort'] : 'id_mhs';
+$order = isset($_GET['order']) && strtoupper($_GET['order']) === 'ASC' ? 'ASC' : 'DESC';
+
+// --- FITUR PAGINATION (LIMIT 5 BARIS KONSISTEN) ---
+$limit = 5; 
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 if ($page < 1) $page = 1;
 $start = ($page - 1) * $limit;
@@ -183,7 +193,10 @@ $total_row = $total_result->fetch_assoc();
 $total_data = $total_row['total'];
 $total_pages = ceil($total_data / $limit);
 
-$result = $db->query("SELECT * FROM mhs ORDER BY id_mhs DESC LIMIT $start, $limit");
+$result = $db->query("SELECT * FROM mhs ORDER BY $sort $order LIMIT $start, $limit");
+
+// Simpan jumlah data asli yang didapat pada halaman ini
+$jumlah_data_sekarang = ($result) ? $result->num_rows : 0;
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -215,9 +228,31 @@ $result = $db->query("SELECT * FROM mhs ORDER BY id_mhs DESC LIMIT $start, $limi
         .badge-status { font-size: 0.75rem; padding: 0.4em 0.8em; }
         
         .table-responsive-konsisten {
-            min-height: 540px; 
             display: flex;
             flex-direction: column;
+            overflow-x: auto;
+        }
+        .table {
+            table-layout: fixed;
+            width: 100%;
+        }
+        .table td {
+            white-space: nowrap;      
+            overflow: hidden;         
+            text-overflow: ellipsis;  
+        }
+        .badge-semester {
+            display: inline-block;
+        }
+        
+        .btn-sort-custom {
+            background-color: #e6f0ff !important;
+            color: #0d6efd !important;
+            border: 1px solid #b3d4ff !important;
+        }
+        .btn-sort-custom:hover, .btn-sort-custom:focus {
+            background-color: #cce0ff !important;
+            color: #0a58ca !important;
         }
     </style>
 </head>
@@ -247,27 +282,57 @@ $result = $db->query("SELECT * FROM mhs ORDER BY id_mhs DESC LIMIT $start, $limi
                 <div>
                     <h2 class="fw-bold text-dark m-0" style="font-family: 'Segoe UI', sans-serif; letter-spacing: -0.5px;">Master Data Mahasiswa</h2>
                 </div>
-                <button class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-sm d-flex align-items-center gap-2" style="background-color: #0d6efd;" data-bs-toggle="modal" data-bs-target="#modalTambah">
-                    <i class="bi bi-plus-lg"></i> Tambah Data
-                </button>
+                
+                <div class="d-flex align-items-center gap-3">
+                    <div class="dropdown">
+                        <button class="btn btn-sort-custom dropdown-toggle rounded-pill px-3 shadow-sm fw-semibold" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-sort-down me-1"></i> Urutkan: 
+                            <?php 
+                                if($sort == 'id_mhs') echo 'Data Terbaru';
+                                if($sort == 'nim') echo 'NIM';
+                                if($sort == 'nama') echo 'Nama';
+                                if($sort == 'angkatan') echo 'Angkatan';
+                                if($sort == 'semester') echo 'Semester';
+                                echo ($order == 'ASC') ? ' (A-Z/Terlama)' : ' (Z-A/Terbaru)';
+                            ?>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2" style="border-radius: 10px;">
+                            <li><h6 class="dropdown-header small text-uppercase fw-bold text-muted px-2">Berdasarkan</h6></li>
+                            <li><a class="dropdown-item rounded" href="data_mahasiswa.php?sort=id_mhs&order=DESC">Data Terbaru</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item rounded" href="data_mahasiswa.php?sort=nama&order=ASC">Nama (A - Z)</a></li>
+                            <li><a class="dropdown-item rounded" href="data_mahasiswa.php?sort=nama&order=DESC">Nama (Z - A)</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item rounded" href="data_mahasiswa.php?sort=nim&order=ASC">NIM (Terkecil)</a></li>
+                            <li><a class="dropdown-item rounded" href="data_mahasiswa.php?sort=nim&order=DESC">NIM (Terbesar)</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item rounded" href="data_mahasiswa.php?sort=angkatan&order=DESC">Angkatan Baru</a></li>
+                            <li><a class="dropdown-item rounded" href="data_mahasiswa.php?sort=semester&order=ASC">Semester Rendah</a></li>
+                        </ul>
+                    </div>
+
+                    <button class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-sm d-flex align-items-center gap-2" style="background-color: #0d6efd;" data-bs-toggle="modal" data-bs-target="#modalTambah">
+                        <i class="bi bi-plus-lg"></i> Tambah Data
+                    </button>
+                </div>
             </div>
 
             <div class="card shadow-sm mb-4">
-                <div class="card-body d-flex flex-column" style="min-height: 650px;">
+                <div class="card-body d-flex flex-column">
                     <div class="table-responsive table-responsive-konsisten flex-grow-1">
                         <table class="table table-hover align-middle mb-0">
                             <thead class="table-light text-secondary">
                                 <tr>
-                                    <th style="width: 7%">Foto</th>
-                                    <th style="width: 28%">NIM / Nama</th>
+                                    <th style="width: 8%">Foto</th>
+                                    <th style="width: 27%">NIM / Nama</th>
                                     <th style="width: 25%">Prodi & Semester</th>
-                                    <th style="width: 22%">Kontak</th>
+                                    <th style="width: 23%">Kontak</th>
                                     <th style="width: 10%">Status</th>
-                                    <th style="width: 12%" class="text-center">Aksi</th>
+                                    <th style="width: 7%" class="text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php if ($result && $result->num_rows > 0): ?>
+                                <?php if ($jumlah_data_sekarang > 0): ?>
                                     <?php while($row = $result->fetch_assoc()): ?>
                                     <tr style="height: 75px;"> 
                                         <td class="align-middle">
@@ -286,20 +351,20 @@ $result = $db->query("SELECT * FROM mhs ORDER BY id_mhs DESC LIMIT $start, $limi
                                             <img src="<?= $path_foto ?>" class="img-table shadow-sm border" alt="Foto" onerror="this.src='<?= $avatar_default ?>'">
                                         </td>
                                         <td class="align-middle">
-                                            <div class="fw-bold text-dark"><?= htmlspecialchars($row['nama']) ?></div>
+                                            <div class="fw-bold text-dark text-truncate" title="<?= htmlspecialchars($row['nama']) ?>"><?= htmlspecialchars($row['nama']) ?></div>
                                             <small class="text-muted"><?= htmlspecialchars($row['nim']) ?> | Angkatan <?= htmlspecialchars($row['angkatan']) ?></small>
                                         </td>
                                         <td class="align-middle">
-                                            <div><?= htmlspecialchars($row['program_studi']) ?></div>
-                                            <span class="badge bg-light text-dark border small">Smstr <?= htmlspecialchars($row['semester']) ?></span>
+                                            <div class="text-truncate" title="<?= htmlspecialchars($row['program_studi']) ?>"><?= htmlspecialchars($row['program_studi']) ?></div>
+                                            <span class="badge bg-light text-dark border small badge-semester">Smstr <?= htmlspecialchars($row['semester']) ?></span>
                                         </td>
                                         <td class="align-middle">
-                                            <div class="small"><i class="bi bi-envelope me-1"></i><?= htmlspecialchars($row['email']) ?></div>
+                                            <div class="small text-truncate" title="<?= htmlspecialchars($row['email']) ?>"><i class="bi bi-envelope me-1"></i><?= htmlspecialchars($row['email']) ?></div>
                                             <div class="small text-muted"><i class="bi bi-whatsapp me-1"></i><?= htmlspecialchars($row['no_hp']) ?></div>
                                         </td>
                                         <td class="align-middle">
                                             <span class="badge badge-status <?= strtolower($row['status']) == 'aktif' ? 'bg-success' : 'bg-danger' ?> rounded-pill">
-                                                <?= !empty($row['status']) ? htmlspecialchars($row['status']) : 'Aktif' ?>
+                                                <?= !empty($row['status']) ? htmlspecialchars($row['status']) : 'aktif' ?>
                                             </span>
                                         </td>
                                         <td class="align-middle text-center">
@@ -330,26 +395,43 @@ $result = $db->query("SELECT * FROM mhs ORDER BY id_mhs DESC LIMIT $start, $limi
                                         </td>
                                     </tr>
                                     <?php endwhile; ?>
-                                <?php else: ?>
-                                    <tr><td colspan="6" class="text-center text-muted py-4">Belum ada data mahasiswa.</td></tr>
                                 <?php endif; ?>
+
+                                <?php 
+                                $sisa_baris = $limit - $jumlah_data_sekarang;
+                                if ($sisa_baris > 0): 
+                                    for ($i = 0; $i < $sisa_baris; $i++):
+                                ?>
+                                    <tr style="height: 75px;">
+                                        <td colspan="6" class="text-center text-muted small bg-white-50 opacity-25">
+                                            <?php if ($jumlah_data_sekarang == 0 && $i == 2): ?>
+                                                Belum ada data mahasiswa.
+                                            <?php else: ?>
+                                                &nbsp;
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php 
+                                    endfor;
+                                endif; 
+                                ?>
                             </tbody>
                         </table>
                     </div>
 
                     <?php if ($total_pages > 1): ?>
-                        <nav class="mt-auto pt-3 border-top">
+                        <nav class="pt-3 border-top">
                             <ul class="pagination justify-content-center mb-0">
                                 <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
-                                    <a class="page-link" href="data_mahasiswa.php?page=<?= $page - 1 ?>">Previous</a>
+                                    <a class="page-link" href="data_mahasiswa.php?page=<?= $page - 1 ?>&sort=<?= $sort ?>&order=<?= $order ?>">Previous</a>
                                 </li>
                                 <?php for($i = 1; $i <= $total_pages; $i++): ?>
                                     <li class="page-item <?= ($page == $i) ? 'active' : '' ?>">
-                                        <a class="page-link" href="data_mahasiswa.php?page=<?= $i ?>"><?= $i ?></a>
+                                        <a class="page-link" href="data_mahasiswa.php?page=<?= $i ?>&sort=<?= $sort ?>&order=<?= $order ?>"><?= $i ?></a>
                                     </li>
                                 <?php endfor; ?>
                                 <li class="page-item <?= ($page >= $total_pages) ? 'disabled' : '' ?>">
-                                    <a class="page-link" href="data_mahasiswa.php?page=<?= $page + 1 ?>">Next</a>
+                                    <a class="page-link" href="data_mahasiswa.php?page=<?= $page + 1 ?>&sort=<?= $sort ?>&order=<?= $order ?>">Next</a>
                                 </li>
                             </ul>
                         </nav>
@@ -494,72 +576,52 @@ $result = $db->query("SELECT * FROM mhs ORDER BY id_mhs DESC LIMIT $start, $limi
                             <label class="form-label fw-bold small text-secondary">Semester</label>
                             <input type="number" name="semester" id="edit_semester" class="form-control">
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <label class="form-label fw-bold small text-secondary">Status Keaktifan</label>
                             <select name="status" id="edit_status" class="form-select">
                                 <option value="aktif">aktif</option>
                                 <option value="non-aktif">non-aktif</option>
                             </select>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold small text-secondary">Ganti Foto Profil</label>
-                            <input type="file" name="foto" class="form-control" accept="image/*">
-                            <div class="form-text text-muted small">Biarkan kosong jika tidak ingin mengubah foto.</div>
-                        </div>
                     </div>
                 </div>
                 <div class="modal-footer bg-light border-0" style="border-bottom-left-radius: 15px; border-bottom-right-radius: 15px;">
                     <button type="button" class="btn btn-secondary rounded-pill px-3" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-warning rounded-pill px-4 fw-bold text-dark shadow-sm">Perbarui Data</button>
+                    <button type="submit" class="btn btn-warning rounded-pill px-4 shadow-sm">Update Data</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
 function hapusData(id) {
-    if(confirm('Yakin ingin menghapus data mahasiswa ini? Menghapus data ini juga akan menghapus akun login terkait.')) {
-        window.location.href = `data_mahasiswa.php?action=delete&id=${id}`;
+    if(confirm('Apakah Anda yakin ingin menghapus data mahasiswa ini?')) {
+        window.location.href = 'data_mahasiswa.php?action=delete&id=' + id;
     }
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    const modalEdit = document.getElementById('modalEdit');
-    if (modalEdit) {
-        modalEdit.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget; 
-            
-            const id = button.getAttribute('data-id');
-            const nim = button.getAttribute('data-nim');
-            const nama = button.getAttribute('data-nama');
-            const tgl_lahir = button.getAttribute('data-tgl_lahir');
-            const jk = button.getAttribute('data-jk');
-            const alamat = button.getAttribute('data-alamat');
-            const no_hp = button.getAttribute('data-no_hp');
-            const email = button.getAttribute('data-email');
-            const prodi = button.getAttribute('data-prodi');
-            const angkatan = button.getAttribute('data-angkatan');
-            const semester = button.getAttribute('data-semester');
-            const status = button.getAttribute('data-status');
-
-            document.getElementById('edit_id_mhs').value = id;
-            document.getElementById('edit_nim').value = nim;
-            document.getElementById('edit_nama').value = nama;
-            document.getElementById('edit_tgl_lahir').value = tgl_lahir;
-            document.getElementById('edit_jenis_kelamin').value = jk;
-            document.getElementById('edit_alamat').value = alamat;
-            document.getElementById('edit_no_hp').value = no_hp;
-            document.getElementById('edit_email').value = email;
-            document.getElementById('edit_program_studi').value = prodi;
-            document.getElementById('edit_angkatan').value = angkatan;
-            document.getElementById('edit_semester').value = semester;
-            document.getElementById('edit_status').value = status;
-        });
-    }
-});
+const modalEdit = document.getElementById('modalEdit');
+if(modalEdit) {
+    modalEdit.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        document.getElementById('edit_id_mhs').value = button.getAttribute('data-id');
+        document.getElementById('edit_nim').value = button.getAttribute('data-nim');
+        document.getElementById('edit_nama').value = button.getAttribute('data-nama');
+        document.getElementById('edit_tgl_lahir').value = button.getAttribute('data-tgl_lahir');
+        document.getElementById('edit_jenis_kelamin').value = button.getAttribute('data-jk');
+        document.getElementById('edit_alamat').value = button.getAttribute('data-alamat');
+        document.getElementById('edit_no_hp').value = button.getAttribute('data-no_hp');
+        document.getElementById('edit_email').value = button.getAttribute('data-email');
+        document.getElementById('edit_program_studi').value = button.getAttribute('data-prodi');
+        document.getElementById('edit_angkatan').value = button.getAttribute('data-angkatan');
+        document.getElementById('edit_semester').value = button.getAttribute('data-semester');
+        
+        const status = button.getAttribute('data-status').toLowerCase();
+        document.getElementById('edit_status').value = status === 'aktif' ? 'aktif' : 'non-aktif';
+    });
+}
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

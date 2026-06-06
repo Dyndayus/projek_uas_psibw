@@ -63,8 +63,34 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     }
 }
 
-// --- FITUR PAGINATION KONSISTEN ---
-$limit = 7; 
+// --- LOGIKA MENENTUKAN QUERY SORTING ---
+$sort = isset($_GET['sort']) ? $_GET['sort'] : 'default';
+$order_by = "k.id_kuliah DESC"; // Default urutan
+
+switch ($sort) {
+    case 'az':
+        $order_by = "k.nama_mk ASC";
+        $label_sort = "Urutkan: Nama (A-Z)";
+        break;
+    case 'za':
+        $order_by = "k.nama_mk DESC";
+        $label_sort = "Urutkan: Nama (Z-A)";
+        break;
+    case 'sks_desc':
+        $order_by = "k.sks DESC";
+        $label_sort = "Urutkan: SKS Tertinggi";
+        break;
+    case 'sks_asc':
+        $order_by = "k.sks ASC";
+        $label_sort = "Urutkan: SKS Terendah";
+        break;
+    default:
+        $label_sort = "Urutkan: Data Terbaru";
+        break;
+}
+
+// --- FITUR PAGINATION KONSISTEN (DIUBAH JADI 5 BARIS) ---
+$limit = 5; 
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 if ($page < 1) $page = 1;
 $start = ($page - 1) * $limit;
@@ -74,11 +100,19 @@ $total_row = $total_result->fetch_assoc();
 $total_data = $total_row['total'];
 $total_pages = ceil($total_data / $limit);
 
-$result = $db->query("SELECT k.*, d.nama AS nama_dosen FROM kuliah k LEFT JOIN dosen d ON k.id_dosen = d.id_dosen ORDER BY k.id_kuliah DESC LIMIT $start, $limit");
+// Query SQL menggunakan variabel $order_by yang dinamis
+$result = $db->query("SELECT k.*, d.nama AS nama_dosen 
+                      FROM kuliah k 
+                      LEFT JOIN dosen d ON k.id_dosen = d.id_dosen 
+                      ORDER BY $order_by 
+                      LIMIT $start, $limit");
 
 $dosen_opt = $db->query("SELECT id_dosen, nama FROM dosen ORDER BY nama ASC");
 $list_dosen = [];
 while($d = $dosen_opt->fetch_assoc()) { $list_dosen[] = $d; }
+
+// Menghitung jumlah data yang tampil di halaman ini untuk membuat baris kosong opsional
+$current_rows_count = $result ? $result->num_rows : 0;
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -106,6 +140,26 @@ while($d = $dosen_opt->fetch_assoc()) { $list_dosen[] = $d; }
         .content-body { padding: 40px; flex-grow: 1; }
         
         .card { border-radius: 12px; border: none; box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.05); width: 100%; }
+
+        .btn-sort {
+            background-color: #ecf3ff;
+            color: #0d6efd;
+            border: 1px solid #d2e3ff;
+            font-weight: 500;
+            padding: 0.5rem 1.25rem;
+            border-radius: 50px;
+            transition: all 0.2s ease;
+        }
+        .btn-sort:hover, .btn-sort:focus {
+            background-color: #dbe7ff;
+            color: #0b5ed7;
+            border-color: #bcccff;
+        }
+        .dropdown-menu-sort {
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+        }
     </style>
 </head>
 <body>
@@ -135,9 +189,27 @@ while($d = $dosen_opt->fetch_assoc()) { $list_dosen[] = $d; }
                     <h2 class="fw-bold text-dark m-0" style="font-family: 'Segoe UI', sans-serif; letter-spacing: -0.5px;">Manajemen Mata Kuliah</h2>
                     <small class="text-muted">Daftar kurikulum program studi aktif</small>
                 </div>
-                <button class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalTambah">
-                    <i class="bi bi-plus-lg"></i> Tambah Matakuliah
-                </button>
+                
+                <div class="d-flex align-items-center gap-3">
+                    <div class="dropdown">
+                        <button class="btn btn-sort d-flex align-items-center gap-2 dropdown-toggle shadow-sm" type="button" id="dropdownSort" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-sort-down"></i> <?= $label_sort ?>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-sort dropdown-menu-end" aria-labelledby="dropdownSort">
+                            <li><a class="dropdown-menu-item dropdown-item <?= $sort === 'default' ? 'active' : '' ?>" href="data_kuliah.php?sort=default">Data Terbaru</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-menu-item dropdown-item <?= $sort === 'az' ? 'active' : '' ?>" href="data_kuliah.php?sort=az">Nama MK (A-Z)</a></li>
+                            <li><a class="dropdown-menu-item dropdown-item <?= $sort === 'za' ? 'active' : '' ?>" href="data_kuliah.php?sort=za">Nama MK (Z-A)</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-menu-item dropdown-item <?= $sort === 'sks_desc' ? 'active' : '' ?>" href="data_kuliah.php?sort=sks_desc">SKS Tertinggi</a></li>
+                            <li><a class="dropdown-menu-item dropdown-item <?= $sort === 'sks_asc' ? 'active' : '' ?>" href="data_kuliah.php?sort=sks_asc">SKS Terendah</a></li>
+                        </ul>
+                    </div>
+
+                    <button class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalTambah">
+                        <i class="bi bi-plus-lg"></i> Tambah Matakuliah
+                    </button>
+                </div>
             </div>
 
             <div class="card shadow-sm">
@@ -154,7 +226,7 @@ while($d = $dosen_opt->fetch_assoc()) { $list_dosen[] = $d; }
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php if ($result && $result->num_rows > 0): ?>
+                                <?php if ($current_rows_count > 0): ?>
                                     <?php while($row = $result->fetch_assoc()): ?>
                                     <tr style="height: 65px;">
                                         <td class="fw-bold text-secondary"><?= htmlspecialchars($row['kode_mk']) ?></td>
@@ -187,8 +259,29 @@ while($d = $dosen_opt->fetch_assoc()) { $list_dosen[] = $d; }
                                         </td>
                                     </tr>
                                     <?php endwhile; ?>
+                                    
+                                    <?php 
+                                    $empty_rows = $limit - $current_rows_count;
+                                    for ($i = 0; $i < $empty_rows; $i++): 
+                                    ?>
+                                    <tr style="height: 65px;">
+                                        <td>&nbsp;</td>
+                                        <td>&nbsp;</td>
+                                        <td>&nbsp;</td>
+                                        <td>&nbsp;</td>
+                                        <td>&nbsp;</td>
+                                    </tr>
+                                    <?php endfor; ?>
+
                                 <?php else: ?>
-                                    <tr><td colspan="5" class="text-center text-muted py-4">Belum ada data mata kuliah.</td></tr>
+                                    <tr style="height: 65px;">
+                                        <td colspan="5" class="text-center text-muted py-4">Belum ada data mata kuliah.</td>
+                                    </tr>
+                                    <?php for ($i = 1; $i < $limit; $i++): ?>
+                                    <tr style="height: 65px;">
+                                        <td colspan="5">&nbsp;</td>
+                                    </tr>
+                                    <?php endfor; ?>
                                 <?php endif; ?>
                             </tbody>
                         </table>
@@ -198,15 +291,15 @@ while($d = $dosen_opt->fetch_assoc()) { $list_dosen[] = $d; }
                         <nav class="mt-4 pt-3 border-top">
                             <ul class="pagination justify-content-center mb-0">
                                 <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
-                                    <a class="page-link" href="data_kuliah.php?page=<?= $page - 1 ?>">Previous</a>
+                                    <a class="page-link" href="data_kuliah.php?page=<?= $page - 1 ?>&sort=<?= $sort ?>">Previous</a>
                                 </li>
                                 <?php for($i = 1; $i <= $total_pages; $i++): ?>
                                     <li class="page-item <?= ($page == $i) ? 'active' : '' ?>">
-                                        <a class="page-link" href="data_kuliah.php?page=<?= $i ?>"><?= $i ?></a>
+                                        <a class="page-link" href="data_kuliah.php?page=<?= $i ?>&sort=<?= $sort ?>"><?= $i ?></a>
                                     </li>
                                 <?php endfor; ?>
                                 <li class="page-item <?= ($page >= $total_pages) ? 'disabled' : '' ?>">
-                                    <a class="page-link" href="data_kuliah.php?page=<?= $page + 1 ?>">Next</a>
+                                    <a class="page-link" href="data_kuliah.php?page=<?= $page + 1 ?>&sort=<?= $sort ?>">Next</a>
                                 </li>
                             </ul>
                         </nav>
@@ -226,7 +319,7 @@ while($d = $dosen_opt->fetch_assoc()) { $list_dosen[] = $d; }
                 <h5 class="modal-title fw-bold">Tambah Mata Kuliah</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <form action="data_kuliah.php" method="POST">
+            <form action="data_kuliah.php?sort=<?= $sort ?>" method="POST">
                 <input type="hidden" name="proses_simpan" value="1">
                 <div class="modal-body p-4 bg-light">
                     <div class="row g-3">
@@ -287,7 +380,7 @@ while($d = $dosen_opt->fetch_assoc()) { $list_dosen[] = $d; }
                 <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square me-2"></i>Form Edit Mata Kuliah</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form action="data_kuliah.php" method="POST">
+            <form action="data_kuliah.php?page=<?= $page ?>&sort=<?= $sort ?>" method="POST">
                 <input type="hidden" name="proses_update" value="1">
                 <input type="hidden" name="id_kuliah" id="edit_id_kuliah">
                 
@@ -348,7 +441,7 @@ while($d = $dosen_opt->fetch_assoc()) { $list_dosen[] = $d; }
 <script>
 function hapusData(id) {
     if(confirm('Yakin ingin menghapus data mata kuliah ini?')) {
-        window.location.href = `data_kuliah.php?action=delete&id=${id}`;
+        window.location.href = `data_kuliah.php?action=delete&id=${id}&sort=<?= $sort ?>`;
     }
 }
 

@@ -182,6 +182,11 @@ if (isset($_GET['delete'])) {
     }
 }
 
+// --- FITUR SORT BY DATA DOSEN ---
+$valid_columns = ['id_dosen', 'nidn', 'nama', 'jabatan', 'status'];
+$sort = isset($_GET['sort']) && in_array($_GET['sort'], $valid_columns) ? $_GET['sort'] : 'id_dosen';
+$order = isset($_GET['order']) && strtoupper($_GET['order']) === 'ASC' ? 'ASC' : 'DESC';
+
 // --- FITUR PAGINATION KONSISTEN MAKSIMAL 5 DATA ---
 $limit = 5; 
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
@@ -193,7 +198,10 @@ $total_row = $total_result->fetch_assoc();
 $total_data = $total_row['total'];
 $total_pages = ceil($total_data / $limit);
 
-$result = $db->query("SELECT * FROM dosen ORDER BY id_dosen DESC LIMIT $start, $limit");
+$result = $db->query("SELECT * FROM dosen ORDER BY $sort $order LIMIT $start, $limit");
+
+// Hitung jumlah data asli yang berhasil diambil pada halaman aktif
+$jumlah_data_sekarang = ($result) ? $result->num_rows : 0;
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -212,7 +220,6 @@ $result = $db->query("SELECT * FROM dosen ORDER BY id_dosen DESC LIMIT $start, $
             margin: 0;
         }
         
-        /* Layout Pembungkus Konten Bersama Sidebar */
         .wrapper {
             display: flex;
             min-height: 100vh;
@@ -227,13 +234,11 @@ $result = $db->query("SELECT * FROM dosen ORDER BY id_dosen DESC LIMIT $start, $
             overflow-x: hidden;
         }
 
-        /* CONTENT AREA */
         .main-content { 
             padding: 40px; 
             flex: 1;
         }
         
-        /* CARDS & TABLES */
         .card { 
             border-radius: 16px; 
             border: none; 
@@ -241,9 +246,13 @@ $result = $db->query("SELECT * FROM dosen ORDER BY id_dosen DESC LIMIT $start, $
             background: #ffffff;
         }
         .table-responsive-konsisten {
-            min-height: 440px; 
             display: flex;
             flex-direction: column;
+            overflow-x: auto;
+        }
+        .table {
+            table-layout: fixed;
+            width: 100%;
         }
         .table thead th {
             font-weight: 600;
@@ -259,6 +268,9 @@ $result = $db->query("SELECT * FROM dosen ORDER BY id_dosen DESC LIMIT $start, $
             padding: 16px;
             border-bottom: 1px solid #f1f5f9;
             font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .img-table { 
             width: 48px; 
@@ -268,11 +280,11 @@ $result = $db->query("SELECT * FROM dosen ORDER BY id_dosen DESC LIMIT $start, $
             background: #f1f5f9; 
         }
         
-        /* UTILITIES & BADGES */
         .badge-status { 
             font-size: 0.75rem; 
             padding: 0.4em 1em; 
             font-weight: 600;
+            display: inline-block;
         }
         .bg-aktif {
             background-color: #dcfce7;
@@ -283,7 +295,6 @@ $result = $db->query("SELECT * FROM dosen ORDER BY id_dosen DESC LIMIT $start, $
             color: #b91c1c;
         }
         
-        /* CUSTOM PAGINATION */
         .pagination .page-link {
             color: #475569;
             border: 1px solid #e2e8f0;
@@ -297,6 +308,16 @@ $result = $db->query("SELECT * FROM dosen ORDER BY id_dosen DESC LIMIT $start, $
         }
         .pagination .page-link:hover {
             background-color: #f1f5f9;
+        }
+
+        .btn-sort-custom {
+            background-color: #e6f0ff !important;
+            color: #0d6efd !important;
+            border: 1px solid #b3d4ff !important;
+        }
+        .btn-sort-custom:hover, .btn-sort-custom:focus {
+            background-color: #cce0ff !important;
+            color: #0a58ca !important;
         }
     </style>
 </head>
@@ -313,38 +334,65 @@ $result = $db->query("SELECT * FROM dosen ORDER BY id_dosen DESC LIMIT $start, $
                     <h3 class="fw-bold mb-1 text-dark" style="letter-spacing: -0.5px;">Manajemen Data Dosen</h3>
                     <p class="text-muted mb-0 small">Kelola informasi serta hak akses login seluruh dosen pengajar.</p>
                 </div>
-                <button class="btn btn-dark rounded-3 px-4 shadow-sm fw-medium d-flex align-items-center" style="background-color: #1e2640; border: none;" data-bs-toggle="modal" data-bs-target="#modalTambahDosen">
-                    <i class="bi bi-plus-lg me-2"></i> Tambah Dosen Baru
-                </button>
+
+                <div class="d-flex align-items-center gap-3">
+                    <div class="dropdown">
+                        <button class="btn btn-sort-custom dropdown-toggle rounded-pill px-3 shadow-sm fw-semibold" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-sort-down me-1"></i> Urutkan: 
+                            <?php 
+                                if($sort == 'id_dosen') echo 'Data Terbaru';
+                                if($sort == 'nidn') echo 'NIDN';
+                                if($sort == 'nama') echo 'Nama';
+                                if($sort == 'jabatan') echo 'Jabatan';
+                                if($sort == 'status') echo 'Status';
+                                echo ($order == 'ASC') ? ' (A-Z/Terlama)' : ' (Z-A/Terbaru)';
+                            ?>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2" style="border-radius: 10px;">
+                            <li><h6 class="dropdown-header small text-uppercase fw-bold text-muted px-2">Berdasarkan</h6></li>
+                            <li><a class="dropdown-item rounded" href="data_dosen.php?sort=id_dosen&order=DESC">Data Terbaru</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item rounded" href="data_dosen.php?sort=nama&order=ASC">Nama (A - Z)</a></li>
+                            <li><a class="dropdown-item rounded" href="data_dosen.php?sort=nama&order=DESC">Nama (Z - A)</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item rounded" href="data_dosen.php?sort=nidn&order=ASC">NIDN (Terkecil)</a></li>
+                            <li><a class="dropdown-item rounded" href="data_dosen.php?sort=jabatan&order=ASC">Jabatan Fungsional</a></li>
+                        </ul>
+                    </div>
+
+                    <button class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-sm d-flex align-items-center gap-2" style="background-color: #0d6efd; border: none;" data-bs-toggle="modal" data-bs-target="#modalTambahDosen">
+                        <i class="bi bi-plus-lg"></i> Tambah Data
+                    </button>
+                </div>
             </div>
 
             <?php if ($message != ''): ?>
                 <div class="alert alert-<?= $msg_status ?> alert-dismissible fade show border-0 shadow-sm rounded-3" role="alert">
                     <i class="bi bi-info-circle-fill me-2"></i> <?= htmlspecialchars($message) ?>
-                    <button type="button" class="btn-close" data-bs-alert="close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             <?php endif; ?>
 
             <div class="card shadow-sm">
-                <div class="card-body d-flex flex-column p-4" style="min-height: 540px;">
+                <div class="card-body d-flex flex-column p-4">
                     <div class="table-responsive table-responsive-konsisten flex-grow-1">
                         <table class="table table-hover align-middle mb-0">
                             <thead>
                                 <tr>
-                                    <th style="width: 8%">Foto</th>
+                                    <th style="width: 10%">Foto</th>
                                     <th style="width: 15%">NIDN</th>
                                     <th style="width: 25%">Nama Lengkap</th>
-                                    <th style="width: 12%" class="text-center">Pendidikan</th>
-                                    <th style="width: 20%">Kontak / Email</th>
-                                    <th style="width: 12%">Jabatan</th>
-                                    <th style="width: 10%">Status</th>
+                                    <th style="width: 13%" class="text-center">Pendidikan</th>
+                                    <th style="width: 22%">Kontak / Email</th>
+                                    <th style="width: 13%">Jabatan</th>
+                                    <th style="width: 12%">Status</th>
                                     <th style="width: 10%" class="text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php if ($result && $result->num_rows > 0): ?>
+                                <?php if ($jumlah_data_sekarang > 0): ?>
                                     <?php while($row = $result->fetch_assoc()): ?>
-                                    <tr style="height: 75px;">
+                                    <tr style="height: 81px;">
                                         <td>
                                             <?php
                                             $avatar_default = "https://ui-avatars.com/api/?name=" . urlencode($row['nama']) . "&background=f1f5f9&color=475569&bold=true";
@@ -355,17 +403,17 @@ $result = $db->query("SELECT * FROM dosen ORDER BY id_dosen DESC LIMIT $start, $
                                                 }
                                             }
                                             ?>
-                                            <img src="<?= $path_foto ?>" class="img-table border" alt="Foto" onerror="this.src='<?= $avatar_default ?>'">
+                                            <img src="<?= $path_foto ?>" class="img-table border shadow-sm" alt="Foto" onerror="this.src='<?= $avatar_default ?>'">
                                         </td>
                                         <td class="fw-semibold text-secondary"><?= htmlspecialchars($row['nidn']) ?></td>
                                         <td>
-                                            <div class="fw-bold text-dark"><?= htmlspecialchars($row['nama']) ?></div>
+                                            <div class="fw-bold text-dark text-truncate" title="<?= htmlspecialchars($row['nama']) ?>"><?= htmlspecialchars($row['nama']) ?></div>
                                         </td>
                                         <td class="text-center">
                                             <span class="badge bg-light text-dark border small px-2 py-1"><?= !empty($row['pendidikan_terakhir']) ? htmlspecialchars($row['pendidikan_terakhir']) : '-' ?></span>
                                         </td>
                                         <td>
-                                            <div class="small fw-medium"><i class="bi bi-envelope text-muted me-1"></i><?= htmlspecialchars($row['email']) ?></div>
+                                            <div class="small fw-medium text-truncate" title="<?= htmlspecialchars($row['email']) ?>"><i class="bi bi-envelope text-muted me-1"></i><?= htmlspecialchars($row['email']) ?></div>
                                             <div class="small text-muted mt-1"><i class="bi bi-whatsapp text-muted me-1"></i><?= htmlspecialchars($row['no_hp']) ?></div>
                                         </td>
                                         <td>
@@ -382,7 +430,7 @@ $result = $db->query("SELECT * FROM dosen ORDER BY id_dosen DESC LIMIT $start, $
                                                         onclick='bukaModalEdit(<?= htmlspecialchars(json_encode($row, JSON_HEX_APOS | JSON_HEX_QUOT), ENT_QUOTES, 'UTF-8') ?>)'>
                                                     <i class="bi bi-pencil-square"></i>
                                                 </button>
-                                                <a href="data_dosen.php?delete=<?= $row['id_dosen'] ?>" class="btn btn-sm btn-light border text-danger rounded-3" 
+                                                <a href="data_dosen.php?delete=<?= $row['id_dosen'] ?>&sort=<?= $sort ?>&order=<?= $order ?>" class="btn btn-sm btn-light border text-danger rounded-3" 
                                                    onclick="return confirm('Apakah Anda yakin ingin menghapus data dosen <?= htmlspecialchars($row['nama'], ENT_QUOTES) ?> beserta akun loginnya?')">
                                                     <i class="bi bi-trash3-fill"></i>
                                                 </a>
@@ -390,9 +438,26 @@ $result = $db->query("SELECT * FROM dosen ORDER BY id_dosen DESC LIMIT $start, $
                                         </td>
                                     </tr>
                                     <?php endwhile; ?>
-                                <?php else: ?>
-                                    <tr><td colspan="8" class="text-center text-muted py-5">Belum ada data dosen terdaftar.</td></tr>
                                 <?php endif; ?>
+
+                                <?php 
+                                $sisa_baris = $limit - $jumlah_data_sekarang;
+                                if ($sisa_baris > 0): 
+                                    for ($i = 0; $i < $sisa_baris; $i++):
+                                ?>
+                                    <tr style="height: 81px;">
+                                        <td colspan="8" class="text-center text-muted small bg-white opacity-50">
+                                            <?php if ($jumlah_data_sekarang == 0 && $i == 2): ?>
+                                                Belum ada data dosen terdaftar.
+                                            <?php else: ?>
+                                                &nbsp;
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php 
+                                    endfor;
+                                endif; 
+                                ?>
                             </tbody>
                         </table>
                     </div>
@@ -401,15 +466,15 @@ $result = $db->query("SELECT * FROM dosen ORDER BY id_dosen DESC LIMIT $start, $
                         <nav class="mt-auto pt-3 border-top">
                             <ul class="pagination justify-content-center mb-0">
                                 <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
-                                    <a class="page-link rounded-start-3" href="data_dosen.php?page=<?= $page - 1 ?>">Sebelumnya</a>
+                                    <a class="page-link rounded-start-3" href="data_dosen.php?page=<?= $page - 1 ?>&sort=<?= $sort ?>&order=<?= $order ?>">Sebelumnya</a>
                                 </li>
                                 <?php for($i = 1; $i <= $total_pages; $i++): ?>
                                     <li class="page-item <?= ($page == $i) ? 'active' : '' ?>">
-                                        <a class="page-link" href="data_dosen.php?page=<?= $i ?>"><?= $i ?></a>
+                                        <a class="page-link" href="data_dosen.php?page=<?= $i ?>&sort=<?= $sort ?>&order=<?= $order ?>"><?= $i ?></a>
                                     </li>
                                 <?php endfor; ?>
                                 <li class="page-item <?= ($page >= $total_pages) ? 'disabled' : '' ?>">
-                                    <a class="page-link rounded-end-3" href="data_dosen.php?page=<?= $page + 1 ?>">Selanjutnya</a>
+                                    <a class="page-link rounded-end-3" href="data_dosen.php?page=<?= $page + 1 ?>&sort=<?= $sort ?>&order=<?= $order ?>">Selanjutnya</a>
                                 </li>
                             </ul>
                         </nav>
@@ -554,15 +619,14 @@ $result = $db->query("SELECT * FROM dosen ORDER BY id_dosen DESC LIMIT $start, $
                             </select>
                         </div>
                         <div class="col-md-12">
-                            <label class="form-label fw-semibold small text-secondary">Ganti Foto Profil</label>
+                            <label class="form-label fw-semibold small text-secondary">Foto Profil (Biarkan kosong jika tidak diubah)</label>
                             <input type="file" name="foto" class="form-control rounded-3" accept="image/*">
-                            <div class="form-text text-muted small">Biarkan kosong jika tidak ingin mengubah foto saat ini.</div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer bg-light p-3 border-top-0">
                     <button type="button" class="btn btn-light border rounded-3" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-dark rounded-3 px-4 fw-semibold" style="background-color: #1e2640; border: none;">Perbarui Data</button>
+                    <button type="submit" class="btn btn-warning rounded-3 px-4 text-darkfw-semibold">Update Data</button>
                 </div>
             </form>
         </div>
@@ -577,21 +641,15 @@ function bukaModalEdit(data) {
     document.getElementById('edit_nama').value = data.nama;
     document.getElementById('edit_tgl_lahir').value = data.tgl_lahir;
     document.getElementById('edit_jenis_kelamin').value = data.jenis_kelamin;
-    document.getElementById('edit_alamat').value = data.alamat;
     document.getElementById('edit_no_hp').value = data.no_hp;
     document.getElementById('edit_email').value = data.email;
+    document.getElementById('edit_alamat').value = data.alamat;
     document.getElementById('edit_pendidikan_terakhir').value = data.pendidikan_terakhir;
     document.getElementById('edit_jabatan').value = data.jabatan;
     document.getElementById('edit_status').value = data.status;
-    
-    var modal = new bootstrap.Modal(document.getElementById('modalEditDosen'));
-    modal.show();
-}
 
-function handleLogout() {
-    if(confirm('Apakah Anda yakin ingin keluar dari sistem?')) {
-        window.location.href = '../logout.php';
-    }
+    var modal = new Bootstrap.Modal(document.getElementById('modalEditDosen'));
+    modal.show();
 }
 </script>
 </body>

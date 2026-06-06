@@ -36,26 +36,27 @@ $current_page = basename($_SERVER['PHP_SELF']);
     .sidebar {
         width: 260px;
         min-width: 260px;
-        background-color: #1e2640; /* Slate Dark Premium sesuai gambar */
+        background-color: #1e2640;
+        /* Slate Dark Premium sesuai gambar */
         color: #94a3b8;
         display: flex;
         flex-direction: column;
-        box-shadow: 4px 0 20px rgba(0,0,0,0.05);
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.05);
         z-index: 1000;
     }
 
     /* Bagian Logo / Brand Zone */
     .sidebar-brand {
-        padding: 35px 20px 25px 20px;
+        padding: 25px 20px 20px 20px; /* Disesuaikan agar pas dengan ukuran logo baru */
         text-align: center;
     }
 
     .sidebar-brand img {
-        width: 65px;
+        width: 95px; /* DIUBAH: Diperbesar dari 65px agar lebih kelihatan */
         height: auto;
         object-fit: contain;
-        filter: drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.2));
-        margin-bottom: 12px;
+        filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.25)); /* Shadow dipertegas sedikit */
+        margin-bottom: 14px;
     }
 
     .sidebar-brand h4 {
@@ -67,7 +68,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
     }
 
     .sidebar-brand small {
-        color: #0ea5e9; /* Warna cyan/biru muda */
+        color: #0ea5e9;
+        /* Warna cyan/biru muda */
         font-size: 0.9rem;
         font-weight: 500;
         display: block;
@@ -88,7 +90,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
         display: flex;
         align-items: center;
         padding: 16px 28px;
-        color: #94a3b8; /* Warna teks redup saat tidak aktif */
+        color: #94a3b8;
+        /* Warna teks redup saat tidak aktif */
         text-decoration: none;
         font-weight: 500;
         font-size: 0.95rem;
@@ -97,14 +100,16 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
     /* Efek Hover Menu */
     .sidebar-menu a:hover {
-        background-color: #2a3454; /* Sedikit lebih terang dari bg sidebar */
+        background-color: #2a3454;
+        /* Sedikit lebih terang dari bg sidebar */
         color: #f8fafc;
     }
 
     /* Menu Aktif Sesuai Halaman (Sama persis seperti screenshot) */
     .sidebar-menu li.active a {
         background-color: #2a3454;
-        color: #0ea5e9; /* Teks berubah biru muda */
+        color: #0ea5e9;
+        /* Teks berubah biru muda */
         font-weight: 600;
     }
 
@@ -134,7 +139,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
     /* Menu Khusus Logout */
     .sidebar-menu a.logout-btn {
-        color: #ef4444; /* Warna merah */
+        color: #ef4444;
+        /* Warna merah */
     }
 
     .sidebar-menu a.logout-btn:hover {
@@ -185,7 +191,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </li>
 
         <li>
-            <a href="javascript:void(0)" onclick="handleLogout()" class="logout-btn">
+            <a href="../logout.php" onclick="return confirm('Apakah Anda yakin ingin logout?')" class="logout-btn">
                 <i class="bi bi-power me-3 fs-5"></i> Logout
             </a>
         </li>
