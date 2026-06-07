@@ -30,7 +30,7 @@ $row_matkul = $stmt_m->get_result()->fetch_assoc();
 $total_matkul = $row_matkul['total_matkul'] ?? 0;
 $stmt_m->close();
 
-// B. Menghitung Total Mahasiswa yang diajar oleh dosen ini (dihitung berdasarkan jumlah baris kelas yang disiapkan oleh admin)
+// B. PERBAIKAN: Menghitung Total Mahasiswa Kumulatif di Seluruh Kelas Dosen Ini
 $q_mhs = "SELECT COUNT(n.id_mhs) AS total_mhs 
           FROM nilai n 
           JOIN kuliah k ON n.id_kuliah = k.id_kuliah 
@@ -83,6 +83,7 @@ $conn->close();
             margin: 0;
             padding: 0;
             overflow: hidden;
+            /* Mengunci scroll utama agar layout tetap presisi */
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             font-size: 14px;
             color: #1e293b;
@@ -132,7 +133,7 @@ $conn->close();
             overflow: hidden;
         }
 
-        /* SIDEBAR: ROYAL BLUE CAMPUS THEME */
+        /* SIDEBAR TETAP DI SAMPING - RESPONSIF RINGKAS DI TABLET & HP */
         .sidebar {
             width: 260px;
             background-color: #1e3a8a;
@@ -141,6 +142,7 @@ $conn->close();
             flex-direction: column;
             height: 100%;
             flex-shrink: 0;
+            transition: width 0.2s ease-in-out;
         }
 
         .sidebar .border-bottom {
@@ -160,6 +162,7 @@ $conn->close();
             margin: 3px 0;
             position: relative;
             transition: all 0.2s ease;
+            white-space: nowrap;
         }
 
         .sidebar .nav-link:hover,
@@ -230,6 +233,7 @@ $conn->close();
             overflow: hidden;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             box-shadow: 0 4px 15px rgba(15, 23, 42, 0.04);
+            height: 100%;
         }
 
         .card-stat-variant:hover {
@@ -300,14 +304,11 @@ $conn->close();
             transform: scale(1.05);
         }
 
-        /* ==========================================================================
-           FORMAL & ACADEMIC GRID TABLE (BIRU GELAP FIELD KOLOM)
-           ========================================================================== */
+        /* FORMAL & ACADEMIC GRID TABLE */
         .card-table-container-grid {
             background-color: #ffffff;
             border: 1px solid #cbd5e1;
             border-radius: 12px;
-            /* Lebih patah dikit agar formal instansi */
             box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
             overflow: hidden;
         }
@@ -327,7 +328,6 @@ $conn->close();
             border-collapse: collapse;
         }
 
-        /* FIELD KOLOM UTAMA: WARNA BIRU GELAP PREMIUM */
         .table-custom-grid thead tr {
             background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%) !important;
         }
@@ -338,7 +338,6 @@ $conn->close();
             text-transform: uppercase;
             letter-spacing: 1px;
             color: #ffffff !important;
-            /* Teks Putih Kontras di Atas Biru Gelap */
             padding: 16px 24px;
             border: none;
         }
@@ -351,7 +350,6 @@ $conn->close();
             border-bottom: 1px solid #e2e8f0 !important;
         }
 
-        /* Hover efek baris formal lembut */
         .table-custom-grid tbody tr:hover td {
             background-color: #f8fafc !important;
         }
@@ -360,7 +358,6 @@ $conn->close();
             border-bottom: none !important;
         }
 
-        /* Aksen komponen dalam tabel */
         .badge-time-formal {
             background-color: #f1f5f9;
             color: #0f172a;
@@ -373,7 +370,6 @@ $conn->close();
             align-items: center;
             gap: 6px;
             font-family: monospace;
-            /* Jam kuliah format rapi */
         }
 
         .badge-room-formal {
@@ -399,7 +395,6 @@ $conn->close();
             letter-spacing: 0.3px;
         }
 
-        /* Kopi Kosong State */
         .empty-state-icon {
             color: #0284c7;
             background-color: #e0f2fe;
@@ -412,8 +407,6 @@ $conn->close();
             margin-bottom: 16px;
         }
 
-        /* ========================================================================== */
-
         .footer {
             background-color: #ffffff;
             border-top: 1px solid #e2e8f0;
@@ -423,34 +416,89 @@ $conn->close();
             flex-shrink: 0;
         }
 
-        @media (max-width: 767.98px) {
-
-            html,
-            body {
-                overflow: auto;
-                height: auto;
-            }
-
-            .main-wrapper {
-                flex-direction: column;
-                overflow: visible;
-            }
-
+        /* MEDIA QUERIES UNTUK TAMPILAN RESPONSIF GADGET (TABLET & HP) */
+        @media (max-width: 991.98px) {
             .sidebar {
-                width: 100%;
-                height: auto;
-                border-right: none;
-                border-bottom: 1px solid #e2e8f0;
+                width: 70px;
+                /* Lebar mengecil secara elegan saat di gadget */
             }
 
-            .right-layout {
-                height: auto;
-                overflow: visible;
+            .sidebar .text-truncate,
+            .sidebar .nav-link span {
+                display: none !important;
+                /* Menyembunyikan text menu sidebar di HP/Tablet */
             }
 
-            .content-scrollable {
-                overflow-y: visible;
-                height: auto;
+            .sidebar .nav-link {
+                text-align: center;
+                padding: 15px 0;
+            }
+
+            .sidebar .nav-link i {
+                margin-right: 0 !important;
+                font-size: 16px;
+            }
+
+            .sidebar .profile-section img {
+                width: 42px !important;
+                height: 42px !important;
+            }
+
+            .welcome-watermark {
+                font-size: 6rem;
+                bottom: -15px;
+            }
+
+            /* Optimasi ukuran teks card statistik saat 3 sejajar di layar kecil */
+            .card-stat-variant h3 {
+                font-size: 15px !important;
+            }
+
+            .card-stat-variant h4 {
+                font-size: 11px !important;
+            }
+
+            .card-stat-variant .fw-bold {
+                font-size: 8.5px !important;
+            }
+
+            .card-stat-variant .fs-6 {
+                font-size: 10px !important;
+            }
+
+            .card-stat-variant .card-body {
+                padding: 10px 6px !important;
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .card-stat-variant .card-body div[class*="bg-soft-"] {
+                margin-right: 0 !important;
+                margin-bottom: 8px;
+                padding: 8px !important;
+            }
+
+            .watermark-icon-vibrant {
+                display: none;
+                /* Sembunyikan watermark icon di HP agar tidak menumpuk teks */
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .table-header-minimalist {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .card-welcome-premium {
+                border-radius: 12px;
+                padding: 20px !important;
+            }
+
+            .table-custom-grid th,
+            .table-custom-grid td {
+                padding: 12px 16px;
             }
         }
     </style>
@@ -459,17 +507,17 @@ $conn->close();
 <body>
 
     <nav class="navbar navbar-expand-lg navbar-dark custom-navbar shadow-sm sticky-top" style="z-index: 1050;">
-        <div class="container-fluid px-4">
-            <a class="navbar-brand fw-bold d-flex align-items-center" href="dashboard_dosen.php">
+        <div class="container-fluid px-3 px-sm-4">
+            <a class="navbar-brand fw-bold d-flex align-items-center me-auto" href="dashboard_dosen.php">
                 <img src="../assets/img/logo-unri.png" alt="Logo UNRI" class="logo-navbar me-2">
                 <span class="d-flex flex-column">
-                    <span class="text-white fw-bold mb-0" style="font-size: 15px; line-height: 1.2; letter-spacing: 0.3px;">SIAKAD Portal</span>
+                    <span class="text-white fw-bold mb-0" style="font-size: 15px; line-height: 1.2; letter-spacing: 0.3px;">SIAKAD</span>
                     <span class="text-white-50" style="font-size: 11px; font-weight: 400; opacity: 0.85;">Universitas Riau</span>
                 </span>
             </a>
             <div class="ms-auto">
-                <a class="btn btn-sm btn-logout-custom px-3 py-1.5" href="../logout.php">
-                    <i class="fa-solid fa-right-from-bracket me-1.5"></i> Keluar
+                <a class="btn btn-sm btn-logout-custom px-2 px-sm-3 py-1.5" href="../logout.php">
+                    <i class="fa-solid fa-right-from-bracket me-1.5"></i> <span class="d-none d-sm-inline">Keluar</span>
                 </a>
             </div>
         </div>
@@ -477,8 +525,8 @@ $conn->close();
 
     <div class="main-wrapper">
 
-        <div class="sidebar py-3">
-            <div class="text-center pb-4 px-3 border-bottom mb-3">
+        <div class="sidebar py-3" id="sidebarMenu">
+            <div class="text-center pb-4 px-3 border-bottom mb-3 profile-section">
                 <div class="position-relative d-inline-block mb-2">
                     <img src="<?= $foto_path ?>" class="rounded-circle border border-2 border-primary-subtle" style="width: 78px; height: 78px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
                 </div>
@@ -488,32 +536,32 @@ $conn->close();
             <ul class="nav flex-column" style="flex: 1;">
                 <li class="nav-item">
                     <a class="nav-link active" href="dashboard_dosen.php">
-                        <i class="fa-solid fa-house-chimney me-2.5"></i> Dashboard
+                        <i class="fa-solid fa-house-chimney me-2.5"></i> <span>Dashboard</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="matakuliah.php">
-                        <i class="fa-solid fa-book-open me-2.5"></i> Daftar Mata Kuliah
+                        <i class="fa-solid fa-book-open me-2.5"></i> <span>Daftar Mata Kuliah</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="jadwal.php">
-                        <i class="fa-solid fa-calendar-check me-2.5"></i> Jadwal Mengajar
+                        <i class="fa-solid fa-calendar-check me-2.5"></i> <span>Jadwal Mengajar</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="input_nilai.php">
-                        <i class="fa-solid fa-file-pen me-2.5"></i> Input Nilai
+                        <i class="fa-solid fa-file-pen me-2.5"></i> <span>Input Nilai</span>
                     </a>
                 </li>
                 <li class="nav-item mt-2 border-top pt-2">
                     <a class="nav-link text-secondary nav-item-normal" href="edit_profil.php">
-                        <i class="fa-solid fa-user-gear me-2.5"></i> Pengaturan Profil
+                        <i class="fa-solid fa-user-gear me-2.5"></i> <span>Pengaturan Profil</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link nav-link-danger-custom" href="ganti_password.php">
-                        <i class="fa-solid fa-lock-open me-2.5"></i> Ganti Password
+                        <i class="fa-solid fa-lock-open me-2.5"></i> <span>Ganti Password</span>
                     </a>
                 </li>
             </ul>
@@ -521,12 +569,12 @@ $conn->close();
 
         <div class="right-layout">
 
-            <div class="content-scrollable px-4 py-4">
+            <div class="content-scrollable px-3 px-sm-4 py-4">
 
                 <div class="card-welcome-premium p-4 mb-4">
                     <i class="fa-solid fa-graduation-cap welcome-watermark"></i>
                     <div style="position: relative; z-index: 2;">
-                        <h4 class="fw-bold text-white mb-1" style="letter-spacing: -0.3px;">
+                        <h4 class="fw-bold text-white mb-1" style="letter-spacing: -0.3px; font-size: calc(1.2rem + 0.3vw);">
                             Selamat Datang Kembali, <?= htmlspecialchars($nama_dosen) ?>.
                         </h4>
                         <p class="text-white-50 mb-0" style="font-size: 13.5px; max-width: 85%; font-weight: 400;">
@@ -535,41 +583,41 @@ $conn->close();
                     </div>
                 </div>
 
-                <div class="row g-3 mb-4">
-                    <div class="col-md-4">
+                <div class="row g-2 g-sm-3 mb-4">
+                    <div class="col-4">
                         <div class="card card-stat-variant card-merah">
                             <i class="fa-solid fa-graduation-cap watermark-icon-vibrant"></i>
-                            <div class="card-body p-3.5 d-flex align-items-center" style="position: relative; z-index: 2;">
+                            <div class="card-body p-3 d-flex align-items-center" style="position: relative; z-index: 2;">
                                 <div class="p-3 rounded-3 bg-soft-merah me-3">
                                     <i class="fa-solid fa-graduation-cap fa-lg"></i>
                                 </div>
                                 <div>
                                     <div class="fw-bold" style="font-size: 11px; letter-spacing: 0.5px; color: #b91c1c !important;">MATA KULIAH DIAMPU</div>
-                                    <h3 class="fw-bold text-dark mb-0 mt-0.5" style="letter-spacing: -0.5px;"><?= $total_matkul ?> <span class="fs-6 text-muted fw-normal">Kelas</span></h3>
+                                    <h3 class="fw-bold text-dark mb-0 mt-0.5" style="letter-spacing: -0.5px; font-size: calc(1.3rem + 0.4vw);"><?= $total_matkul ?> <span class="fs-6 text-muted fw-normal">Kelas</span></h3>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-4">
                         <div class="card card-stat-variant card-kuning">
                             <i class="fa-solid fa-user-graduate watermark-icon-vibrant"></i>
-                            <div class="card-body p-3.5 d-flex align-items-center" style="position: relative; z-index: 2;">
+                            <div class="card-body p-3 d-flex align-items-center" style="position: relative; z-index: 2;">
                                 <div class="p-3 rounded-3 bg-soft-kuning me-3">
                                     <i class="fa-solid fa-user-graduate fa-lg"></i>
                                 </div>
                                 <div>
                                     <div class="fw-bold" style="font-size: 11px; letter-spacing: 0.5px; color: #a16207 !important;">MAHASISWA DIAJAR</div>
-                                    <h3 class="fw-bold text-dark mb-0 mt-0.5" style="letter-spacing: -0.5px;"><?= $total_mhs ?> <span class="fs-6 text-muted fw-normal">Siswa</span></h3>
+                                    <h3 class="fw-bold text-dark mb-0 mt-0.5" style="letter-spacing: -0.5px; font-size: calc(1.3rem + 0.4vw);"><?= $total_mhs ?> <span class="fs-6 text-muted fw-normal">Siswa</span></h3>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-4">
                         <div class="card card-stat-variant card-hijau">
                             <i class="fa-solid fa-circle-check watermark-icon-vibrant"></i>
-                            <div class="card-body p-3.5 d-flex align-items-center" style="position: relative; z-index: 2;">
+                            <div class="card-body p-3 d-flex align-items-center" style="position: relative; z-index: 2;">
                                 <div class="p-3 rounded-3 bg-soft-hijau me-3">
                                     <i class="fa-solid fa-circle-check fa-lg"></i>
                                 </div>
@@ -611,7 +659,7 @@ $conn->close();
                                                 </div>
                                             </td>
                                             <td>
-                                                <div class="d-flex align-items-center gap-2 mb-1">
+                                                <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
                                                     <span class="class-code-pill"><?= htmlspecialchars($row['kode_mk']) ?></span>
                                                     <span class="fw-bold text-dark" style="font-size: 14px;">
                                                         <?= htmlspecialchars($row['nama_mk']) ?>
@@ -635,7 +683,7 @@ $conn->close();
                                                 <i class="fa-solid fa-mug-hot fs-4"></i>
                                             </div>
                                             <h6 class="fw-bold text-dark mb-1" style="font-size: 14px;">Tidak Ada Jadwal Mengajar Hari Ini</h6>
-                                            <p class="text-muted small mb-0">Hari ini (<?= $hari_ini ?>) Anda bebas dari kelas perkuliahan tatap muka.</p>
+                                            <p class="text-muted small mb-0 px-3">Hari ini (<?= $hari_ini ?>) tidak terdapat agenda perkuliahan tatap muka yang dijadwalkan.</p>
                                         </td>
                                     </tr>
                                 <?php endif; ?>
@@ -650,7 +698,7 @@ $conn->close();
                 <div class="container-fluid px-4">
                     <div class="row align-items-center justify-content-between flex-column flex-sm-row">
                         <div class="col-auto text-center text-sm-start mb-2 mb-sm-0">
-                            <span class="fw-semibold text-secondary">SIAKAD Universitas Riau</span> &copy; <?= date('Y'); ?>.
+                            <span class="fw-semibold text-secondary">SIAKAD Universitas Riau</span> &copy; <?= date('Y'); ?>. Seluruh Hak Cipta Dilindungi.
                         </div>
                         <div class="col-auto text-center text-sm-end">
                             <span class="me-3" style="font-size: 12px; font-weight: 500;"><i class="fa-solid fa-circle-shield text-success me-1"></i> Sesi Dosen Aman</span>

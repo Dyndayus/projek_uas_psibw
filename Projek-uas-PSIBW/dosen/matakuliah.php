@@ -101,6 +101,7 @@ $kuliah_result = $stmt_k->get_result();
             flex-direction: column;
             height: 100%;
             flex-shrink: 0;
+            transition: transform 0.3s ease;
         }
 
         .sidebar .border-bottom {
@@ -207,16 +208,14 @@ $kuliah_result = $stmt_k->get_result();
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
-        /* Cetakan kolom dikunci mutlak berurutan */
         .grid-table-header,
         .grid-table-row {
             display: grid !important;
-            grid-template-columns: 0.8fr 1.5fr 5fr 1.2fr 1.5fr; /* Rasio proporsi kolom pakem */
+            grid-template-columns: 0.6fr 1.5fr 4.5fr 1.2fr 1.7fr; 
             align-items: center;
             padding: 14px 16px;
         }
 
-        /* Header Style */
         .grid-table-header {
             background-color: #1e3a8a !important;
             color: #ffffff !important;
@@ -225,7 +224,6 @@ $kuliah_result = $stmt_k->get_result();
             border-bottom: none;
         }
 
-        /* Row Style */
         .grid-table-row {
             border-bottom: 1px solid #e2e8f0;
             background-color: #ffffff;
@@ -241,7 +239,6 @@ $kuliah_result = $stmt_k->get_result();
             border-bottom: none;
         }
 
-        /* Alignment Konten Kolom Grid */
         .col-center-align {
             text-align: center;
             justify-self: center;
@@ -253,7 +250,6 @@ $kuliah_result = $stmt_k->get_result();
             padding-right: 15px;
         }
 
-        /* Komponen Badge & Teks Khusus */
         .badge-code-custom {
             background-color: #f1f5f9;
             border: 1px solid #cbd5e1;
@@ -287,23 +283,101 @@ $kuliah_result = $stmt_k->get_result();
             flex-shrink: 0;
         }
 
-        /* Responsivitas Layar Seluler */
-        @media (max-width: 767.98px) {
-            html, body { overflow: auto; height: auto; }
-            .main-wrapper { flex-direction: column; overflow: visible; }
-            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #e2e8f0; }
-            .right-layout { height: auto; overflow: visible; }
-            .content-scrollable { overflow-y: visible; height: auto; }
-
-            .grid-table-header { display: none !important; }
-            .grid-table-row {
-                display: flex !important; /* Kembali ke susunan tumpuk vertikal di HP */
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
-                padding: 14px;
+        /* ======================================================== */
+        /* RESPONSIVITAS SEAMLESS UNTUK LAYAR MOBILE & TABLET       */
+        /* ======================================================== */
+        @media (max-width: 991.98px) {
+            html, body { 
+                overflow: auto; 
+                height: auto; 
             }
-            .col-center-align { text-align: left; justify-self: flex-start; }
+            body {
+                display: block;
+            }
+            .main-wrapper { 
+                display: block;
+                overflow: visible; 
+            }
+            
+            /* Sembunyikan sidebar bawaan, pakai mode Offcanvas Bootstrap */
+            .sidebar { 
+                position: fixed;
+                top: 0;
+                left: 0;
+                z-index: 1045;
+                width: 280px;
+                height: 100vh;
+                transform: translateX(-100%);
+                box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .right-layout { 
+                height: auto; 
+                overflow: visible; 
+            }
+            .content-scrollable { 
+                overflow-y: visible; 
+                height: auto; 
+            }
+
+            /* Transformasi CSS Grid ke Card-List Data */
+            .grid-table-header { 
+                display: none !important; 
+            }
+            .grid-table-container {
+                border: none;
+                background: transparent;
+                box-shadow: none;
+            }
+            .grid-table-row {
+                display: flex !important; 
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+                padding: 20px;
+                background: #ffffff;
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                margin-bottom: 16px;
+                box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            }
+            .grid-table-row:hover {
+                background-color: #ffffff;
+            }
+            
+            /* Inject Label panduan data pada layar kecil */
+            .grid-table-row > div {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                text-align: right;
+                width: 100%;
+            }
+            .grid-table-row > div::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: #64748b;
+                text-align: left;
+                font-size: 13px;
+                padding-right: 15px;
+            }
+            
+            .col-center-align { 
+                text-align: right; 
+                justify-self: flex-end; 
+            }
+            .col-nama {
+                padding-right: 0;
+                text-align: right;
+                justify-content: flex-end;
+            }
+            .grid-table-row .btn {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -311,25 +385,31 @@ $kuliah_result = $stmt_k->get_result();
 <body>
 
     <nav class="navbar navbar-expand-lg navbar-dark custom-navbar shadow-sm sticky-top" style="z-index: 1050;">
-        <div class="container-fluid px-4">
-            <a class="navbar-brand fw-bold d-flex align-items-center" href="dashboard_dosen.php">
+        <div class="container-fluid px-3 px-sm-4">
+            <button class="navbar-toggler border-0 me-2 px-2" type="button" id="sidebarToggle" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <a class="navbar-brand fw-bold d-flex align-items-center me-auto" href="dashboard_dosen.php">
                 <img src="../assets/img/logo-unri.png" alt="Logo UNRI" class="logo-navbar me-2">
                 <span class="d-flex flex-column">
-                    <span class="text-white fw-bold mb-0" style="font-size: 15px; line-height: 1.2; letter-spacing: 0.3px;">SIAKAD Portal</span>
+                    <span class="text-white fw-bold mb-0" style="font-size: 15px; line-height: 1.2; letter-spacing: 0.3px;">SIAKAD</span>
                     <span class="text-white-50" style="font-size: 11px; font-weight: 400; opacity: 0.85;">Universitas Riau</span>
                 </span>
             </a>
             <div class="ms-auto">
                 <a class="btn btn-sm btn-logout-custom px-3 py-1.5" href="../logout.php">
-                    <i class="fa-solid fa-right-from-bracket me-1.5"></i> Keluar
+                    <i class="fa-solid fa-right-from-bracket me-1.5"></i> <span class="d-none d-sm-inline">Keluar</span>
                 </a>
             </div>
         </div>
     </nav>
 
+    <div class="modal-backdrop fade show d-none" id="sidebarBackdrop" style="z-index: 1040;"></div>
+
     <div class="main-wrapper">
 
-        <div class="sidebar py-3">
+        <div class="sidebar py-3" id="sidebarMenu">
             <div class="text-center pb-4 px-3 border-bottom mb-3">
                 <div class="position-relative d-inline-block mb-2">
                     <img src="<?= $foto_path ?>" class="rounded-circle border border-2 border-primary-subtle" style="width: 78px; height: 78px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
@@ -373,7 +453,7 @@ $kuliah_result = $stmt_k->get_result();
 
         <div class="right-layout">
 
-            <div class="content-scrollable px-3 px-sm-4 py-4">
+            <div class="content-scrollable px-2 px-sm-4 py-4">
 
                 <div class="profile-clean-card mx-auto" style="max-width: 1100px;">
 
@@ -382,12 +462,12 @@ $kuliah_result = $stmt_k->get_result();
                             <i class="fa-solid fa-book"></i>
                         </div>
                         <div>
-                            <h4 class="fw-bold mb-1" style="letter-spacing: -0.5px;">Mata Kuliah Yang Diampu</h4>
-                            <p class="mb-0 text-white-50" style="font-size: 12.5px;">Silakan pilih salah satu mata kuliah aktif di bawah ini untuk memulai pengisian atau kelola bobot nilai mahasiswa.</p>
+                            <h4 class="fw-bold mb-1" style="letter-spacing: -0.5px; font-size: calc(1.2rem + 0.3vw);">Mata Kuliah Yang Diampu</h4>
+                            <p class="mb-0 text-white-50 d-none d-sm-block" style="font-size: 12.5px;">Silakan pilih salah satu mata kuliah aktif di bawah ini untuk memulai pengisian atau kelola bobot nilai mahasiswa.</p>
                         </div>
                     </div>
 
-                    <div class="p-4 bg-white">
+                    <div class="p-3 p-sm-4 bg-white">
 
                         <?php if (!($kuliah_result && $kuliah_result->num_rows > 0)): ?>
                             <div class="text-center py-5 border rounded-3 bg-light-subtle">
@@ -413,25 +493,25 @@ $kuliah_result = $stmt_k->get_result();
                                 ?>
                                     <div class="grid-table-row">
                                         
-                                        <div class="col-center-align text-muted fw-semibold">
-                                            <?= $no++ ?>
+                                        <div class="col-center-align text-muted fw-semibold" data-label="No Penugasan">
+                                            <span><?= $no++ ?></span>
                                         </div>
                                         
-                                        <div>
+                                        <div data-label="Kode Matakuliah">
                                             <span class="badge-code-custom"><?= htmlspecialchars($row['kode_mk']) ?></span>
                                         </div>
                                         
-                                        <div class="col-nama">
+                                        <div class="col-nama" data-label="Nama Mata Kuliah">
                                             <span class="fw-bold text-dark" style="font-size: 14.5px;">
                                                 <?= htmlspecialchars($row['nama_mk']) ?>
                                             </span>
                                         </div>
                                         
-                                        <div class="col-center-align">
+                                        <div class="col-center-align" data-label="Bobot SKS">
                                             <span class="badge-sks-custom"><?= htmlspecialchars($row['sks'] ?? '3') ?> SKS</span>
                                         </div>
                                         
-                                        <div class="col-center-align">
+                                        <div class="col-center-align" data-label="Aksi">
                                             <a href="input_nilai.php?id_kuliah=<?= $row['id_kuliah'] ?>" class="btn btn-sm btn-primary rounded-3 fw-medium px-3 py-1.5 shadow-sm d-inline-flex align-items-center" style="font-size: 12px; transition: all 0.2s;">
                                                 <i class="fa-solid fa-file-signature me-1.5"></i> Input Nilai
                                             </a>
@@ -454,10 +534,10 @@ $kuliah_result = $stmt_k->get_result();
                 <div class="container-fluid px-4">
                     <div class="row align-items-center justify-content-between flex-column flex-sm-row">
                         <div class="col-auto text-center text-sm-start mb-2 mb-sm-0">
-                            <span class="fw-semibold text-secondary">SIAKAD Universitas Riau</span> &copy; <?= date('Y'); ?>. Seluruh Hak Cipta Dilindungi.
+                            <span class="fw-semibold text-secondary">SIAKAD Universitas Riau</span> &copy; <?= date('Y'); ?>.
                         </div>
                         <div class="col-auto text-center text-sm-end">
-                            <span class="me-3" style="font-size: 12px; font-weight: 500;"><i class="fa-solid fa-circle-shield text-success me-1"></i> Sesi Dosen Aman</span>
+                            <span class="me-3" style="font-size: 12px; font-weight: 500;"><i class="fa-solid fa-circle-shield text-success me-1"></i> Sesi Aman</span>
                             <span class="text-muted" style="font-size: 11px;">v2.2.0</span>
                         </div>
                     </div>
@@ -469,6 +549,18 @@ $kuliah_result = $stmt_k->get_result();
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // SCRIPT UNTUK OPERASIONAL SIDEBAR DI MOBILE/HP
+        document.getElementById('sidebarToggle').addEventListener('click', function () {
+            document.getElementById('sidebarMenu').classList.add('show');
+            document.getElementById('sidebarBackdrop').classList.remove('d-none');
+        });
+
+        document.getElementById('sidebarBackdrop').addEventListener('click', function () {
+            document.getElementById('sidebarMenu').classList.remove('show');
+            document.getElementById('sidebarBackdrop').classList.add('d-none');
+        });
+    </script>
 </body>
 
 </html>

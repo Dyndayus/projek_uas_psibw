@@ -167,6 +167,7 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
             flex-direction: column;
             height: 100%;
             flex-shrink: 0;
+            transition: width 0.2s ease-in-out;
         }
 
         .sidebar .border-bottom {
@@ -193,6 +194,7 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
             margin: 3px 0;
             position: relative;
             transition: all 0.2s ease;
+            white-space: nowrap;
         }
 
         .sidebar .nav-link:hover,
@@ -220,12 +222,6 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
             border-bottom-right-radius: 4px;
         }
 
-        .sidebar .nav-link.active-merah {
-            background-color: #991b1b !important;
-            color: #fecdd3 !important;
-            font-weight: 700;
-        }
-
         .right-layout {
             flex: 1;
             display: flex;
@@ -240,18 +236,15 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
             background-color: #f8fafc;
         }
 
-        /* ======================================================== */
-        /* COLORFUL & VIBRANT INTERIOR CONTENT STYLING              */
-        /* ======================================================== */
+        /* CARD CONTENT STYLING */
         .profile-clean-card {
             background: #ffffff;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #cbd5e1;
             border-radius: 20px;
             box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.06);
             overflow: hidden;
         }
 
-        /* Colorful Gradient Header Block */
         .colorful-header-block {
             background: linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%);
             padding: 24px 30px;
@@ -279,7 +272,6 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
             margin-bottom: 6px;
         }
 
-        /* Input Form Dinamis Lebih Berwarna */
         .custom-form-group .form-control,
         .custom-form-group .form-select {
             font-size: 14px;
@@ -299,7 +291,6 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
             background-color: #fafafa;
         }
 
-        /* Kotak Informasi Terkunci Berwarna Ice Blue */
         .locked-fields-bg {
             background: linear-gradient(180deg, #f0f7ff 0%, #e0f2fe 100%);
             border: 1px solid #bae6fd;
@@ -323,7 +314,6 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
             box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
         }
 
-        /* Uploader Box Berwarna Cerah */
         .avatar-uploader-box {
             background: #f8fafc;
             border: 2px dashed #0284c7;
@@ -340,7 +330,6 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
             box-shadow: 0 4px 14px rgba(2, 132, 199, 0.2);
         }
 
-        /* Tombol Upload Berwarna Indigo */
         .file-upload-wrapper {
             position: relative;
             overflow: hidden;
@@ -377,7 +366,6 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
             cursor: pointer;
         }
 
-        /* Tombol Simpan Bergradasi Royal Blue */
         .btn-action-save {
             background: linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%);
             color: #ffffff;
@@ -403,7 +391,6 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
             box-shadow: none;
         }
 
-        /* FOOTER SINKRON */
         .footer {
             background-color: #ffffff;
             border-top: 1px solid #e2e8f0;
@@ -413,12 +400,46 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
             flex-shrink: 0;
         }
 
-        @media (max-width: 767.98px) {
-            html, body { overflow: auto; height: auto; }
-            .main-wrapper { flex-direction: column; overflow: visible; }
-            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #e2e8f0; }
-            .right-layout { height: auto; overflow: visible; }
-            .content-scrollable { overflow-y: visible; height: auto; }
+        /* MEDIA QUERIES UNTUK TAMPILAN GADGET (TABLET & HP) */
+        @media (max-width: 991.98px) {
+            .sidebar {
+                width: 70px; /* Sidebar mengecil otomatis */
+            }
+            .sidebar .text-truncate,
+            .sidebar .nav-link span {
+                display: none !important; /* Sembunyikan nama dosen dan teks menu */
+            }
+            .sidebar .nav-link {
+                text-align: center;
+                padding: 15px 0;
+            }
+            .sidebar .nav-link i {
+                margin-right: 0 !important;
+                font-size: 16px;
+            }
+            
+            /* FIX FOTO DOSEN DI SIDEBAR MENJADI RESPONSIF */
+            .sidebar .sidebar-profile-img {
+                width: 40px !important;
+                height: 40px !important;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .colorful-header-block {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 12px !important;
+                padding: 20px !important;
+            }
+            .profile-clean-card {
+                border-radius: 12px;
+            }
+            .avatar-uploader-box {
+                flex-direction: column;
+                text-align: center;
+                padding: 16px;
+            }
         }
     </style>
 </head>
@@ -426,17 +447,17 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
 <body>
 
     <nav class="navbar navbar-expand-lg navbar-dark custom-navbar shadow-sm sticky-top" style="z-index: 1050;">
-        <div class="container-fluid px-4">
-            <a class="navbar-brand fw-bold d-flex align-items-center" href="dashboard_dosen.php">
+        <div class="container-fluid px-3 px-sm-4">
+            <a class="navbar-brand fw-bold d-flex align-items-center me-auto" href="dashboard_dosen.php">
                 <img src="../assets/img/logo-unri.png" alt="Logo UNRI" class="logo-navbar me-2">
                 <span class="d-flex flex-column">
-                    <span class="text-white fw-bold mb-0" style="font-size: 15px; line-height: 1.2; letter-spacing: 0.3px;">SIAKAD Portal</span>
+                    <span class="text-white fw-bold mb-0" style="font-size: 15px; line-height: 1.2; letter-spacing: 0.3px;">SIAKAD</span>
                     <span class="text-white-50" style="font-size: 11px; font-weight: 400; opacity: 0.85;">Universitas Riau</span>
                 </span>
             </a>
             <div class="ms-auto">
-                <a class="btn btn-sm btn-logout-custom px-3 py-1.5" href="../logout.php">
-                    <i class="fa-solid fa-right-from-bracket me-1.5"></i> Keluar
+                <a class="btn btn-sm btn-logout-custom px-2 px-sm-3 py-1.5" href="../logout.php">
+                    <i class="fa-solid fa-right-from-bracket me-1.5"></i> <span class="d-none d-sm-inline">Keluar</span>
                 </a>
             </div>
         </div>
@@ -447,7 +468,7 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
         <div class="sidebar py-3">
             <div class="text-center pb-4 px-3 border-bottom mb-3">
                 <div class="position-relative d-inline-block mb-2">
-                    <img src="<?= $foto_path ?>" class="rounded-circle border border-2 border-primary-subtle" style="width: 78px; height: 78px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
+                    <img src="<?= $foto_path ?>" class="sidebar-profile-img img-fluid rounded-circle border border-2 border-primary-subtle" style="width: 78px; height: 78px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: all 0.2s ease-in-out;">
                 </div>
                 <div class="text-dosen-nama text-truncate small px-2"><?= htmlspecialchars($nama_dosen) ?></div>
             </div>
@@ -455,34 +476,34 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
             <ul class="nav flex-column" style="flex: 1;">
                 <li class="nav-item">
                     <a class="nav-link" href="dashboard_dosen.php">
-                        <i class="fa-solid fa-house-chimney me-2.5"></i> Dashboard
+                        <i class="fa-solid fa-house-chimney me-2.5"></i> <span>Dashboard</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="matakuliah.php">
-                        <i class="fa-solid fa-book-open me-2.5"></i> Daftar Mata Kuliah
+                        <i class="fa-solid fa-book-open me-2.5"></i> <span>Daftar Mata Kuliah</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="jadwal.php">
-                        <i class="fa-solid fa-calendar-check me-2.5"></i> Jadwal Mengajar
+                        <i class="fa-solid fa-calendar-check me-2.5"></i> <span>Jadwal Mengajar</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="input_nilai.php">
-                        <i class="fa-solid fa-file-pen me-2.5"></i> Input Nilai
+                        <i class="fa-solid fa-file-pen me-2.5"></i> <span>Input Nilai</span>
                     </a>
                 </li>
 
                 <li class="nav-item mt-2 border-top pt-2">
                     <a class="nav-link active" href="edit_profil.php">
-                        <i class="fa-solid fa-user-gear me-2.5"></i> Pengaturan Profil
+                        <i class="fa-solid fa-user-gear me-2.5"></i> <span>Pengaturan Profil</span>
                     </a>
                 </li>
 
                 <li class="nav-item">
                     <a class="nav-link nav-link-danger-custom" href="ganti_password.php">
-                        <i class="fa-solid fa-lock-open me-2.5"></i> Ganti Password
+                        <i class="fa-solid fa-lock-open me-2.5"></i> <span>Ganti Password</span>
                     </a>
                 </li>
             </ul>
@@ -504,13 +525,13 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
                         </div>
                     </div>
 
-                    <div class="p-4 p-sm-5 bg-white">
+                    <div class="p-3 p-sm-4 p-md-5 bg-white">
                         <form id="formEditProfil" enctype="multipart/form-data" autocomplete="off">
                             <input type="hidden" name="id_dosen" value="<?= htmlspecialchars($dosen['id_dosen'] ?? $id_dosen ?? 0) ?>">
                             
                             <div class="row g-4">
                                 
-                                <div class="col-md-6 d-flex flex-column gap-4">
+                                <div class="col-12 col-md-6 d-flex flex-column gap-4">
                                     
                                     <div class="avatar-uploader-box d-flex flex-column flex-sm-row align-items-center gap-4">
                                         <div class="avatar-preview-wrapper flex-shrink-0">
@@ -541,37 +562,37 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
 
                                 </div>
 
-                                <div class="col-md-6">
+                                <div class="col-12 col-md-6">
                                     <div class="locked-fields-bg">
                                         <div class="d-flex align-items-center gap-2 mb-3 pb-2 border-bottom border-info-subtle">
                                             <i class="fa-solid fa-circle-info text-info fs-5"></i>
                                             <span class="fw-bold text-dark small" style="letter-spacing: 0.3px;">DATA UTAMA AKADEMIK</span>
                                         </div>
                                         <div class="row g-3">
-                                            <div class="col-sm-6 custom-form-group">
+                                            <div class="col-12 col-sm-6 custom-form-group">
                                                 <label>NIDN <span class="text-danger fw-bold">*</span></label>
                                                 <input type="text" class="form-control" value="<?= htmlspecialchars($dosen['nidn'] ?? '') ?>" disabled>
                                             </div>
-                                            <div class="col-sm-6 custom-form-group">
+                                            <div class="col-12 col-sm-6 custom-form-group">
                                                 <label>Nama Lengkap & Gelar <span class="text-danger fw-bold">*</span></label>
                                                 <input type="text" class="form-control" value="<?= htmlspecialchars($dosen['nama'] ?? '') ?>" disabled>
                                             </div>
-                                            <div class="col-sm-6 custom-form-group">
+                                            <div class="col-12 col-sm-6 custom-form-group">
                                                 <label>Jenis Kelamin <span class="text-danger fw-bold">*</span></label>
                                                 <select class="form-select" disabled>
                                                     <option value="L" <?= isset($dosen['jenis_kelamin']) && $dosen['jenis_kelamin'] === 'L' ? 'selected' : '' ?>>Laki-laki</option>
                                                     <option value="P" <?= isset($dosen['jenis_kelamin']) && $dosen['jenis_kelamin'] === 'P' ? 'selected' : '' ?>>Perempuan</option>
                                                 </select>
                                             </div>
-                                            <div class="col-sm-6 custom-form-group">
+                                            <div class="col-12 col-sm-6 custom-form-group">
                                                 <label>Tanggal Lahir <span class="text-danger fw-bold">*</span></label>
                                                 <input type="date" class="form-control" value="<?= $dosen['tgl_lahir'] ?? '' ?>" disabled>
                                             </div>
-                                            <div class="col-sm-6 custom-form-group">
+                                            <div class="col-12 col-sm-6 custom-form-group">
                                                 <label>Pendidikan Terakhir <span class="text-danger fw-bold">*</span></label>
                                                 <input type="text" class="form-control" value="<?= htmlspecialchars($dosen['pendidikan_terakhir'] ?? '') ?>" disabled>
                                             </div>
-                                            <div class="col-sm-6 custom-form-group">
+                                            <div class="col-12 col-sm-6 custom-form-group">
                                                 <label>Jabatan Fungsional <span class="text-danger fw-bold">*</span></label>
                                                 <input type="text" class="form-control" value="<?= htmlspecialchars($dosen['jabatan'] ?? '') ?>" disabled>
                                             </div>
@@ -584,7 +605,7 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
                             <div id="alertMessage" class="mt-4"></div>
 
                             <div class="d-flex justify-content-end mt-4 pt-2 border-top border-light">
-                                <button type="submit" id="btnSimpan" class="btn btn-action-save px-4 py-2.5">
+                                <button type="submit" id="btnSimpan" class="btn btn-action-save w-100 w-sm-auto px-4 py-2.5">
                                     <i class="fa-solid fa-floppy-disk me-2"></i> Simpan Perubahan Profil
                                 </button>
                             </div>
@@ -613,7 +634,7 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
 
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Update Nama File & Live Preview Gambar Saat Memilih Foto Baru
         document.getElementById('inputFoto').addEventListener('change', function(e) {

@@ -125,7 +125,7 @@ $conn->close();
             overflow: hidden;
         }
 
-        /* SIDEBAR KONSISTEN */
+        /* SIDEBAR KONSISTEN & SERAGAM */
         .sidebar {
             width: 260px;
             background-color: #1e3a8a;
@@ -134,6 +134,7 @@ $conn->close();
             flex-direction: column;
             height: 100%;
             flex-shrink: 0;
+            transition: width 0.2s ease-in-out;
         }
 
         .sidebar .border-bottom {
@@ -155,6 +156,7 @@ $conn->close();
             margin: 3px 0;
             position: relative;
             transition: all 0.2s ease;
+            white-space: nowrap;
         }
 
         .sidebar .nav-link:hover {
@@ -164,7 +166,7 @@ $conn->close();
 
         .sidebar .nav-link.active-merah {
             background-color: #991b1b !important;
-            color: #fecdd3 !important;
+            color: #ffffff !important;
             font-weight: 700;
         }
 
@@ -194,13 +196,10 @@ $conn->close();
             background-color: #f8fafc;
         }
 
-        /* ======================================================== */
-        /* UPDATE: PASSWORD FORM SIZE AND POSITION ADJUSTMENT       */
-        /* ======================================================== */
+        /* CARD CONFIGURATIONS */
         .card-custom {
             max-width: 480px;
-            /* Diperkecil dari 620px agar lebih compact */
-            border: 1px solid #e2e8f0;
+            border: 1px solid #cbd5e1;
             border-radius: 16px;
             overflow: hidden;
             background-color: #ffffff;
@@ -211,7 +210,6 @@ $conn->close();
         .colorful-header-block {
             background: linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%);
             padding: 22px 26px;
-            /* Padding disesuaikan lebih pas */
             color: #ffffff;
             border-bottom: 4px solid #38bdf8;
         }
@@ -331,33 +329,40 @@ $conn->close();
             flex-shrink: 0;
         }
 
-        @media (max-width: 767.98px) {
-
-            html,
-            body {
-                overflow: auto;
-                height: auto;
-            }
-
-            .main-wrapper {
-                flex-direction: column;
-                overflow: visible;
-            }
-
+        /* MEDIA QUERIES UNTUK LAYAR MOBIL DAN TABLET (RESPONSIF) */
+        @media (max-width: 991.98px) {
             .sidebar {
-                width: 100%;
-                height: auto;
-                border-right: none;
+                width: 70px;
             }
-
-            .right-layout {
-                height: auto;
-                overflow: visible;
+            .sidebar .text-truncate,
+            .sidebar .nav-link span {
+                display: none !important;
             }
+            .sidebar .nav-link {
+                text-align: center;
+                padding: 15px 0;
+            }
+            .sidebar .nav-link i {
+                margin-right: 0 !important;
+                font-size: 16px;
+            }
+            
+            /* FIX FOTO SIDEBAR OTOMATIS MENYUSUT PROPORSIAL DI LAYAR GADGET */
+            .sidebar .sidebar-profile-img {
+                width: 40px !important;
+                height: 40px !important;
+            }
+        }
 
-            .content-scrollable {
-                overflow-y: visible;
-                height: auto;
+        @media (max-width: 575.98px) {
+            .colorful-header-block {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 10px !important;
+                padding: 18px 20px !important;
+            }
+            .card-custom {
+                border-radius: 12px;
             }
         }
     </style>
@@ -366,17 +371,17 @@ $conn->close();
 <body>
 
     <nav class="navbar navbar-expand-lg navbar-dark custom-navbar shadow-sm sticky-top" style="z-index: 1050;">
-        <div class="container-fluid px-4">
-            <a class="navbar-brand fw-bold d-flex align-items-center" href="dashboard_dosen.php">
+        <div class="container-fluid px-3 px-sm-4">
+            <a class="navbar-brand fw-bold d-flex align-items-center me-auto" href="dashboard_dosen.php">
                 <img src="../assets/img/logo-unri.png" alt="Logo UNRI" class="logo-navbar me-2">
                 <span class="d-flex flex-column">
-                    <span class="text-white fw-bold mb-0" style="font-size: 15px; line-height: 1.2; letter-spacing: 0.3px;">SIAKAD Portal</span>
+                    <span class="text-white fw-bold mb-0" style="font-size: 15px; line-height: 1.2; letter-spacing: 0.3px;">SIAKAD</span>
                     <span class="text-white-50" style="font-size: 11px; font-weight: 400; opacity: 0.85;">Universitas Riau</span>
                 </span>
             </a>
             <div class="ms-auto">
-                <a class="btn btn-sm btn-logout-custom px-3 py-1.5" href="../logout.php">
-                    <i class="fa-solid fa-right-from-bracket me-1.5"></i> Keluar
+                <a class="btn btn-sm btn-logout-custom px-2 px-sm-3 py-1.5" href="../logout.php">
+                    <i class="fa-solid fa-right-from-bracket me-1.5"></i> <span class="d-none d-sm-inline">Keluar</span>
                 </a>
             </div>
         </div>
@@ -387,7 +392,7 @@ $conn->close();
         <div class="sidebar py-3">
             <div class="text-center pb-4 px-3 border-bottom mb-3">
                 <div class="position-relative d-inline-block mb-2">
-                    <img src="<?= $foto_path ?>" class="rounded-circle border border-2 border-primary-subtle" style="width: 78px; height: 78px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
+                    <img src="<?= $foto_path ?>" class="sidebar-profile-img img-fluid rounded-circle border border-2 border-primary-subtle" style="width: 78px; height: 78px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: all 0.2s ease-in-out;">
                 </div>
                 <div class="text-dosen-nama text-truncate small px-2"><?= htmlspecialchars($nama_dosen) ?></div>
             </div>
@@ -395,32 +400,32 @@ $conn->close();
             <ul class="nav flex-column" style="flex: 1;">
                 <li class="nav-item">
                     <a class="nav-link" href="dashboard_dosen.php">
-                        <i class="fa-solid fa-house-chimney me-2.5"></i> Dashboard
+                        <i class="fa-solid fa-house-chimney me-2.5"></i> <span>Dashboard</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="matakuliah.php">
-                        <i class="fa-solid fa-book-open me-2.5"></i> Daftar Mata Kuliah
+                        <i class="fa-solid fa-book-open me-2.5"></i> <span>Daftar Mata Kuliah</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="jadwal.php">
-                        <i class="fa-solid fa-calendar-check me-2.5"></i> Jadwal Mengajar
+                        <i class="fa-solid fa-calendar-check me-2.5"></i> <span>Jadwal Mengajar</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="input_nilai.php">
-                        <i class="fa-solid fa-file-pen me-2.5"></i> Input Nilai
+                        <i class="fa-solid fa-file-pen me-2.5"></i> <span>Input Nilai</span>
                     </a>
                 </li>
                 <li class="nav-item mt-2 border-top pt-2">
                     <a class="nav-link" href="edit_profil.php">
-                        <i class="fa-solid fa-user-gear me-2.5"></i> Pengaturan Profil
+                        <i class="fa-solid fa-user-gear me-2.5"></i> <span>Pengaturan Profil</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active-merah" href="ganti_password.php">
-                        <i class="fa-solid fa-lock-open me-2.5"></i> Ganti Password
+                        <i class="fa-solid fa-lock-open me-2.5"></i> <span>Ganti Password</span>
                     </a>
                 </li>
             </ul>
@@ -442,7 +447,7 @@ $conn->close();
                         </div>
                     </div>
 
-                    <div class="p-4 bg-white">
+                    <div class="p-3 p-sm-4 bg-white">
 
                         <?php if (!empty($error_msg)): ?>
                             <div class="alert alert-danger d-flex align-items-center gap-2 small py-2.5 px-3 border-0 mb-3" style="border-radius: 8px; background-color: #fef2f2; color: #991b1b;">

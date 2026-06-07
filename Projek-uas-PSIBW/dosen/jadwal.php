@@ -17,7 +17,7 @@ $dosen_res = $stmt_d->get_result()->fetch_assoc();
 $stmt_d->close();
 
 $id_dosen   = $dosen_res['id_dosen'] ?? 0;
-$nama_dosen = $dosen_res['nama'] ?? 'Dosen SIAKAD';
+$nama_dosen = !empty($dosen_res['nama']) ? $dosen_res['nama'] : 'Dosen SIAKAD';
 $foto_path  = !empty($dosen_res['foto']) ? '../uploads/foto_dosen/' . $dosen_res['foto'] : 'https://via.placeholder.com/150';
 
 // 2. Ambil data mata kuliah berdasarkan dosen yang login
@@ -52,7 +52,7 @@ if ($id_dosen > 0) {
             'sks'         => $row['sks'],
             'jam_mulai'   => $jam_mulai,
             'jam_selesai' => $jam_selesai,
-            'ruangan'     => 'Ruang Kuliah Utama'
+            'ruangan'     => 'Ruang Kuliah Utama' // Sesuai mockup sebelumnya
         ];
     }
     $stmt_k->close();
@@ -89,7 +89,7 @@ $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
             flex-direction: column;
         }
 
-        /* NAVBAR KONSISTEN */
+        /* NAVBAR PREMIUM (Sama Persis Edit Profil) */
         .custom-navbar {
             background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
             border-bottom: 1px solid rgba(255, 255, 255, 0.15);
@@ -113,7 +113,8 @@ $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
             border: 1px solid rgba(255, 255, 255, 0.25);
         }
 
-        .btn-logout-custom:hover {
+        .btn-logout-custom:hover,
+        .btn-logout-custom:focus {
             background-color: #e11d48 !important;
             color: #ffffff !important;
             border-color: #e11d48 !important;
@@ -126,7 +127,7 @@ $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
             overflow: hidden;
         }
 
-        /* SIDEBAR KONSISTEN */
+        /* SIDEBAR KONSISTEN & SERAGAM (Sama Persis Edit Profil) */
         .sidebar {
             width: 260px;
             background-color: #1e3a8a;
@@ -135,6 +136,7 @@ $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
             flex-direction: column;
             height: 100%;
             flex-shrink: 0;
+            transition: width 0.2s ease-in-out;
         }
 
         .sidebar .border-bottom {
@@ -161,9 +163,11 @@ $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
             margin: 3px 0;
             position: relative;
             transition: all 0.2s ease;
+            white-space: nowrap;
         }
 
         .sidebar .nav-link:hover,
+        .sidebar .nav-item-normal:hover,
         .sidebar .nav-link-danger-custom:hover {
             color: #ffffff !important;
             background-color: rgba(255, 255, 255, 0.1) !important;
@@ -201,9 +205,10 @@ $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
             background-color: #f8fafc;
         }
 
+        /* CARD CONTENT STYLING */
         .profile-clean-card {
             background: #ffffff;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #cbd5e1;
             border-radius: 20px;
             box-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.06);
             overflow: hidden;
@@ -229,10 +234,21 @@ $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
             color: #ffffff;
         }
 
-        /* TABS MINGGUAN */
+        /* TABS HARI MINGGUAN (Agar rapi saat sidebar mengecil) */
         .academic-tabs-line {
             border-bottom: 2px solid #e2e8f0;
             margin-bottom: 20px;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            scrollbar-width: none; 
+        }
+
+        .academic-tabs-line::-webkit-scrollbar {
+            display: none;
+        }
+
+        .academic-tabs-line .nav-item {
+            white-space: nowrap;
         }
 
         .academic-tabs-line .nav-link {
@@ -277,9 +293,7 @@ $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
             border-color: #bae6fd;
         }
 
-        /* ======================================================== */
-        /* SOLUSI FINAL: MENERAPKAN CSS GRID AGAR SELARAS TOTAL       */
-        /* ======================================================== */
+        /* GRID LAYOUT JADWAL UTAMA (Desktop & HP Fleksibel) */
         .grid-table-container {
             border: 1px solid #cbd5e1;
             border-radius: 8px;
@@ -288,25 +302,21 @@ $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
-        /* Cetakan kolom dikunci mutlak lewat grid-template-columns */
         .grid-table-header, 
         .grid-table-row {
             display: grid !important;
-            grid-template-columns: 1.6fr 1.2fr 4.6fr 1.2fr 1.4fr; /* Rasio proporsi kolom yang pakem */
+            grid-template-columns: 1.6fr 1.2fr 4.6fr 1.2fr 1.4fr;
             align-items: center;
             padding: 12px 16px;
         }
 
-        /* Header Style */
         .grid-table-header {
             background-color: #1e3a8a !important;
             color: #ffffff !important;
             font-weight: 600;
             font-size: 13.5px;
-            border-bottom: none;
         }
 
-        /* Row Style */
         .grid-table-row {
             border-bottom: 1px solid #e2e8f0;
             background-color: #ffffff;
@@ -322,23 +332,7 @@ $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
             border-bottom: none;
         }
 
-        /* Pengondisian teks turun ke bawah tetap aman di dalam grid */
-        .col-nama {
-            white-space: normal !important;
-            word-break: break-word;
-            padding-right: 15px;
-        }
-
-        .col-ruangan {
-            white-space: normal !important;
-            word-break: break-word;
-        }
-
-        /* Penyelarasan Alignment Konten */
-        .col-waktu-align { text-align: center; justify-self: center; }
-        .col-bobot-align { text-align: center; justify-self: center; }
-
-        /* Badge Styling */
+        /* BADGES & TYPOGRAPHY JADWAL */
         .badge-waktu-custom {
             background-color: #f0f4f8;
             border: 1px solid #d9e2ec;
@@ -374,7 +368,17 @@ $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
             font-size: 13px;
         }
 
-        /* FOOTER */
+        /* CARD JADWAL KHUSUS MOBILE VIEW (< 768px) */
+        .mobile-jadwal-card {
+            display: none;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
         .footer {
             background-color: #ffffff;
             border-top: 1px solid #e2e8f0;
@@ -384,23 +388,50 @@ $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
             flex-shrink: 0;
         }
 
-        /* Responsivitas HP */
-        @media (max-width: 767.98px) {
-            html, body { overflow: auto; height: auto; }
-            .main-wrapper { flex-direction: column; overflow: visible; }
-            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #e2e8f0; }
-            .right-layout { height: auto; overflow: visible; }
-            .content-scrollable { overflow-y: visible; height: auto; }
-            
-            .grid-table-header { display: none !important; }
-            .grid-table-row { 
-                display: flex !important; /* Kembali ke flex vertikal di mobile */
-                flex-direction: column; 
-                align-items: flex-start; 
-                gap: 6px; 
-                padding: 12px; 
+        /* MEDIA QUERIES UNTUK TAMPILAN GADGET (Sama Persis Edit Profil) */
+        @media (max-width: 991.98px) {
+            .sidebar {
+                width: 70px;
             }
-            .col-waktu-align, .col-bobot-align { text-align: left; justify-self: flex-start; }
+            .sidebar .text-truncate,
+            .sidebar .nav-link span {
+                display: none !important;
+            }
+            .sidebar .nav-link {
+                text-align: center;
+                padding: 15px 0;
+            }
+            .sidebar .nav-link i {
+                margin-right: 0 !important;
+                font-size: 16px;
+            }
+            
+            .sidebar .sidebar-profile-img {
+                width: 40px !important;
+                height: 40px !important;
+            }
+        }
+
+        /* Responsivitas Khusus Komponen Tabel Jadwal */
+        @media (max-width: 767.98px) {
+            .grid-table-container {
+                display: none !important;
+            }
+            .mobile-jadwal-card {
+                display: block;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .colorful-header-block {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 12px !important;
+                padding: 20px !important;
+            }
+            .profile-clean-card {
+                border-radius: 12px;
+            }
         }
     </style>
 </head>
@@ -408,17 +439,17 @@ $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 <body>
 
     <nav class="navbar navbar-expand-lg navbar-dark custom-navbar shadow-sm sticky-top" style="z-index: 1050;">
-        <div class="container-fluid px-4">
-            <a class="navbar-brand fw-bold d-flex align-items-center" href="dashboard_dosen.php">
+        <div class="container-fluid px-3 px-sm-4">
+            <a class="navbar-brand fw-bold d-flex align-items-center me-auto" href="dashboard_dosen.php">
                 <img src="../assets/img/logo-unri.png" alt="Logo UNRI" class="logo-navbar me-2">
                 <span class="d-flex flex-column">
-                    <span class="text-white fw-bold mb-0" style="font-size: 15px; line-height: 1.2; letter-spacing: 0.3px;">SIAKAD Portal</span>
+                    <span class="text-white fw-bold mb-0" style="font-size: 15px; line-height: 1.2; letter-spacing: 0.3px;">SIAKAD</span>
                     <span class="text-white-50" style="font-size: 11px; font-weight: 400; opacity: 0.85;">Universitas Riau</span>
                 </span>
             </a>
             <div class="ms-auto">
-                <a class="btn btn-sm btn-logout-custom px-3 py-1.5" href="../logout.php">
-                    <i class="fa-solid fa-right-from-bracket me-1.5"></i> Keluar
+                <a class="btn btn-sm btn-logout-custom px-2 px-sm-3 py-1.5" href="../logout.php">
+                    <i class="fa-solid fa-right-from-bracket me-1.5"></i> <span class="d-none d-sm-inline">Keluar</span>
                 </a>
             </div>
         </div>
@@ -429,7 +460,7 @@ $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
         <div class="sidebar py-3">
             <div class="text-center pb-4 px-3 border-bottom mb-3">
                 <div class="position-relative d-inline-block mb-2">
-                    <img src="<?= $foto_path ?>" class="rounded-circle border border-2 border-primary-subtle" style="width: 78px; height: 78px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
+                    <img src="<?= $foto_path ?>" class="sidebar-profile-img img-fluid rounded-circle border border-2 border-primary-subtle" style="width: 78px; height: 78px; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.08); transition: all 0.2s ease-in-out;">
                 </div>
                 <div class="text-dosen-nama text-truncate small px-2"><?= htmlspecialchars($nama_dosen) ?></div>
             </div>
@@ -437,32 +468,34 @@ $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
             <ul class="nav flex-column" style="flex: 1;">
                 <li class="nav-item">
                     <a class="nav-link" href="dashboard_dosen.php">
-                        <i class="fa-solid fa-house-chimney me-2.5"></i> Dashboard
+                        <i class="fa-solid fa-house-chimney me-2.5"></i> <span>Dashboard</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="matakuliah.php">
-                        <i class="fa-solid fa-book-open me-2.5"></i> Daftar Mata Kuliah
+                        <i class="fa-solid fa-book-open me-2.5"></i> <span>Daftar Mata Kuliah</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" href="jadwal.php">
-                        <i class="fa-solid fa-calendar-check me-2.5"></i> Jadwal Mengajar
+                        <i class="fa-solid fa-calendar-check me-2.5"></i> <span>Jadwal Mengajar</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="input_nilai.php">
-                        <i class="fa-solid fa-file-pen me-2.5"></i> Input Nilai
+                        <i class="fa-solid fa-file-pen me-2.5"></i> <span>Input Nilai</span>
                     </a>
                 </li>
+
                 <li class="nav-item mt-2 border-top pt-2">
                     <a class="nav-link" href="edit_profil.php">
-                        <i class="fa-solid fa-user-gear me-2.5"></i> Pengaturan Profil
+                        <i class="fa-solid fa-user-gear me-2.5"></i> <span>Pengaturan Profil</span>
                     </a>
                 </li>
+
                 <li class="nav-item">
                     <a class="nav-link nav-link-danger-custom" href="ganti_password.php">
-                        <i class="fa-solid fa-lock-open me-2.5"></i> Ganti Password
+                        <i class="fa-solid fa-lock-open me-2.5"></i> <span>Ganti Password</span>
                     </a>
                 </li>
             </ul>
@@ -471,9 +504,9 @@ $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
         <div class="right-layout">
 
             <div class="content-scrollable px-3 px-sm-4 py-4">
-                
-                <div class="profile-clean-card mx-auto" style="max-width: 1100px;">
 
+                <div class="profile-clean-card mx-auto" style="max-width: 1100px;">
+                    
                     <div class="colorful-header-block d-flex align-items-center gap-3">
                         <div class="header-badge-icon flex-shrink-0">
                             <i class="fa-solid fa-calendar-days"></i>
@@ -484,7 +517,7 @@ $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
                         </div>
                     </div>
 
-                    <div class="p-4 bg-white">
+                    <div class="p-3 p-sm-4 bg-white">
                         
                         <ul class="nav nav-tabs academic-tabs-line" id="jadwalTab" role="tablist">
                             <?php
@@ -536,49 +569,60 @@ $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
                                         <div class="tab-pane fade <?= $isActivePanel ?>" id="panel-<?= $hari ?>" role="tabpanel">
                                             
                                             <div class="grid-table-container">
-                                                
                                                 <div class="grid-table-header">
-                                                    <div class="col-waktu-align">Waktu</div>
+                                                    <div class="text-center">Waktu</div>
                                                     <div>Kode MK</div>
                                                     <div>Nama Mata Kuliah</div>
-                                                    <div class="col-bobot-align">Bobot</div>
+                                                    <div class="text-center">Bobot</div>
                                                     <div>Ruangan</div>
                                                 </div>
 
                                                 <?php foreach ($jadwal_list[$hari] as $item): ?>
                                                     <div class="grid-table-row">
-                                                        
-                                                        <div class="col-waktu-align">
+                                                        <div class="text-center">
                                                             <div class="badge-waktu-custom">
                                                                 <i class="fa-regular fa-clock me-1 text-primary"></i>
                                                                 <?= date('H:i', strtotime($item['jam_mulai'])) ?> - <?= date('H:i', strtotime($item['jam_selesai'])) ?>
                                                             </div>
                                                         </div>
-                                                        
                                                         <div>
                                                             <span class="txt-code"><?= htmlspecialchars($item['kode_mk']) ?></span>
                                                         </div>
-                                                        
-                                                        <div class="col-nama">
-                                                            <span class="fw-bold text-dark">
-                                                                <?= htmlspecialchars($item['nama_mk']) ?>
-                                                            </span>
+                                                        <div>
+                                                            <span class="fw-bold text-dark"><?= htmlspecialchars($item['nama_mk']) ?></span>
                                                         </div>
-                                                        
-                                                        <div class="col-bobot-align">
+                                                        <div class="text-center">
                                                             <span class="badge-sks-custom"><?= htmlspecialchars($item['sks']) ?> SKS</span>
                                                         </div>
-                                                        
-                                                        <div class="col-ruangan">
+                                                        <div>
                                                             <div class="txt-ruangan">
                                                                 <i class="fa-solid fa-location-dot text-danger me-1"></i><?= htmlspecialchars($item['ruangan']) ?>
                                                             </div>
                                                         </div>
-
                                                     </div>
                                                 <?php endforeach; ?>
-
                                             </div>
+
+                                            <?php foreach ($jadwal_list[$hari] as $item): ?>
+                                                <div class="mobile-jadwal-card">
+                                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                                        <span class="txt-code bg-light px-2 py-1 rounded border"><?= htmlspecialchars($item['kode_mk']) ?></span>
+                                                        <span class="badge-sks-custom"><?= htmlspecialchars($item['sks']) ?> SKS</span>
+                                                    </div>
+                                                    <h6 class="fw-bold text-dark mb-3" style="line-height: 1.4;"><?= htmlspecialchars($item['nama_mk']) ?></h6>
+                                                    <hr class="text-muted my-2 opacity-25">
+                                                    <div class="d-flex flex-column gap-2 pt-1">
+                                                        <div class="small d-flex align-items-center">
+                                                            <i class="fa-regular fa-clock text-primary me-2" style="width: 16px;"></i>
+                                                            <span class="fw-semibold text-dark"><?= date('H:i', strtotime($item['jam_mulai'])) ?> - <?= date('H:i', strtotime($item['jam_selesai'])) ?> WIB</span>
+                                                        </div>
+                                                        <div class="small d-flex align-items-center">
+                                                            <i class="fa-solid fa-location-dot text-danger me-2" style="width: 16px;"></i>
+                                                            <span class="fw-semibold text-dark"><?= htmlspecialchars($item['ruangan']) ?></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <?php endforeach; ?>
 
                                         </div>
                                 <?php
