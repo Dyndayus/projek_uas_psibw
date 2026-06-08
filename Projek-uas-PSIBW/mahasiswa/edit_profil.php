@@ -97,7 +97,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
 <style>
 
 body{
-    background:#f4f6f9;
+    background: #f4f6f9;
 }
 
 .card{
@@ -113,6 +113,11 @@ body{
     border:4px solid #081120;
 }
 
+.header-blue{
+     background: linear-gradient(to bottom, #93c5fd, #3b82f6);
+}
+
+
 </style>
 
 </head>
@@ -123,7 +128,7 @@ body{
 
     <div class="card shadow">
 
-        <div class="card-header bg-warning text-black">
+        <div class="card-header header-blue text-black">
             <h3 class="mb-0">Edit Profil Mahasiswa</h3>
         </div>
 
@@ -215,7 +220,7 @@ body{
 
                 <button
                 type="submit"
-                class="btn btn-warning">
+                class="btn header-blue">
                     Simpan Perubahan
                 </button>
 

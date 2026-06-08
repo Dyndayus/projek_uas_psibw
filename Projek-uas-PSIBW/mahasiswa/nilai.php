@@ -34,192 +34,221 @@ $nilai = $stmt->get_result();
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Nilai Mahasiswa</title>
+    <title>Nilai Mahasiswa</title>
 
-<style>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial,sans-serif;
-}
+        body {
+            background: #f1f5f9;
+        }
 
-body{
-    background:#f1f5f9;
-}
+        .container {
+            width: 95%;
+            margin: 30px auto;
+        }
 
-.container{
-    width:95%;
-    margin:30px auto;
-}
+        .header {
+            margin-bottom: 25px;
+        }
 
-.header{
-    margin-bottom:25px;
-}
+        .header h1 {
+            color: #1e293b;
+        }
 
-.header h1{
-    color:#1e293b;
-}
+        .header p {
+            color: #64748b;
+        }
 
-.header p{
-    color:#64748b;
-}
+        .table-box {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .05);
+        }
 
-.table-box{
-    background:white;
-    border-radius:20px;
-    padding:25px;
-    box-shadow:0 10px 25px rgba(0,0,0,.05);
-}
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
-table{
-    width:100%;
-    border-collapse:collapse;
-}
+        table th {
+            background: #2563eb;
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
 
-table th{
-    background:#2563eb;
-    color:white;
-    padding:15px;
-    text-align:left;
-}
+        table td {
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
 
-table td{
-    padding:15px;
-    border-bottom:1px solid #e2e8f0;
-}
+        table tr:hover {
+            background: #f8fafc;
+        }
 
-table tr:hover{
-    background:#f8fafc;
-}
+        .badge {
+            color: white;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
 
-.badge{
-    color:white;
-    padding:6px 12px;
-    border-radius:10px;
-    font-weight:bold;
-}
+        .A {
+            background: #16a34a;
+        }
 
-.A{
-    background:#16a34a;
-}
+        .B {
+            background: #2563eb;
+        }
 
-.B{
-    background:#2563eb;
-}
+        .C {
+            background: #f59e0b;
+        }
 
-.C{
-    background:#f59e0b;
-}
+        .D {
+            background: #dc2626;
+        }
 
-.D{
-    background:#dc2626;
-}
+        .btn {
+            display: inline-block;
+            text-decoration: none;
+            background: #2563eb;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
 
-.btn{
-    display:inline-block;
-    text-decoration:none;
-    background:#2563eb;
-    color:white;
-    padding:10px 15px;
-    border-radius:10px;
-    margin-bottom:20px;
-}
-
-.btn:hover{
-    background:#1d4ed8;
-}
-
-</style>
+        .btn:hover {
+            background: #1d4ed8;
+        }
+    </style>
 
 </head>
 
 <body>
 
-<div class="container">
+    <body>
 
-    <a href="dashboard_mahasiswa.php" class="btn">
-        ← Kembali ke Dashboard
-    </a>
+        <?php include 'sidebar_mhs.php'; ?>
+        <div class="topbar">
 
-    <div class="header">
-        <h1>📝 Nilai Mahasiswa</h1>
-        <p>Riwayat nilai akademik</p>
-    </div>
+            <div class="brand">
 
-    <div class="table-box">
+                <img src="../assets/img/logo-unri.png" alt="Logo">
 
-        <table>
+                <div>
+                    <h4>SIAKAD</h4>
+                    <small>Universitas Riau</small>
+                </div>
 
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Kode MK</th>
-                    <th>Mata Kuliah</th>
-                    <th>Nilai Angka</th>
-                    <th>Nilai Huruf</th>
-                    <th>Tahun Ajaran</th>
-                </tr>
-            </thead>
+            </div>
 
-            <tbody>
+        </div>
 
-            <?php if($nilai->num_rows > 0): ?>
+        <div class="content">
+            <div class="container">
 
-                <?php $no = 1; ?>
+                <a href="dashboard_mahasiswa.php" class="btn">
+                    ← Kembali ke Dashboard
+                </a>
 
-                <?php while($row = $nilai->fetch_assoc()): ?>
+                <div class="header">
+                    <h1>📝 Nilai Mahasiswa</h1>
+                    <p>Riwayat nilai akademik</p>
+                </div>
 
-                <tr>
+                <div class="table-box">
 
-                    <td><?= $no++; ?></td>
+                    <table>
 
-                    <td><?= $row['kode_mk']; ?></td>
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Kode MK</th>
+                                <th>Mata Kuliah</th>
+                                <th>Nilai Angka</th>
+                                <th>Nilai Huruf</th>
+                                <th>Tahun Ajaran</th>
+                            </tr>
+                        </thead>
 
-                    <td><?= $row['nama_mk']; ?></td>
+                        <tbody>
 
-                    <td><?= $row['nilai_angka']; ?></td>
+                            <?php if ($nilai->num_rows > 0): ?>
 
-                    <td>
+                                <?php $no = 1; ?>
 
-                        <?php
-                        $huruf = strtoupper(substr($row['nilai_huruf'],0,1));
-                        ?>
+                                <?php while ($row = $nilai->fetch_assoc()): ?>
 
-                        <span class="badge <?= $huruf ?>">
-                            <?= $row['nilai_huruf']; ?>
-                        </span>
+                                    <tr>
 
-                    </td>
+                                        <td><?= $no++; ?></td>
 
-                    <td><?= $row['tahun_ajaran']; ?></td>
+                                        <td><?= $row['kode_mk']; ?></td>
 
-                </tr>
+                                        <td><?= $row['nama_mk']; ?></td>
 
-                <?php endwhile; ?>
+                                        <td><?= $row['nilai_angka']; ?></td>
 
-            <?php else: ?>
+                                        <td>
 
-                <tr>
-                    <td colspan="6">
-                        Belum ada data nilai
-                    </td>
-                </tr>
+                                        <td>
 
-            <?php endif; ?>
+                                            <?php
+                                            $nilai_huruf_aman = $row['nilai_huruf'] ?? '';
+                                            $huruf = strtoupper(substr($nilai_huruf_aman, 0, 1));
+                                            ?>
 
-            </tbody>
+                                            <?php if (!empty($huruf)): ?>
+                                                <span class="badge <?= $huruf ?>">
+                                                    <?= htmlspecialchars($row['nilai_huruf']); ?>
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="badge A" style="font-size: 12px;">
+                                                    Dosen belum menginput nilai
+                                                </span>
+                                            <?php endif; ?>
 
-        </table>
+                                        </td>
 
-    </div>
 
-</div>
+                                        <td><?= $row['tahun_ajaran']; ?></td>
 
-</body>
+                                    </tr>
+
+                                <?php endwhile; ?>
+
+                            <?php else: ?>
+
+                                <tr>
+                                    <td colspan="6">
+                                        Belum ada data nilai
+                                    </td>
+                                </tr>
+
+                            <?php endif; ?>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+    </body>
+
 </html>

@@ -44,7 +44,17 @@ href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.m
 <style>
 
 body{
-    background:#f4f6f9;
+    background: #f4f6f9;
+}
+
+.btn{
+    display:inline-block;
+    text-decoration:none;
+    background: #2563eb;
+    color:white;
+    padding:10px 15px;
+    border-radius:10px;
+    margin-bottom:20px;
 }
 
 .profile-card{
@@ -54,7 +64,7 @@ body{
 }
 
 .profile-header{
-    background:linear-gradient(135deg, #081120, #0d1a32);
+    background: linear-gradient(to bottom, #93c5fd, #3b82f6);
     color:white;
     padding:20px;
 }
@@ -84,12 +94,36 @@ body{
     transform:translateY(-5px);
 }
 
+
 </style>
 </head>
 
+
 <body>
 
+<?php include 'sidebar_mhs.php'; ?>
+<div class="topbar">
+
+    <div class="brand">
+
+        <img src="../assets/img/logo-unri.png" alt="Logo">
+
+        <div>
+            <h4>SIAKAD</h4>
+            <small>Universitas Riau</small>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="content">
+
 <div class="container py-5">
+
+<a href="dashboard_mahasiswa.php" class="btn">
+        ← Kembali ke Dashboard
+    </a>
 
     <div class="card shadow profile-card">
 
@@ -259,6 +293,9 @@ body{
         </div>
 
     </div>
+    </div> <!-- content -->
+
+</body>
 
 </div>
 

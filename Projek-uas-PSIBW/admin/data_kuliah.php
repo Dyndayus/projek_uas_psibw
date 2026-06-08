@@ -1,11 +1,11 @@
 <?php
-// 1. Sesuaikan path config karena file berada di folder 'admin'
+
 require_once '../config/db.php';
 requireRole(['admin']); 
 
 $db = getDB();
 
-// --- LOGIKA MENANGKAP DAN MENYIMPAN DATA BARU (PROSES INSERT) ---
+// utk tambah/get data
 $pesan_sukses = "";
 $pesan_gagal = "";
 
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['proses_simpan'])) {
     }
 }
 
-// --- LOGIKA PROSES UPDATE/EDIT DATA ---
+// utk update data
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['proses_update'])) {
     $id_kuliah = intval($_POST['id_kuliah']);
     $kode_mk = mysqli_real_escape_string($db, $_POST['kode_mk']);
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['proses_update'])) {
     }
 }
 
-// --- LOGIKA FITUR HAPUS DATA ---
+// untuk hapus data
 if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
     $id_hapus = intval($_GET['id']);
     
@@ -63,9 +63,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     }
 }
 
-// --- LOGIKA MENENTUKAN QUERY SORTING ---
 $sort = isset($_GET['sort']) ? $_GET['sort'] : 'default';
-$order_by = "k.id_kuliah DESC"; // Default urutan
+$order_by = "k.id_kuliah DESC"; 
 
 switch ($sort) {
     case 'az':
@@ -89,7 +88,6 @@ switch ($sort) {
         break;
 }
 
-// --- FITUR PAGINATION KONSISTEN (DIUBAH JADI 5 BARIS) ---
 $limit = 5; 
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 if ($page < 1) $page = 1;
@@ -100,7 +98,6 @@ $total_row = $total_result->fetch_assoc();
 $total_data = $total_row['total'];
 $total_pages = ceil($total_data / $limit);
 
-// Query SQL menggunakan variabel $order_by yang dinamis
 $result = $db->query("SELECT k.*, d.nama AS nama_dosen 
                       FROM kuliah k 
                       LEFT JOIN dosen d ON k.id_dosen = d.id_dosen 
@@ -111,7 +108,6 @@ $dosen_opt = $db->query("SELECT id_dosen, nama FROM dosen ORDER BY nama ASC");
 $list_dosen = [];
 while($d = $dosen_opt->fetch_assoc()) { $list_dosen[] = $d; }
 
-// Menghitung jumlah data yang tampil di halaman ini untuk membuat baris kosong opsional
 $current_rows_count = $result ? $result->num_rows : 0;
 ?>
 <!DOCTYPE html>

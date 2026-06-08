@@ -95,7 +95,7 @@ body{
 
 h1{
     margin-bottom:20px;
-    color:#1e293b;
+    color: #1e293b;
 }
 
 .form-group{
@@ -117,7 +117,7 @@ input{
 
 button{
     width:100%;
-    background: #ffad0a;
+        background: linear-gradient(to bottom, #93c5fd, #3b82f6);
     color:black;
     border:none;
     padding:14px;
