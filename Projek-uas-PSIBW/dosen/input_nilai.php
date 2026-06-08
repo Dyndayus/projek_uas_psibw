@@ -18,7 +18,7 @@ $nama_dosen = !empty($dosen_res['nama']) ? $dosen_res['nama'] : 'Dosen SIAKAD';
 $foto_path = !empty($dosen_res['foto']) ? '../uploads/foto_dosen/' . $dosen_res['foto'] : 'https://via.placeholder.com/150';
 
 
-// LOGIKA MENGAMBIL MATA KULIAH YANG HANYA DIAMPUI OLEH DOSEN INI
+// Ambil matkul yg diapu dosen
 $kuliah_q = "SELECT id_kuliah, nama_mk, kode_mk FROM kuliah WHERE id_dosen = '$id_dosen' ORDER BY nama_mk ASC";
 $kuliah_result = mysqli_query($conn, $kuliah_q);
 

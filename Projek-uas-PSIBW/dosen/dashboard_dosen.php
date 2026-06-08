@@ -19,7 +19,6 @@ $nama_dosen = !empty($dosen['nama']) ? $dosen['nama'] : 'Dosen SIAKAD';
 $foto_path  = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] : 'https://via.placeholder.com/150';
 
 
-// 2. HITUNG STATISTIK UTAMA (Disinkronkan Khusus Dosen yang Login)
 
 // A. Menghitung Total Mata Kuliah yang BENAR-BENAR diampu oleh dosen ini di tabel kuliah
 $q_matkul = "SELECT COUNT(*) AS total_matkul FROM kuliah WHERE id_dosen = ?";
@@ -43,7 +42,7 @@ $total_mhs = $row_mhs['total_mhs'] ?? 0;
 $stmt_mh->close();
 
 
-// 3. AMBIL JADWAL MENGAJAR HARI INI
+// 3. Ambil jadwal kuliah hari ini untuk dosen ini
 $hari_inggris = date('l');
 $daftar_hari = [
     'Sunday'    => 'Minggu',

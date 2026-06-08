@@ -6,7 +6,7 @@ requireRole(['dosen']);
 $conn = getDB();
 $session_email = $_SESSION['username'];
 
-// --- PROSES UPDATE FORM VIA AJAX FETCH ---
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ob_clean();
     header('Content-Type: application/json');
