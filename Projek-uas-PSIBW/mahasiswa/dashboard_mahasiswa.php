@@ -90,7 +90,7 @@ $riwayat = $stmtRiwayat->get_result();
 }
 
 body{
-    background: #fffef0;;
+    background: #f0f3ff;;
     display:flex;
 }
 
@@ -183,7 +183,7 @@ body{
 .blue,
 .green,
 .orange{
-    background:linear-gradient(135deg, #ffc74d, #ffad0a);
+    background: linear-gradient(to bottom, #93c5fd, #3b82f6);
     color: #111827;
 }
 
@@ -212,7 +212,7 @@ table{
 }
 
 th{
-    background:linear-gradient(to bottom, #ffc74d, #ffad0a);
+    background: linear-gradient(to bottom, #93c5fd, #3b82f6);
     color: #111827;
     padding:14px;
     text-align:left;
@@ -252,22 +252,19 @@ td{
 </head>
 
 <body>
+<?php include 'sidebar_mhs.php'; ?>
+<div class="topbar">
 
-<div class="sidebar">
+    <div class="brand">
 
-    <div class="logo-section">
-        <img src="../assets/img/logo-unri.png" alt="Logo UNRI">
-        <h2>SIAKAD</h2>
-        <p>Universitas Riau</p>
+        <img src="../assets/img/logo-unri.png" alt="Logo">
+
+        <div>
+            <h4>SIAKAD</h4>
+            <small>Universitas Riau</small>
+        </div>
+
     </div>
-
-    <ul class="menu">
-        <li><a href="dashboard_mahasiswa.php">Dashboard</a></li>
-        <li><a href="profil_mhs.php">Profil</a></li>
-        <li><a href="matkul.php">Mata Kuliah</a></li>
-        <li><a href="nilai.php">Nilai</a></li>
-        <li><a href="logout.php" class="logout">Logout</a></li>
-    </ul>
 
 </div>
 

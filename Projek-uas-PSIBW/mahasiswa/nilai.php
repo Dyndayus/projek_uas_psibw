@@ -124,7 +124,7 @@ table tr:hover{
 .btn{
     display:inline-block;
     text-decoration:none;
-    background:#2563eb;
+    background: #2563eb;
     color:white;
     padding:10px 15px;
     border-radius:10px;
@@ -140,7 +140,25 @@ table tr:hover{
 </head>
 
 <body>
+<body>
 
+<?php include 'sidebar_mhs.php'; ?>
+<div class="topbar">
+
+    <div class="brand">
+
+        <img src="../assets/img/logo-unri.png" alt="Logo">
+
+        <div>
+            <h4>SIAKAD</h4>
+            <small>Universitas Riau</small>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="content">
 <div class="container">
 
     <a href="dashboard_mahasiswa.php" class="btn">

@@ -46,7 +46,7 @@ $result = $db->query($query);
 }
 
 body{
-    background:#f1f5f9;
+    background: #f1f5f9;
 }
 
 .container{
@@ -79,7 +79,7 @@ table{
 }
 
 table th{
-    background:#2563eb;
+    background:#3b82f6;
     color:white;
     padding:15px;
     text-align:left;
@@ -116,7 +116,7 @@ table tr:hover{
 }
 
 .ambil-btn{
-    background:#16a34a;
+    background: #16a34a;
     color:white;
     border:none;
     padding:8px 14px;
@@ -131,6 +131,26 @@ table tr:hover{
 </head>
 
 <body>
+
+<body>
+
+<?php include 'sidebar_mhs.php'; ?>
+<div class="topbar">
+
+    <div class="brand">
+
+        <img src="../assets/img/logo-unri.png" alt="Logo">
+
+        <div>
+            <h4>SIAKAD</h4>
+            <small>Universitas Riau</small>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="content">
 
 <div class="container">
 
@@ -213,7 +233,10 @@ table tr:hover{
 
     </div>
 
+
+
 </div>
+
 <script>
 
 const idMahasiswa = <?= $id_mhs ?>;
@@ -261,5 +284,7 @@ function ambilMK(idKuliah){
 }
 
 </script>
+</div>
+
 </body>
 </html>
