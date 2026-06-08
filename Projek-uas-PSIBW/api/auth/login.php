@@ -101,10 +101,10 @@ $_SESSION['id_ref']   = $user['id_ref'];
 $_SESSION['nama']     = $user['nama_lengkap'];
 $_SESSION['foto']     = $user['foto'];
 
-// Bersihkan semua output liar
+// Bersihkan semua output asing
 ob_clean();
 
-// Response JSON Bersih
+
 echo json_encode([
     'status'  => 'success',
     'message' => 'Login berhasil',

@@ -21,8 +21,8 @@ if (isset($_SESSION['role'])) {
     
     <style>
         :root {
-            --primary-blue: #0f172a; /* Deep Navy */
-            --accent-blue: #2563eb; /* Modern Admin Blue */
+            --primary-blue: #0f172a; 
+            --accent-blue: #2563eb; 
             --light-blue: #f0f5ff;
             --text-dark: #1e293b;
         }
@@ -37,7 +37,7 @@ if (isset($_SESSION['role'])) {
             padding: 20px;
         }
 
-        /* Container Split Layout */
+
         .login-wrapper {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 24px;
@@ -49,7 +49,7 @@ if (isset($_SESSION['role'])) {
             min-height: 580px;
         }
 
-        /* Sisi Kiri: Branding & Informasi Admin */
+  
         .login-sidebar {
             background: linear-gradient(135deg, rgba(187, 209, 255, 0.9) 0%, rgba(29, 78, 216, 0.95) 100%), 
                         url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0e8rOOwb6o7gadw3B5pVOibQ0l3yjScJsbA&s') center/cover;
@@ -62,7 +62,7 @@ if (isset($_SESSION['role'])) {
             position: relative;
         }
 
-        /* Sisi Kanan: Form */
+   
         .login-form-area {
             padding: 50px;
             width: 50%;
@@ -100,7 +100,7 @@ if (isset($_SESSION['role'])) {
             border-color: var(--accent-blue);
         }
 
-        /* Tombol Sign-In ala Dashboard Pro */
+
         .btn-admin { 
             background: var(--accent-blue); 
             border: none; 
@@ -119,7 +119,6 @@ if (isset($_SESSION['role'])) {
             color: white;
         }
 
-        /* Alert styling */
         .alert {
             border-radius: 12px;
             font-size: 14px;

@@ -13,9 +13,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $jk        = $_POST['jenis_kelamin'];
     $alamat    = $_POST['alamat'];
     $no_hp     = $_POST['no_hp'];
-    $email     = $_POST['email'];   // Ini yang akan jadi USERNAME di tabel user
+    $email     = $_POST['email'];   
     
-    // Password plaintext menggunakan NIM/NIDN langsung agar sinkron dengan data di phpMyAdmin Kakak
+   
     $password_plain = $username; 
 
     // --- LOGIKA UPLOAD FOTO ---
@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         move_uploaded_file($_FILES['foto']['tmp_name'], $target_dir . $nama_foto);
     }
-    // --------------------------
+    
 
     try {
         $db->begin_transaction();
@@ -71,22 +71,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $last_id_ref = $db->insert_id; 
         }
 
-        // --- PROSES INSERT KE TABEL USER ---
+        
         $stmtUser = $db->prepare("INSERT INTO user (username, password, role, id_ref) VALUES (?, ?, ?, ?)");
         $stmtUser->bind_param("sssi", $email, $password_plain, $role, $last_id_ref);
         
-        // TAMBAHKAN VALIDASI EKSEKUSI INI:
+     
         if (!$stmtUser->execute()) {
-            // Jika insert ke tabel user gagal, sengaja lempar error agar ketahuan masalahnya!
             throw new Exception("Gagal insert ke tabel USER: " . $stmtUser->error);
         }
 
-        // Kunci perubahan ke database jika semuanya sukses tanpa hambatan
+      
         $db->commit();
         echo json_encode(['status' => 'success', 'message' => 'Data profil dan akun login berhasil digenerate!']);
 
     } catch (Exception $e) {
-        // Jika ada masalah di tengah jalan, batalkan semuanya agar data tidak timpang
+      
         $db->rollback();
         echo json_encode(['status' => 'error', 'message' => 'Gagal simpan: ' . $e->getMessage()]);
     }
