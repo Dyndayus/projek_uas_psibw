@@ -33,7 +33,7 @@ if (!$mahasiswa) {
 
 // Total mata kuliah
 $totalMK = $db->query("SELECT COUNT(*) AS total FROM kuliah")
-              ->fetch_assoc()['total'];
+    ->fetch_assoc()['total'];
 
 // Total nilai mahasiswa
 $stmtNilai = $db->prepare("
@@ -75,281 +75,282 @@ $riwayat = $stmtRiwayat->get_result();
 
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Mahasiswa</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Mahasiswa</title>
 
-<style>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial,sans-serif;
-}
+        body {
+            background: #f0f3ff;
+            ;
+            display: flex;
+        }
 
-body{
-    background: #f0f3ff;;
-    display:flex;
-}
+        .sidebar {
+            width: 300px;
+            background: #081120;
+            color: white;
+            min-height: 100vh;
+        }
 
-.sidebar{
-    width:300px;
-    background: #081120;
-    color:white;
-    min-height:100vh;
-}
+        .logo-section {
+            text-align: center;
+            padding: 40px 20px;
+        }
 
-.logo-section{
-    text-align:center;
-    padding:40px 20px;
-}
+        .logo-section img {
+            width: 80px;
+            margin-bottom: 15px;
+        }
 
-.logo-section img{
-    width:80px;
-    margin-bottom:15px;
-}
+        .logo-section h2 {
+            color: white;
+            font-size: 28px;
+        }
 
-.logo-section h2{
-    color:white;
-    font-size:28px;
-}
+        .logo-section p {
+            color: #4ea3ff;
+            margin-top: 5px;
+        }
 
-.logo-section p{
-    color:#4ea3ff;
-    margin-top:5px;
-}
+        .menu {
+            list-style: none;
+        }
 
-.menu{
-    list-style:none;
-}
+        .menu li {
+            margin: 5px 0;
+        }
 
-.menu li{
-    margin:5px 0;
-}
+        .menu a {
+            display: block;
+            padding: 15px 25px;
+            color: #cbd5e1;
+            text-decoration: none;
+        }
 
-.menu a{
-    display:block;
-    padding:15px 25px;
-    color:#cbd5e1;
-    text-decoration:none;
-}
+        .menu a.logout {
+            color: #ef4444;
+        }
 
-.menu a.logout{
-    color:#ef4444;
-}
+        .menu a.logout:hover {
+            color: #dc2626;
+        }
 
-.menu a.logout:hover{
-    color:#dc2626;
-}
+        .menu a:hover {
+            background: #0f2747;
+            color: white;
+        }
 
-.menu a:hover{
-    background:#0f2747;
-    color:white;
-}
+        .content {
+            flex: 1;
+            padding: 35px;
+        }
 
-.content{
-    flex:1;
-    padding:35px;
-}
+        .header {
+            margin-bottom: 30px;
+        }
 
-.header{
-    margin-bottom:30px;
-}
+        .header h1 {
+            font-size: 34px;
+            color: #1e293b;
+        }
 
-.header h1{
-    font-size:34px;
-    color:#1e293b;
-}
+        .header p {
+            color: #64748b;
+        }
 
-.header p{
-    color:#64748b;
-}
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 35px;
+        }
 
-.cards{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:20px;
-    margin-bottom:35px;
-}
+        .card {
+            padding: 25px;
+            border-radius: 18px;
+            color: white;
+        }
 
-.card{
-    padding:25px;
-    border-radius:18px;
-    color:white;
-}
+        .blue,
+        .green,
+        .orange {
+            background: linear-gradient(to bottom, #93c5fd, #3b82f6);
+            color: #111827;
+        }
 
-.blue,
-.green,
-.orange{
-    background: linear-gradient(to bottom, #93c5fd, #3b82f6);
-    color: #111827;
-}
+        .card h3 {
+            margin-bottom: 10px;
+        }
 
-.card h3{
-    margin-bottom:10px;
-}
+        .card h1 {
+            font-size: 38px;
+        }
 
-.card h1{
-    font-size:38px;
-}
+        .table-box {
+            background: white;
+            border-radius: 18px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, .05);
+        }
 
-.table-box{
-    background:white;
-    border-radius:18px;
-    padding:25px;
-    box-shadow:0 10px 25px rgba(0,0,0,.05);
-}
+        .table-box h2 {
+            margin-bottom: 20px;
+        }
 
-.table-box h2{
-    margin-bottom:20px;
-}
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
-table{
-    width:100%;
-    border-collapse:collapse;
-}
+        th {
+            background: linear-gradient(to bottom, #93c5fd, #3b82f6);
+            color: #111827;
+            padding: 14px;
+            text-align: left;
+        }
 
-th{
-    background: linear-gradient(to bottom, #93c5fd, #3b82f6);
-    color: #111827;
-    padding:14px;
-    text-align:left;
-}
+        td {
+            padding: 14px;
+            border-bottom: 1px solid #e2e8f0;
+        }
 
-td{
-    padding:14px;
-    border-bottom:1px solid #e2e8f0;
-}
+        .badge {
+            background: #16a34a;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold;
+        }
 
-.badge{
-    background:#16a34a;
-    color:white;
-    padding:6px 12px;
-    border-radius:10px;
-    font-size:12px;
-    font-weight:bold;
-}
+        @media(max-width:768px) {
 
-@media(max-width:768px){
+            body {
+                flex-direction: column;
+            }
 
-    body{
-        flex-direction:column;
-    }
+            .sidebar {
+                width: 100%;
+                min-height: auto;
+            }
 
-    .sidebar{
-        width:100%;
-        min-height:auto;
-    }
-
-    .content{
-        padding:20px;
-    }
-}
-
-</style>
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
 
 <body>
-<?php include 'sidebar_mhs.php'; ?>
-<div class="topbar">
+    <?php include 'sidebar_mhs.php'; ?>
+    <div class="topbar">
 
-    <div class="brand">
+        <div class="brand">
 
-        <img src="../assets/img/logo-unri.png" alt="Logo">
+            <img src="../assets/img/logo-unri.png" alt="Logo">
 
-        <div>
-            <h4>SIAKAD</h4>
-            <small>Universitas Riau</small>
+            <div>
+                <h4>SIAKAD</h4>
+                <small>Universitas Riau</small>
+            </div>
+
         </div>
 
     </div>
 
-</div>
+    <div class="content">
 
-<div class="content">
-
-    <div class="header">
-        <h1>Dashboard Mahasiswa</h1>
-        <p>
-            Selamat datang kembali,
-            <?= htmlspecialchars($mahasiswa['nama']); ?> 👋
-        </p>
-    </div>
-
-    <div class="cards">
-
-        <div class="card blue">
-            <h3>Total Mata Kuliah</h3>
-            <h1><?= $totalMK; ?></h1>
+        <div class="header">
+            <h1>Dashboard Mahasiswa</h1>
+            <p>
+                Selamat datang kembali,
+                <?= htmlspecialchars($mahasiswa['nama']); ?> 👋
+            </p>
         </div>
 
-        <div class="card green">
-            <h3>Total Nilai</h3>
-            <h1><?= $totalNilai; ?></h1>
+        <div class="cards">
+
+            <div class="card blue">
+                <h3>Total Mata Kuliah</h3>
+                <h1><?= $totalMK; ?></h1>
+            </div>
+
+            <div class="card green">
+                <h3>Total Nilai</h3>
+                <h1><?= $totalNilai; ?></h1>
+            </div>
+
+            <div class="card orange">
+                <h3>Rata-rata Nilai</h3>
+                <h1><?= number_format($rataNilai ?? 0, 2); ?></h1>
+            </div>
+
         </div>
 
-        <div class="card orange">
-            <h3>Rata-rata Nilai</h3>
-            <h1><?= number_format($rataNilai ?? 0, 2); ?></h1>
+        <div class="table-box">
+
+            <h2>Riwayat Nilai</h2>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Mata Kuliah</th>
+                        <th>Nilai Angka</th>
+                        <th>Nilai Huruf</th>
+                        <th>Tahun Ajaran</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <?php if ($riwayat->num_rows > 0): ?>
+
+                        <?php $no = 1; ?>
+
+                        <?php while ($row = $riwayat->fetch_assoc()): ?>
+
+                            <tr>
+                                <td><?= $no++; ?></td>
+                                <td><?= htmlspecialchars($row['nama_mk']); ?></td>
+                                <td><?= $row['nilai_angka']; ?></td>
+                                <td>
+                                    <span class="badge">
+                                        <?= htmlspecialchars($row['nilai_huruf'] ?? 'Nilai belum diinput oleh Dosen'); ?>
+                                    </span>
+                                </td>
+                                <td><?= htmlspecialchars($row['tahun_ajaran']); ?></td>
+                            </tr>
+
+                        <?php endwhile; ?>
+
+                    <?php else: ?>
+
+                        <tr>
+                            <td colspan="5">Belum ada data nilai</td>
+                        </tr>
+
+                    <?php endif; ?>
+
+                </tbody>
+
+            </table>
+
         </div>
 
     </div>
-
-    <div class="table-box">
-
-        <h2>Riwayat Nilai</h2>
-
-        <table>
-
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Mata Kuliah</th>
-                    <th>Nilai Angka</th>
-                    <th>Nilai Huruf</th>
-                    <th>Tahun Ajaran</th>
-                </tr>
-            </thead>
-
-            <tbody>
-
-            <?php if($riwayat->num_rows > 0): ?>
-
-                <?php $no = 1; ?>
-
-                <?php while($row = $riwayat->fetch_assoc()): ?>
-
-                <tr>
-                    <td><?= $no++; ?></td>
-                    <td><?= htmlspecialchars($row['nama_mk']); ?></td>
-                    <td><?= $row['nilai_angka']; ?></td>
-                    <td>
-                        <span class="badge">
-                            <?= htmlspecialchars($row['nilai_huruf']); ?>
-                        </span>
-                    </td>
-                    <td><?= htmlspecialchars($row['tahun_ajaran']); ?></td>
-                </tr>
-
-                <?php endwhile; ?>
-
-            <?php else: ?>
-
-                <tr>
-                    <td colspan="5">Belum ada data nilai</td>
-                </tr>
-
-            <?php endif; ?>
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</div>
 
 </body>
+
 </html>
