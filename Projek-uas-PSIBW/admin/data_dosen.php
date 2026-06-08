@@ -1,15 +1,11 @@
 <?php
-// 1. Path config naik satu tingkat
 require_once '../config/db.php'; 
-// requireRole(['admin']); // Aktifkan jika proteksi role sudah siap
 
 $db = getDB();
 
-// --- PROSES ACTION CRUD SECARA TRADISIONAL (Langsung ke Database) ---
 $message = '';
 $msg_status = '';
 
-// A. PROSES TAMBAH DOSEN + OTOMATIS BUAT AKUN DI TABEL 'user' SINKRON DENGAN ID_REF
 if (isset($_POST['action']) && $_POST['action'] == 'tambah') {
     $nidn = $db->real_escape_string($_POST['nidn']);
     $nama = $db->real_escape_string($_POST['nama']);
@@ -22,10 +18,8 @@ if (isset($_POST['action']) && $_POST['action'] == 'tambah') {
     $jabatan = $db->real_escape_string($_POST['jabatan']);
     $status = $db->real_escape_string($_POST['status']);
     
-    // Default nama file foto
     $nama_foto = 'default_dosen.jpg';
 
-    // Proses Upload Foto jika ada
     if (isset($_FILES['foto']) && $_FILES['foto']['error'] == 0) {
         $ekstensi_diperbolehkan = array('png', 'jpg', 'jpeg');
         $x = explode('.', $_FILES['foto']['name']);
@@ -34,7 +28,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'tambah') {
         $file_tmp = $_FILES['foto']['tmp_name'];
 
         if (in_array($ekstensi, $ekstensi_diperbolehkan) === true) {
-            if ($ukuran < 2000000) { // Max 2MB
+            if ($ukuran < 2000000) { // ukuran max foto= 2MB
                 $nama_foto = time() . '_' . preg_replace("/[^a-zA-Z0-9]/", "", $nidn) . '.' . $ekstensi;
                 if(!is_dir('../uploads/foto_dosen/')) {
                     mkdir('../uploads/foto_dosen/', 0777, true);
@@ -44,17 +38,14 @@ if (isset($_POST['action']) && $_POST['action'] == 'tambah') {
         }
     }
 
-    // Mulai Database Transaction agar sinkronisasi aman
     $db->begin_transaction();
 
     try {
-        // Validasi Awal: Pastikan email belum pernah digunakan sebagai username di tabel user
         $checkUser = $db->query("SELECT username FROM user WHERE username = '$email'");
         if ($checkUser && $checkUser->num_rows > 0) {
             throw new Exception("Email '" . htmlspecialchars($email) . "' sudah terdaftar di sistem!");
         }
 
-        // 1. Insert ke tabel dosen terlebih dahulu
         $query_dosen = "INSERT INTO dosen (nidn, nama, tgl_lahir, jenis_kelamin, alamat, no_hp, email, foto, pendidikan_terakhir, jabatan, status) 
                         VALUES ('$nidn', '$nama', '$tgl_lahir', '$jenis_kelamin', '$alamat', '$no_hp', '$email', '$nama_foto', '$pendidikan_terakhir', '$jabatan', '$status')";
         
@@ -62,10 +53,8 @@ if (isset($_POST['action']) && $_POST['action'] == 'tambah') {
             throw new Exception("Gagal menyimpan data dosen: " . $db->error);
         }
 
-        // Ambil ID Dosen yang baru saja dibuat secara otomatis (untuk id_ref)
         $id_dosen_baru = $db->insert_id;
 
-        // 2. Insert ke tabel user (username=email, password=nidn polos tanpa enkripsi, id_ref=id_dosen_baru)
         $query_user = "INSERT INTO user (username, password, role, id_ref) 
                        VALUES ('$email', '$nidn', 'dosen', '$id_dosen_baru')";
         
@@ -73,19 +62,16 @@ if (isset($_POST['action']) && $_POST['action'] == 'tambah') {
             throw new Exception("Gagal membuat akun user login: " . $db->error);
         }
 
-        // Jika kedua query berhasil tanpa masalah, terapkan ke database
         $db->commit();
         $message = "Data Dosen & Akun Login Dosen berhasil ditambahkan!";
         $msg_status = "success";
     } catch (Exception $e) {
-        // Jika salah satu gagal, batalkan semua agar data tidak timpang sebelah
         $db->rollback();
         $message = $e->getMessage();
         $msg_status = "danger";
     }
 }
 
-// B. PROSES EDIT DATA DOSEN
 if (isset($_POST['action']) && $_POST['action'] == 'edit') {
     $id_dosen = intval($_POST['id_dosen']);
     $nidn = $db->real_escape_string($_POST['nidn']);
@@ -133,7 +119,6 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
             throw new Exception("Gagal memperbarui data dosen.");
         }
 
-        // Sinkronisasi username di tabel user jika email dosen diubah
         $query_user_update = "UPDATE user SET username = '$email' WHERE role = 'dosen' AND id_ref = $id_dosen";
         if (!$db->query($query_user_update)) {
             throw new Exception("Gagal memperbarui data login user.");
@@ -149,7 +134,6 @@ if (isset($_POST['action']) && $_POST['action'] == 'edit') {
     }
 }
 
-// C. PROSES HAPUS DOSEN
 if (isset($_GET['delete'])) {
     $id_hapus = intval($_GET['delete']);
     
@@ -164,7 +148,7 @@ if (isset($_GET['delete'])) {
 
     $db->begin_transaction();
     try {
-        // Hapus akun di tabel user terlebih dahulu
+        // hapus akun di tabel user terlebih dahulu
         $db->query("DELETE FROM user WHERE role = 'dosen' AND id_ref = $id_hapus");
 
         // Hapus data utama di tabel dosen
@@ -182,12 +166,10 @@ if (isset($_GET['delete'])) {
     }
 }
 
-// --- FITUR SORT BY DATA DOSEN ---
 $valid_columns = ['id_dosen', 'nidn', 'nama', 'jabatan', 'status'];
 $sort = isset($_GET['sort']) && in_array($_GET['sort'], $valid_columns) ? $_GET['sort'] : 'id_dosen';
 $order = isset($_GET['order']) && strtoupper($_GET['order']) === 'ASC' ? 'ASC' : 'DESC';
 
-// --- FITUR PAGINATION KONSISTEN MAKSIMAL 5 DATA ---
 $limit = 5; 
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 if ($page < 1) $page = 1;
@@ -636,7 +618,6 @@ $jumlah_data_sekarang = ($result) ? $result->num_rows : 0;
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 function bukaModalEdit(data) {
-    // Isi data ke dalam input form modal edit berdasarkan ID komponennya
     document.getElementById('edit_id_dosen').value = data.id_dosen;
     document.getElementById('edit_nidn').value = data.nidn;
     document.getElementById('edit_nama').value = data.nama;
@@ -649,7 +630,6 @@ function bukaModalEdit(data) {
     document.getElementById('edit_jabatan').value = data.jabatan;
     document.getElementById('edit_status').value = data.status;
 
-    // Tampilkan modal edit secara manual menggunakan JavaScript Bootstrap
     var modalEdit = new bootstrap.Modal(document.getElementById('modalEditDosen'));
     modalEdit.show();
 }

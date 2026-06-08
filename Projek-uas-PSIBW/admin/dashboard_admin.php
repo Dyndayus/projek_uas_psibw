@@ -1,5 +1,4 @@
 <?php
-// Pastikan session dimulai di baris paling pertama
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -9,11 +8,9 @@ requireRole(['admin']);
 
 $db = getDB();
 
-// --- PENANGANAN BACKEND INTEGRASI FOTO CADANGAN ---
 $pesan_sukses = "";
 $pesan_gagal = "";
 
-// Jika form mengirim data secara langsung (POST Native) untuk mengamankan unggahan foto profil
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset($_FILES['foto'])) {
     $role = mysqli_real_escape_string($db, $_POST['role']);
     $username = mysqli_real_escape_string($db, $_POST['username']);
@@ -22,7 +19,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
         $file_tmp = $_FILES['foto']['tmp_name'];
         $file_name = $_FILES['foto']['name'];
         
-        // Membersihkan nama file dan memberikan timestamp unik agar tidak bentrok
         $nama_foto_database = time() . "_" . preg_replace("/[^a-zA-Z0-9\._-]/", "", $file_name);
         $target_dir = "../uploads/foto_mhs/";
 
@@ -30,20 +26,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['username']) && isset(
             mkdir($target_dir, 0777, true);
         }
 
-        // Pindahkan file ke folder tujuan fisiknya
         if (move_uploaded_file($file_tmp, $target_dir . $nama_foto_database)) {
-            // Update nama file foto di database berdasarkan NIM mahasiswa yang baru saja tersimpan via API
             $db->query("UPDATE mhs SET foto = '$nama_foto_database' WHERE nim = '$username'");
         }
     }
 }
 
-// Ambil total untuk dashboard box
 $totalMhs = $db->query("SELECT COUNT(*) as total FROM mhs")->fetch_assoc()['total'];
 $totalDosen = $db->query("SELECT COUNT(*) as total FROM dosen")->fetch_assoc()['total'];
 $totalMK = $db->query("SELECT COUNT(*) as total FROM kuliah")->fetch_assoc()['total'];
 
-// Ambil data terbaru untuk tabel
 $mhsBaru = $db->query("SELECT nim, nama FROM mhs ORDER BY id_mhs DESC LIMIT 4");
 $dosenBaru = $db->query("SELECT nidn, nama FROM dosen ORDER BY id_dosen DESC LIMIT 2");
 $mkBaru = $db->query("SELECT kode_mk, nama_mk FROM kuliah ORDER BY id_kuliah DESC LIMIT 2");
@@ -75,7 +67,6 @@ $mkBaru = $db->query("SELECT kode_mk, nama_mk FROM kuliah ORDER BY id_kuliah DES
             color: #334155;
         }
 
-        /* --- CONTENT RE-DESIGN --- */
         .main-content { 
             padding: 40px; 
         }
@@ -85,7 +76,6 @@ $mkBaru = $db->query("SELECT kode_mk, nama_mk FROM kuliah ORDER BY id_kuliah DES
             font-weight: 700;
         }
 
-        /* --- CARD STATISTIK MINIMALIS --- */
         .card-stat { 
             border-radius: 16px; 
             border: none; 
@@ -122,7 +112,6 @@ $mkBaru = $db->query("SELECT kode_mk, nama_mk FROM kuliah ORDER BY id_kuliah DES
         .stat-dosen .stat-icon-wrapper { background: rgba(99, 102, 241, 0.1); color: #6366f1; }
         .stat-mk .stat-icon-wrapper { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
 
-        /* --- UTILITY CARDS & TABLES --- */
         .card-data {
             border: none;
             border-radius: 16px;
@@ -166,7 +155,6 @@ $mkBaru = $db->query("SELECT kode_mk, nama_mk FROM kuliah ORDER BY id_kuliah DES
             font-size: 0.85rem;
         }
 
-        /* --- BUTTONS & MODAL --- */
         .btn-premium-success {
             background: var(--accent-emerald);
             border: none;

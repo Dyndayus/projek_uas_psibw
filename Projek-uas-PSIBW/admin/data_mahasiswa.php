@@ -1,11 +1,11 @@
 <?php
-// 1. Sesuaikan path config karena file berada di folder 'admin'
+
 require_once '../config/db.php';
 requireRole(['admin']); 
 
 $db = getDB();
 
-// --- LOGIKA MENANGKAP DAN MENYIMPAN DATA BARU (PROSES INSERT) ---
+
 $pesan_sukses = "";
 $pesan_gagal = "";
 
@@ -71,7 +71,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['proses_simpan'])) {
     }
 }
 
-// --- LOGIKA PROSES UPDATE/EDIT DATA ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['proses_update'])) {
     $id_mhs = intval($_POST['id_mhs']);
     $nim = mysqli_real_escape_string($db, $_POST['nim']);
@@ -150,7 +149,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['proses_update'])) {
     }
 }
 
-// --- LOGIKA FITUR HAPUS DATA ---
 if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
     $id_hapus = intval($_GET['id']);
     
@@ -177,12 +175,11 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])
     }
 }
 
-// --- FITUR SORT BY DINAMIS ---
+//sort by
 $valid_columns = ['id_mhs', 'nim', 'nama', 'angkatan', 'semester'];
 $sort = isset($_GET['sort']) && in_array($_GET['sort'], $valid_columns) ? $_GET['sort'] : 'id_mhs';
 $order = isset($_GET['order']) && strtoupper($_GET['order']) === 'ASC' ? 'ASC' : 'DESC';
 
-// --- FITUR PAGINATION (LIMIT 5 BARIS KONSISTEN) ---
 $limit = 5; 
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 if ($page < 1) $page = 1;
@@ -195,7 +192,6 @@ $total_pages = ceil($total_data / $limit);
 
 $result = $db->query("SELECT * FROM mhs ORDER BY $sort $order LIMIT $start, $limit");
 
-// Simpan jumlah data asli yang didapat pada halaman ini
 $jumlah_data_sekarang = ($result) ? $result->num_rows : 0;
 ?>
 <!DOCTYPE html>

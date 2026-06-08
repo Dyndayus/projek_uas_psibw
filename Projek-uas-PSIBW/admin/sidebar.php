@@ -1,5 +1,5 @@
 <?php
-// Mengambil nama file aktif untuk class active secara dinamis
+
 $current_page = basename($_SERVER['PHP_SELF']);
 ?>
 
@@ -17,7 +17,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         color: #334155;
     }
 
-    /* Struktur Layout Flexbox */
+
     .wrapper {
         display: flex;
         min-height: 100vh;
@@ -32,12 +32,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
         overflow-x: hidden;
     }
 
-    /* Re-design Sidebar Utama */
+    
     .sidebar {
         width: 260px;
         min-width: 260px;
         background-color: #1e2640;
-        /* Slate Dark Premium sesuai gambar */
         color: #94a3b8;
         display: flex;
         flex-direction: column;
@@ -45,17 +44,17 @@ $current_page = basename($_SERVER['PHP_SELF']);
         z-index: 1000;
     }
 
-    /* Bagian Logo / Brand Zone */
+
     .sidebar-brand {
-        padding: 25px 20px 20px 20px; /* Disesuaikan agar pas dengan ukuran logo baru */
+        padding: 25px 20px 20px 20px; 
         text-align: center;
     }
 
     .sidebar-brand img {
-        width: 95px; /* DIUBAH: Diperbesar dari 65px agar lebih kelihatan */
+        width: 95px; 
         height: auto;
         object-fit: contain;
-        filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.25)); /* Shadow dipertegas sedikit */
+        filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.25)); 
         margin-bottom: 14px;
     }
 
@@ -69,13 +68,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
     .sidebar-brand small {
         color: #0ea5e9;
-        /* Warna cyan/biru muda */
         font-size: 0.9rem;
         font-weight: 500;
         display: block;
     }
 
-    /* Menu List */
     .sidebar-menu {
         list-style: none;
         padding: 10px 0;
@@ -91,29 +88,24 @@ $current_page = basename($_SERVER['PHP_SELF']);
         align-items: center;
         padding: 16px 28px;
         color: #94a3b8;
-        /* Warna teks redup saat tidak aktif */
         text-decoration: none;
         font-weight: 500;
         font-size: 0.95rem;
         transition: all 0.2s ease;
     }
 
-    /* Efek Hover Menu */
     .sidebar-menu a:hover {
         background-color: #2a3454;
-        /* Sedikit lebih terang dari bg sidebar */
         color: #f8fafc;
     }
 
-    /* Menu Aktif Sesuai Halaman (Sama persis seperti screenshot) */
+  
     .sidebar-menu li.active a {
         background-color: #2a3454;
         color: #0ea5e9;
-        /* Teks berubah biru muda */
         font-weight: 600;
     }
 
-    /* Garis Indikator Vertikal Biru di Sebelah Kiri Menu Aktif */
     .sidebar-menu li.active::before {
         content: '';
         position: absolute;
@@ -125,7 +117,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
         z-index: 5;
     }
 
-    /* Garis Pembatas (Divider) Sebelum Logout */
     .sidebar-divider {
         padding: 0 28px;
         margin: 20px 0;
@@ -137,10 +128,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
         margin: 0;
     }
 
-    /* Menu Khusus Logout */
     .sidebar-menu a.logout-btn {
         color: #ef4444;
-        /* Warna merah */
     }
 
     .sidebar-menu a.logout-btn:hover {
@@ -148,7 +137,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
         color: #f87171;
     }
 
-    /* Area Konten Utama */
     .main-content {
         padding: 40px;
         flex: 1;
