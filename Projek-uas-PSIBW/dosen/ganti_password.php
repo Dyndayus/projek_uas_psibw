@@ -88,7 +88,6 @@ $conn->close();
             flex-direction: column;
         }
 
-        /* NAVBAR PREMIUM */
         .custom-navbar {
             background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
             border-bottom: 1px solid rgba(255, 255, 255, 0.15);
@@ -125,7 +124,6 @@ $conn->close();
             overflow: hidden;
         }
 
-        /* SIDEBAR KONSISTEN & SERAGAM */
         .sidebar {
             width: 260px;
             background-color: #1e3a8a;
@@ -196,7 +194,6 @@ $conn->close();
             background-color: #f8fafc;
         }
 
-        /* CARD CONFIGURATIONS */
         .card-custom {
             max-width: 480px;
             border: 1px solid #cbd5e1;
@@ -206,7 +203,6 @@ $conn->close();
             box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.05);
         }
 
-        /* Colorful Gradient Header Block */
         .colorful-header-block {
             background: linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%);
             padding: 22px 26px;
@@ -236,7 +232,6 @@ $conn->close();
             margin-bottom: 6px;
         }
 
-        /* Input Control Group */
         .form-control-colored {
             border-radius: 0 8px 8px 0;
             font-size: 13.5px;
@@ -262,7 +257,6 @@ $conn->close();
             transition: all 0.2s;
         }
 
-        /* Efek fokus komponen input */
         .input-group:focus-within .input-group-text-colored {
             border-color: #0284c7;
             color: #0284c7;
@@ -294,13 +288,11 @@ $conn->close();
             background-color: #f0f9ff;
         }
 
-        /* Pembatas Elemen */
         .colored-divider {
             border-top: 2px dotted #bae6fd;
             margin: 24px 0;
         }
 
-        /* Tombol Aksi */
         .btn-action-save {
             background: linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%);
             color: #ffffff;
@@ -319,7 +311,6 @@ $conn->close();
             color: #ffffff;
         }
 
-        /* FOOTER */
         .footer {
             background-color: #ffffff;
             border-top: 1px solid #e2e8f0;
@@ -329,7 +320,6 @@ $conn->close();
             flex-shrink: 0;
         }
 
-        /* MEDIA QUERIES UNTUK LAYAR MOBIL DAN TABLET (RESPONSIF) */
         @media (max-width: 991.98px) {
             .sidebar {
                 width: 70px;
@@ -347,7 +337,6 @@ $conn->close();
                 font-size: 16px;
             }
             
-            /* FIX FOTO SIDEBAR OTOMATIS MENYUSUT PROPORSIAL DI LAYAR GADGET */
             .sidebar .sidebar-profile-img {
                 width: 40px !important;
                 height: 40px !important;

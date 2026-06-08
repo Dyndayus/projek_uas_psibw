@@ -1,5 +1,4 @@
 <?php
-// Ambil status output buffering untuk mencegah output tidak sengaja sebelum JSON dilempar
 ob_start();
 require_once '../config/db.php';
 requireRole(['dosen']);
@@ -78,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-// --- AMBIL DATA PROFIL UNTUK SIDEBAR DAN FORM ---
+
 $query = "SELECT * FROM dosen WHERE email = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("s", $session_email);
@@ -120,7 +119,6 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
             flex-direction: column;
         }
 
-        /* NAVBAR PREMIUM */
         .custom-navbar {
             background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
             border-bottom: 1px solid rgba(255, 255, 255, 0.15);
@@ -158,7 +156,6 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
             overflow: hidden;
         }
 
-        /* SIDEBAR KONSISTEN & SERAGAM */
         .sidebar {
             width: 260px;
             background-color: #1e3a8a;
@@ -236,7 +233,6 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
             background-color: #f8fafc;
         }
 
-        /* CARD CONTENT STYLING */
         .profile-clean-card {
             background: #ffffff;
             border: 1px solid #cbd5e1;
@@ -400,14 +396,13 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
             flex-shrink: 0;
         }
 
-        /* MEDIA QUERIES UNTUK TAMPILAN GADGET (TABLET & HP) */
         @media (max-width: 991.98px) {
             .sidebar {
-                width: 70px; /* Sidebar mengecil otomatis */
+                width: 70px; 
             }
             .sidebar .text-truncate,
             .sidebar .nav-link span {
-                display: none !important; /* Sembunyikan nama dosen dan teks menu */
+                display: none !important; 
             }
             .sidebar .nav-link {
                 text-align: center;
@@ -417,8 +412,7 @@ $foto_path = !empty($dosen['foto']) ? '../uploads/foto_dosen/' . $dosen['foto'] 
                 margin-right: 0 !important;
                 font-size: 16px;
             }
-            
-            /* FIX FOTO DOSEN DI SIDEBAR MENJADI RESPONSIF */
+
             .sidebar .sidebar-profile-img {
                 width: 40px !important;
                 height: 40px !important;

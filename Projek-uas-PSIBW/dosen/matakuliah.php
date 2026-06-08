@@ -20,7 +20,7 @@ $id_dosen   = $dosen_res['id_dosen'] ?? 0;
 $nama_dosen = $dosen_res['nama'] ?? 'Dosen SIAKAD';
 $foto_path  = !empty($dosen_res['foto']) ? '../uploads/foto_dosen/' . $dosen_res['foto'] : 'https://via.placeholder.com/150';
 
-// 2. QUERY UTAMA: Hanya ambil mata kuliah yang diampu oleh DOSEN YANG LOGIN
+// 2. QUERY Hanya ambil mata kuliah yang diampu oleh DOSEN YANG LOGIN
 $kuliah_q = "SELECT id_kuliah, kode_mk, nama_mk, sks FROM kuliah WHERE id_dosen = ? ORDER BY nama_mk ASC";
 $stmt_k = $conn->prepare($kuliah_q);
 $stmt_k->bind_param("i", $id_dosen);
@@ -55,7 +55,6 @@ $kuliah_result = $stmt_k->get_result();
             flex-direction: column;
         }
 
-        /* NAVBAR KONSISTEN */
         .custom-navbar {
             background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
             border-bottom: 1px solid rgba(255, 255, 255, 0.15);
@@ -92,7 +91,6 @@ $kuliah_result = $stmt_k->get_result();
             overflow: hidden;
         }
 
-        /* SIDEBAR KONSISTEN */
         .sidebar {
             width: 260px;
             background-color: #1e3a8a;
@@ -168,7 +166,6 @@ $kuliah_result = $stmt_k->get_result();
             background-color: #f8fafc;
         }
 
-        /* CARD CLEAN DAN GRADASI HEADER UTAMA */
         .profile-clean-card {
             background: #ffffff;
             border: 1px solid #e2e8f0;
@@ -197,9 +194,6 @@ $kuliah_result = $stmt_k->get_result();
             color: #ffffff;
         }
 
-        /* ======================================================== */
-        /* IMPLEMENTASI CSS GRID AGAR SELARAS TOTAL                 */
-        /* ======================================================== */
         .grid-table-container {
             border: 1px solid #cbd5e1;
             border-radius: 8px;
@@ -283,9 +277,6 @@ $kuliah_result = $stmt_k->get_result();
             flex-shrink: 0;
         }
 
-        /* ======================================================== */
-        /* RESPONSIVITAS SEAMLESS UNTUK LAYAR MOBILE & TABLET       */
-        /* ======================================================== */
         @media (max-width: 991.98px) {
             html, body { 
                 overflow: auto; 
@@ -298,8 +289,7 @@ $kuliah_result = $stmt_k->get_result();
                 display: block;
                 overflow: visible; 
             }
-            
-            /* Sembunyikan sidebar bawaan, pakai mode Offcanvas Bootstrap */
+
             .sidebar { 
                 position: fixed;
                 top: 0;
@@ -323,7 +313,6 @@ $kuliah_result = $stmt_k->get_result();
                 height: auto; 
             }
 
-            /* Transformasi CSS Grid ke Card-List Data */
             .grid-table-header { 
                 display: none !important; 
             }
@@ -347,8 +336,7 @@ $kuliah_result = $stmt_k->get_result();
             .grid-table-row:hover {
                 background-color: #ffffff;
             }
-            
-            /* Inject Label panduan data pada layar kecil */
+
             .grid-table-row > div {
                 display: flex;
                 align-items: center;
@@ -550,7 +538,7 @@ $kuliah_result = $stmt_k->get_result();
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // SCRIPT UNTUK OPERASIONAL SIDEBAR DI MOBILE/HP
+        
         document.getElementById('sidebarToggle').addEventListener('click', function () {
             document.getElementById('sidebarMenu').classList.add('show');
             document.getElementById('sidebarBackdrop').classList.remove('d-none');

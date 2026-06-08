@@ -42,7 +42,7 @@ if ($id_dosen > 0) {
         $jam_mulai = $row['jam_mulai'];
         $sks_matkul = (int)($row['sks'] ?? 2);
 
-        // Menghitung jam selesai secara otomatis (1 SKS = 50 Menit)
+        // Menghitung jam  (1 SKS = 50 Menit)
         $durasi_menit = $sks_matkul * 50;
         $jam_selesai = date('H:i', strtotime("+$durasi_menit minutes", strtotime($jam_mulai)));
 
@@ -52,7 +52,7 @@ if ($id_dosen > 0) {
             'sks'         => $row['sks'],
             'jam_mulai'   => $jam_mulai,
             'jam_selesai' => $jam_selesai,
-            'ruangan'     => 'Ruang Kuliah Utama' // Sesuai mockup sebelumnya
+            'ruangan'     => 'Ruang Kuliah Utama'
         ];
     }
     $stmt_k->close();
@@ -89,7 +89,6 @@ $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
             flex-direction: column;
         }
 
-        /* NAVBAR PREMIUM (Sama Persis Edit Profil) */
         .custom-navbar {
             background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
             border-bottom: 1px solid rgba(255, 255, 255, 0.15);
@@ -127,7 +126,6 @@ $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
             overflow: hidden;
         }
 
-        /* SIDEBAR KONSISTEN & SERAGAM (Sama Persis Edit Profil) */
         .sidebar {
             width: 260px;
             background-color: #1e3a8a;
@@ -205,7 +203,6 @@ $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
             background-color: #f8fafc;
         }
 
-        /* CARD CONTENT STYLING */
         .profile-clean-card {
             background: #ffffff;
             border: 1px solid #cbd5e1;
@@ -234,7 +231,6 @@ $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
             color: #ffffff;
         }
 
-        /* TABS HARI MINGGUAN (Agar rapi saat sidebar mengecil) */
         .academic-tabs-line {
             border-bottom: 2px solid #e2e8f0;
             margin-bottom: 20px;
@@ -293,7 +289,6 @@ $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
             border-color: #bae6fd;
         }
 
-        /* GRID LAYOUT JADWAL UTAMA (Desktop & HP Fleksibel) */
         .grid-table-container {
             border: 1px solid #cbd5e1;
             border-radius: 8px;
@@ -332,7 +327,6 @@ $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
             border-bottom: none;
         }
 
-        /* BADGES & TYPOGRAPHY JADWAL */
         .badge-waktu-custom {
             background-color: #f0f4f8;
             border: 1px solid #d9e2ec;
@@ -368,7 +362,6 @@ $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
             font-size: 13px;
         }
 
-        /* CARD JADWAL KHUSUS MOBILE VIEW (< 768px) */
         .mobile-jadwal-card {
             display: none;
             background: #ffffff;
@@ -388,7 +381,6 @@ $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
             flex-shrink: 0;
         }
 
-        /* MEDIA QUERIES UNTUK TAMPILAN GADGET (Sama Persis Edit Profil) */
         @media (max-width: 991.98px) {
             .sidebar {
                 width: 70px;
@@ -412,7 +404,6 @@ $urutan_hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
             }
         }
 
-        /* Responsivitas Khusus Komponen Tabel Jadwal */
         @media (max-width: 767.98px) {
             .grid-table-container {
                 display: none !important;

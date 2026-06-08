@@ -17,9 +17,8 @@ $id_dosen = $dosen_res['id_dosen'] ?? $dosen_res['id'] ?? 0;
 $nama_dosen = !empty($dosen_res['nama']) ? $dosen_res['nama'] : 'Dosen SIAKAD';
 $foto_path = !empty($dosen_res['foto']) ? '../uploads/foto_dosen/' . $dosen_res['foto'] : 'https://via.placeholder.com/150';
 
-// ========================================================================
+
 // LOGIKA MENGAMBIL MATA KULIAH YANG HANYA DIAMPUI OLEH DOSEN INI
-// ========================================================================
 $kuliah_q = "SELECT id_kuliah, nama_mk, kode_mk FROM kuliah WHERE id_dosen = '$id_dosen' ORDER BY nama_mk ASC";
 $kuliah_result = mysqli_query($conn, $kuliah_q);
 
@@ -29,9 +28,9 @@ if (isset($_REQUEST['id_kuliah'])) {
     $id_kuliah_terpilih = mysqli_real_escape_string($conn, $_REQUEST['id_kuliah']);
 }
 
-// ========================================================================
+
 // LOGIKA NYAMBUNG KE DATA MAHASISWA
-// ========================================================================
+
 $mahasiswa_list = [];
 if (!empty($id_kuliah_terpilih)) {
     $mhs_q = "SELECT n.id_nilai, n.nilai_angka, n.nilai_huruf, n.tahun_ajaran, m.id_mhs, m.nim, m.nama 
@@ -45,9 +44,9 @@ if (!empty($id_kuliah_terpilih)) {
     }
 }
 
-// ========================================================================
-// PROSES SIMPAN NILAI SECARA MASSAL (ARRAY FOREACH LOOP)
-// ========================================================================
+
+// PROSES SIMPAN NILAI SECARA MASSAL
+
 $notif_status = "";
 $notif_pesan = "";
 
@@ -64,7 +63,7 @@ if (isset($_POST['proses_simpan_nilai_massal'])) {
             $n_angka        = floatval($array_nilai_angka[$index]);
             $thn_ajaran     = mysqli_real_escape_string($conn, $array_thn_ajaran[$index]);
 
-            // Hitung nilai huruf otomatis berdasarkan kriteria SIAKAD
+            // Hitung nilai huruf otomatis 
             $n_huruf = 'E';
             if ($n_angka >= 85) $n_huruf = 'A';
             elseif ($n_angka >= 75) $n_huruf = 'B+';
@@ -131,7 +130,6 @@ if (isset($_POST['proses_simpan_nilai_massal'])) {
             flex-direction: column;
         }
 
-        /* NAVBAR PREMIUM */
         .custom-navbar {
             background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
             border-bottom: 1px solid rgba(255, 255, 255, 0.15);
@@ -169,7 +167,6 @@ if (isset($_POST['proses_simpan_nilai_massal'])) {
             overflow: hidden;
         }
 
-        /* SIDEBAR KONSISTEN & SERAGAM (Sama Persis dengan Edit Profil) */
         .sidebar {
             width: 260px;
             background-color: #1e3a8a;
@@ -247,7 +244,6 @@ if (isset($_POST['proses_simpan_nilai_massal'])) {
             background-color: #f8fafc;
         }
 
-        /* CARD CONTENT STYLING (Tema Clean Khas Halaman Anda) */
         .profile-clean-card {
             background: #ffffff;
             border: 1px solid #cbd5e1;
@@ -276,7 +272,6 @@ if (isset($_POST['proses_simpan_nilai_massal'])) {
             color: #ffffff;
         }
 
-        /* FORM COMPONENT STYLING */
         .form-control-nilai {
             font-size: 14px;
             padding: 8px 12px;
@@ -358,7 +353,6 @@ if (isset($_POST['proses_simpan_nilai_massal'])) {
             flex-shrink: 0;
         }
 
-        /* MEDIA QUERIES GADGET YANG SESUAI DENGAN EDIT PROFIL ANDA */
         @media (max-width: 991.98px) {
             .sidebar {
                 width: 70px;

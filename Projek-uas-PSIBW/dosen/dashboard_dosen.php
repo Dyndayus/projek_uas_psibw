@@ -43,7 +43,7 @@ $total_mhs = $row_mhs['total_mhs'] ?? 0;
 $stmt_mh->close();
 
 
-// 3. AMBIL JADWAL MENGAJAR HARI INI (Otomatis Deteksi Hari Bahasa Indonesia)
+// 3. AMBIL JADWAL MENGAJAR HARI INI
 $hari_inggris = date('l');
 $daftar_hari = [
     'Sunday'    => 'Minggu',
@@ -83,7 +83,6 @@ $conn->close();
             margin: 0;
             padding: 0;
             overflow: hidden;
-            /* Mengunci scroll utama agar layout tetap presisi */
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             font-size: 14px;
             color: #1e293b;
@@ -95,7 +94,6 @@ $conn->close();
             flex-direction: column;
         }
 
-        /* NAVBAR PREMIUM */
         .custom-navbar {
             background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
             border-bottom: 1px solid rgba(255, 255, 255, 0.15);
@@ -133,7 +131,6 @@ $conn->close();
             overflow: hidden;
         }
 
-        /* SIDEBAR TETAP DI SAMPING - RESPONSIF RINGKAS DI TABLET & HP */
         .sidebar {
             width: 260px;
             background-color: #1e3a8a;
@@ -204,7 +201,6 @@ $conn->close();
             background-color: #f8fafc;
         }
 
-        /* CARD WELCOME */
         .card-welcome-premium {
             background: linear-gradient(135deg, #1e3a8a 0%, #0284c7 100%);
             border: none;
@@ -226,7 +222,6 @@ $conn->close();
             transform: rotate(-12deg);
         }
 
-        /* 3 CARD STATISTIK: MERAH, KUNING, HIJAU */
         .card-stat-variant {
             border-radius: 18px;
             position: relative;
@@ -304,7 +299,6 @@ $conn->close();
             transform: scale(1.05);
         }
 
-        /* FORMAL & ACADEMIC GRID TABLE */
         .card-table-container-grid {
             background-color: #ffffff;
             border: 1px solid #cbd5e1;
@@ -416,17 +410,14 @@ $conn->close();
             flex-shrink: 0;
         }
 
-        /* MEDIA QUERIES UNTUK TAMPILAN RESPONSIF GADGET (TABLET & HP) */
         @media (max-width: 991.98px) {
             .sidebar {
                 width: 70px;
-                /* Lebar mengecil secara elegan saat di gadget */
             }
 
             .sidebar .text-truncate,
             .sidebar .nav-link span {
                 display: none !important;
-                /* Menyembunyikan text menu sidebar di HP/Tablet */
             }
 
             .sidebar .nav-link {
@@ -449,7 +440,6 @@ $conn->close();
                 bottom: -15px;
             }
 
-            /* Optimasi ukuran teks card statistik saat 3 sejajar di layar kecil */
             .card-stat-variant h3 {
                 font-size: 15px !important;
             }
@@ -480,7 +470,6 @@ $conn->close();
 
             .watermark-icon-vibrant {
                 display: none;
-                /* Sembunyikan watermark icon di HP agar tidak menumpuk teks */
             }
         }
 
